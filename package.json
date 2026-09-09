@@ -1,0 +1,17 @@
+{
+  "name": "tapra-2026",
+  "version": "1.0.0",
+  "description": "Azure Functions com gatilhos Timer e HTTP - TAPRA 2026",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start",
+    "azurite": "azurite --silent --location .azurite"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.1"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.0.6280",
+    "azurite": "^3.33.0"
+  }
+}
