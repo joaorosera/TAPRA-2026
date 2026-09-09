@@ -68,4 +68,54 @@ Anotado porque custou tempo descobrir:
 - Repositório criado, público, com o código enviado na branch `main`.
 - Convite de colaborador enviado para `lvwerner` (permissão de escrita) — depende de ele aceitar.
 - Validação local concluída com as quatro functions funcionando.
-- Publicação no Azure: em andamento nesta sessão (Resource Group, Storage Account e Function App via módulo `Az`).
+- Deploy no Azure feito, **falta apenas confirmar que os endpoints publicados respondem** (ver seção abaixo).
+
+## Azure — recursos já criados
+
+Conta usada: `joao.rosera@univille.br` · Assinatura: `Azure for Students` (`574b5eab-8380-4d55-b2bb-70666c58cd5b`).
+
+| Recurso | Nome |
+| --- | --- |
+| Resource Group | `rg-tapra-2026` (região `brazilsouth`) |
+| Storage Account | `sttapra2026jvr` |
+| Function App | `func-tapra-2026-jvr` (Linux, Consumption, Node 22, Functions v4) |
+| Host | `https://func-tapra-2026-jvr.azurewebsites.net` |
+
+App settings já configuradas:
+
+- `ECO_FUNCTION_URL` = `https://func-tapra-2026-jvr.azurewebsites.net/api/eco`
+- `WEBSITE_RUN_FROM_PACKAGE` = URL SAS do pacote no blob (container `deployments`, blob `tapra-2026-20260909201558.zip`)
+
+A app foi reiniciada depois do deploy, mas a verificação dos endpoints publicados ficou pela metade.
+
+## Próximos passos (continuar daqui)
+
+1. Testar os endpoints publicados (pode levar 1-2 min de cold start na primeira chamada):
+
+```powershell
+Invoke-WebRequest "https://func-tapra-2026-jvr.azurewebsites.net/api/parametro?nome=Joao" -UseBasicParsing | Select-Object -Expand Content
+Invoke-WebRequest "https://func-tapra-2026-jvr.azurewebsites.net/api/eco?mensagem=teste" -UseBasicParsing | Select-Object -Expand Content
+```
+
+2. Conferir os timers rodando no Azure pelo portal: Function App → **Log stream**, ou Application Insights → **Logs** (`traces | where message contains "timerLog" or message contains "timerChamaHttp"`). O `timerLog` roda a cada 1 min e o `timerChamaHttp` a cada 2 min.
+3. Se os endpoints derem 404, a app provavelmente não recarregou o pacote: reiniciar com `Restart-AzFunctionApp -Name func-tapra-2026-jvr -ResourceGroupName rg-tapra-2026 -Force` e testar de novo.
+4. Opcional: acrescentar no `README.md` as URLs públicas como evidência para o professor.
+
+### Como refazer o deploy depois de mudar o código
+
+Kudu zip deploy (`Publish-AzWebApp`) **não funciona** neste tipo de plano — retorna `Deployment failed with status code NotFound`. O caminho que funciona é pacote no blob + `WEBSITE_RUN_FROM_PACKAGE`:
+
+1. Copiar `host.json`, `package.json`, `package-lock.json` e `src/` para uma pasta temporária e rodar `npm install --omit=dev` lá.
+2. `Compress-Archive -Path "<pasta>\*" -DestinationPath tapra.zip -Force` (zipar o **conteúdo**, não a pasta).
+3. Subir o zip com `Set-AzStorageBlobContent` no container `deployments` do storage `sttapra2026jvr`.
+4. Gerar SAS com `New-AzStorageBlobSASToken -Permission r -FullUri` e apontar `WEBSITE_RUN_FROM_PACKAGE` para ela com `Update-AzFunctionAppSetting`.
+5. `Restart-AzFunctionApp`.
+
+### Armadilhas do módulo Az nesta máquina
+
+- **Sempre** definir a cultura antes de usar cmdlets do `Az.Functions`, senão `New-AzFunctionApp` quebra com `"Cadeia de caracteres não foi reconhecida como DateTime válido"`:
+  ```powershell
+  [System.Threading.Thread]::CurrentThread.CurrentCulture = [System.Globalization.CultureInfo]::new('en-US')
+  ```
+- `Invoke-AzResourceAction ... -Action syncfunctiontriggers` falhou com `O inicializador de tipo de 'ApiVersionCache' acionou uma exceção`. Use `Restart-AzFunctionApp` no lugar.
+- O login do Azure (`Connect-AzAccount -UseDeviceAuthentication`) fica salvo no perfil do usuário, então normalmente não precisa refazer.
