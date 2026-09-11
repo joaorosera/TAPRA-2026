@@ -70,6 +70,17 @@ A cada 2 minutos monta uma mensagem, faz uma chamada HTTP para a function `httpE
 
 A URL de destino vem da configuração `ECO_FUNCTION_URL`, para que o mesmo código funcione localmente e publicado no Azure.
 
+## Publicado no Azure
+
+As functions estão publicadas na Function App `func-tapra-2026-jvr-cus` (região Central US, Linux, plano Consumption, Node 22, Functions v4) e podem ser testadas direto no navegador:
+
+- https://func-tapra-2026-jvr-cus.azurewebsites.net/api/parametro?nome=Joao
+  `-> Parametro recebido: Joao`
+- https://func-tapra-2026-jvr-cus.azurewebsites.net/api/eco?mensagem=teste
+  `-> [httpEco - TAPRA-2026] Recebi a seguinte mensagem: "teste"`
+
+Os timers `timerLog` e `timerChamaHttp` rodam no Azure e escrevem no log da Function App (Log stream / Application Insights). O `timerChamaHttp` chama a `httpEco` publicada, pela URL configurada em `ECO_FUNCTION_URL`.
+
 ## Como executar localmente
 
 Pré-requisitos: [Node.js 20 ou 22 LTS](https://nodejs.org) (versões suportadas pelo Azure Functions v4) e [Azure Functions Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local) — o Core Tools e o Azurite já vêm como `devDependencies` deste projeto.
@@ -116,7 +127,7 @@ Ao publicar no Azure, defina `ECO_FUNCTION_URL` nas *Application settings* da Fu
 az login
 az functionapp create \
   --resource-group <grupo> \
-  --consumption-plan-location brazilsouth \
+  --consumption-plan-location centralus \
   --runtime node \
   --runtime-version 22 \
   --functions-version 4 \
