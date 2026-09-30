@@ -8,7 +8,8 @@
     "azurite": "azurite --silent --location .azurite"
   },
   "dependencies": {
-    "@azure/functions": "^4.5.1"
+    "@azure/functions": "^4.5.1",
+    "mssql": "^12.7.2"
   },
   "devDependencies": {
     "azure-functions-core-tools": "^4.0.6280",
