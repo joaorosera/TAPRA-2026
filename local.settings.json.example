@@ -4,6 +4,13 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "FUNCTIONS_EXTENSION_VERSION": "~4",
-    "ECO_FUNCTION_URL": "http://localhost:7071/api/eco"
+    "ECO_FUNCTION_URL": "http://localhost:7071/api/eco",
+    "ITSM_DB_SERVER": "<servidor>.database.windows.net",
+    "ITSM_DB_PORT": "1433",
+    "ITSM_DB_NAME": "itsm",
+    "ITSM_DB_USER": "<usuario>",
+    "ITSM_DB_PASSWORD": "<senha>",
+    "ITSM_DB_ENCRYPT": "true",
+    "ITSM_DB_TRUST_SERVER_CERTIFICATE": "false"
   }
 }

@@ -1,6 +1,6 @@
 # TAPRA-2026
 
-Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**.
+Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de dados de uma tabela do banco de origem (SQL Server, banco `itsm`).
 
 ## Integrantes da equipe
 
@@ -13,6 +13,19 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 - Node.js / JavaScript
 - Azure Functions Core Tools v4
 - Azurite (emulador de storage, necessário para os timer triggers rodarem localmente)
+- SQL Server / Azure SQL (banco de origem `itsm`), acessado com o driver [`mssql`](https://www.npmjs.com/package/mssql)
+
+## Arquitetura
+
+![Arquitetura do projeto TAPRA-2026](docs/arquitetura.png)
+
+O desenho foi feito no draw.io e está em [`docs/arquitetura.drawio`](docs/arquitetura.drawio). Para editar, abra o arquivo em [app.diagrams.net](https://app.diagrams.net) ou na extensão *Draw.io Integration* do VS Code e, depois de salvar, exporte de novo para `docs/arquitetura.png` (*File > Export as > PNG*).
+
+- A **Function App** hospeda todas as functions do projeto (Node.js, Azure Functions v4).
+- Os **HTTP triggers** atendem chamadas do navegador e da própria `timerChamaHttp`.
+- A **`timerCapturaChamados`** abre uma conexão com o **banco de origem `itsm`** (SQL Server / Azure SQL) e captura os dados da tabela `chamado`.
+- Endereços e credenciais ficam em **variáveis de ambiente**: *Application settings* no Azure e `local.settings.json` no ambiente local, arquivo que não vai para o Git.
+- O **Azure Storage** (Azurite no ambiente local) guarda o estado dos timers, e o **Application Insights** recebe os logs das execuções.
 
 ## Functions do projeto
 
@@ -22,6 +35,7 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 | `httpParametro` | HTTP GET `/api/parametro?nome=Valor` | Recebe um parâmetro pela URL e imprime esse parâmetro na tela. |
 | `httpEco` | HTTP GET `/api/eco?mensagem=Texto` | Retorna a informação recebida acrescida de um texto de identificação. |
 | `timerChamaHttp` | Timer (a cada 2 minutos) | Faz uma chamada HTTP para a function `httpEco` e imprime a resposta no log. |
+| `timerCapturaChamados` | Timer (a cada 5 minutos) | Abre uma conexão com o banco de origem `itsm` e captura os dados da tabela `chamado`. |
 
 ### 1. `timerLog` — Timer Trigger
 
@@ -70,6 +84,28 @@ A cada 2 minutos monta uma mensagem, faz uma chamada HTTP para a function `httpE
 
 A URL de destino vem da configuração `ECO_FUNCTION_URL`, para que o mesmo código funcione localmente e publicado no Azure.
 
+### 5. `timerCapturaChamados` — Timer Trigger que captura os dados de uma tabela do banco de origem
+
+Arquivo: [`src/functions/timerCapturaChamados.js`](src/functions/timerCapturaChamados.js)
+
+A cada 5 minutos (NCRONTAB `0 */5 * * * *`) a function:
+
+1. monta a configuração da conexão a partir das variáveis de ambiente `ITSM_DB_*` (nenhuma credencial fica no código);
+2. abre uma conexão com o banco de origem `itsm` (SQL Server / Azure SQL);
+3. executa `SELECT * FROM chamado`, tabela escolhida pela equipe por ser a tabela central do ITSM;
+4. imprime no log a quantidade de registros capturados, as colunas e os primeiros registros;
+5. encerra a conexão.
+
+```
+[timerCapturaChamados] abrindo conexao com o banco itsm
+[timerCapturaChamados] <N> registro(s) capturado(s) da tabela chamado
+[timerCapturaChamados] colunas: id_chamado, titulo, ...
+[timerCapturaChamados] primeiros registros: [{"id_chamado":1, ...}]
+[timerCapturaChamados] conexao encerrada
+```
+
+Se faltar alguma variável obrigatória, a execução registra um erro com o **nome** das variáveis ausentes (nunca os valores) e não tenta conectar.
+
 ## Como executar localmente
 
 Pré-requisitos: [Node.js 20 ou 22 LTS](https://nodejs.org) (versões suportadas pelo Azure Functions v4) e [Azure Functions Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local) — o Core Tools e o Azurite já vêm como `devDependencies` deste projeto.
@@ -80,6 +116,8 @@ cd TAPRA-2026
 npm install
 cp local.settings.json.example local.settings.json   # no Windows: copy local.settings.json.example local.settings.json
 ```
+
+Edite o `local.settings.json` e preencha as variáveis `ITSM_DB_*` com os dados de acesso ao banco `itsm`. Esse arquivo está no `.gitignore` e **não deve ser commitado**. Somente o modelo `local.settings.json.example`, com valores de exemplo, fica no repositório.
 
 Os timer triggers precisam de uma conta de storage. Para desenvolvimento local, suba o emulador Azurite em um terminal:
 
@@ -98,7 +136,11 @@ O host sobe em `http://localhost:7071` e expõe:
 - `http://localhost:7071/api/parametro?nome=Joao`
 - `http://localhost:7071/api/eco?mensagem=teste`
 
-Os dois timers passam a escrever no terminal automaticamente conforme o agendamento.
+Os timers passam a escrever no terminal automaticamente conforme o agendamento. Para executar a captura na hora, sem esperar os 5 minutos, chame o endpoint de administração do host local:
+
+```bash
+curl -X POST http://localhost:7071/admin/functions/timerCapturaChamados -H "Content-Type: application/json" -d "{}"
+```
 
 ## Configurações
 
@@ -107,8 +149,17 @@ Os dois timers passam a escrever no terminal automaticamente conforme o agendame
 | `AzureWebJobsStorage` | Conta de storage usada pelo host e pelos timer triggers | `UseDevelopmentStorage=true` (Azurite) |
 | `FUNCTIONS_WORKER_RUNTIME` | Runtime da function app | `node` |
 | `ECO_FUNCTION_URL` | URL da function `httpEco` chamada pelo `timerChamaHttp` | `http://localhost:7071/api/eco` |
+| `ITSM_DB_SERVER` | Servidor do banco de origem | `<servidor>.database.windows.net` |
+| `ITSM_DB_PORT` | Porta do SQL Server (opcional) | `1433` |
+| `ITSM_DB_NAME` | Nome do banco de origem | `itsm` |
+| `ITSM_DB_USER` | Usuário do banco | definido pela equipe |
+| `ITSM_DB_PASSWORD` | Senha do banco | definida pela equipe |
+| `ITSM_DB_ENCRYPT` | Usa conexão criptografada (TLS). Mantenha `true` no Azure SQL (opcional) | `true` |
+| `ITSM_DB_TRUST_SERVER_CERTIFICATE` | Aceita certificado autoassinado. Use `true` só em SQL Server local (opcional) | `false` |
 
-Ao publicar no Azure, defina `ECO_FUNCTION_URL` nas *Application settings* da Function App apontando para `https://<nome-da-function-app>.azurewebsites.net/api/eco`.
+Ao publicar no Azure, defina `ECO_FUNCTION_URL` nas *Application settings* da Function App apontando para `https://<nome-da-function-app>.azurewebsites.net/api/eco`, e cadastre também as variáveis `ITSM_DB_*`.
+
+> **Credenciais:** usuário e senha do banco existem apenas no `local.settings.json` (ignorado pelo Git) e nas *Application settings* da Function App. Nunca coloque esses valores no código, no `local.settings.json.example` ou no README.
 
 ## Publicação no Azure
 
@@ -126,7 +177,12 @@ az functionapp create \
 az functionapp config appsettings set \
   --name <nome-da-function-app> \
   --resource-group <grupo> \
-  --settings ECO_FUNCTION_URL=https://<nome-da-function-app>.azurewebsites.net/api/eco
+  --settings ECO_FUNCTION_URL=https://<nome-da-function-app>.azurewebsites.net/api/eco \
+             ITSM_DB_SERVER=<servidor>.database.windows.net \
+             ITSM_DB_NAME=itsm \
+             ITSM_DB_USER=<usuario>
 
 func azure functionapp publish <nome-da-function-app>
 ```
+
+Cadastre a `ITSM_DB_PASSWORD` pelo portal (*Function App > Settings > Environment variables*) para que a senha não fique no histórico do terminal. Se o banco for um Azure SQL, libere o acesso da Function App no firewall do servidor (*Networking > Allow Azure services and resources to access this server*).

@@ -1,0 +1,121 @@
+<mxfile host="drawio" type="device">
+  <diagram id="arquitetura-tapra-2026" name="Arquitetura">
+    <mxGraphModel dx="1480" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1490" pageHeight="720" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="funcapp" value="&lt;b style=&quot;font-size:15px&quot;&gt;Azure Function App — TAPRA-2026&lt;/b&gt;&lt;br&gt;Node.js · Azure Functions v4" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=2;fillColor=#F3F9FD;strokeColor=#0078D4;strokeWidth=2;align=left;verticalAlign=top;spacingLeft=62;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="660" height="540" as="geometry" />
+        </mxCell>
+        <mxCell id="funcapp_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/compute/Function_Apps.svg;" vertex="1" parent="1">
+          <mxGeometry x="356" y="52" width="42" height="37" as="geometry" />
+        </mxCell>
+        <mxCell id="grupo_http" value="&lt;b&gt;HTTP Trigger&lt;/b&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=4;fillColor=#FFFFFF;strokeColor=#9DBBD8;dashed=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fontColor=#1B4F72;" vertex="1" parent="1">
+          <mxGeometry x="365" y="130" width="250" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="httpParametro" value="&lt;b&gt;httpParametro&lt;/b&gt;&lt;br&gt;GET /api/parametro?nome=" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#FFFFFF;strokeColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="385" y="170" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="httpEco" value="&lt;b&gt;httpEco&lt;/b&gt;&lt;br&gt;GET /api/eco?mensagem=" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#FFFFFF;strokeColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="385" y="250" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="grupo_timer" value="&lt;b&gt;Timer Trigger&lt;/b&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=4;fillColor=#FFFFFF;strokeColor=#9DBBD8;dashed=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fontColor=#1B4F72;" vertex="1" parent="1">
+          <mxGeometry x="725" y="130" width="250" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="timerLog" value="&lt;b&gt;timerLog&lt;/b&gt;&lt;br&gt;a cada 1 min · escreve um log" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#FFFFFF;strokeColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="745" y="170" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="timerChamaHttp" value="&lt;b&gt;timerChamaHttp&lt;/b&gt;&lt;br&gt;a cada 2 min · chama o httpEco" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#FFFFFF;strokeColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="745" y="250" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="timerCapturaChamados" value="&lt;b&gt;timerCapturaChamados&lt;/b&gt;&lt;br&gt;a cada 5 min&lt;br&gt;captura a tabela &lt;i&gt;chamado&lt;/i&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="745" y="330" width="210" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="env" value="&lt;b&gt;Variáveis de ambiente&lt;/b&gt; — Application settings (Azure) / local.settings.json (local, fora do Git)&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace;font-size:11px&quot;&gt;ECO_FUNCTION_URL · ITSM_DB_SERVER · ITSM_DB_PORT · ITSM_DB_NAME · ITSM_DB_USER · ITSM_DB_PASSWORD · ITSM_DB_ENCRYPT · ITSM_DB_TRUST_SERVER_CERTIFICATE&lt;/span&gt;&lt;br&gt;&lt;i&gt;Nenhuma credencial fica no código.&lt;/i&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=6;fillColor=#FFF8E1;strokeColor=#C98A00;align=left;spacingLeft=12;spacingRight=12;" vertex="1" parent="1">
+          <mxGeometry x="365" y="450" width="610" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="banco" value="&lt;b style=&quot;font-size:14px&quot;&gt;Banco de origem&lt;/b&gt;&lt;br&gt;SQL Server / Azure SQL · &lt;i&gt;itsm&lt;/i&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=3;fillColor=#F7F7F7;strokeColor=#5A5A5A;strokeWidth=2;align=left;verticalAlign=top;spacingLeft=52;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="110" width="250" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="banco_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/databases/SQL_Database.svg;" vertex="1" parent="1">
+          <mxGeometry x="1214" y="120" width="30" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="github" value="&lt;b&gt;Repositório GitHub&lt;/b&gt;&lt;br&gt;joaorosera/TAPRA-2026" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#24292F;strokeColor=#24292F;fontColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="30" y="40" width="210" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="dev" value="&lt;b&gt;Ambiente local da equipe&lt;/b&gt;&lt;br&gt;VS Code · Core Tools · Azurite&lt;br&gt;local.settings.json" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="30" y="130" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="usuario" value="Usuário / navegador" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#333333;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="120" y="280" width="30" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="storage" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Storage_Accounts.svg;" vertex="1" parent="1">
+          <mxGeometry x="420" y="640" width="44" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="storage_txt" value="&lt;b&gt;Azure Storage&lt;/b&gt; (AzureWebJobsStorage)&lt;br&gt;estado dos timers · Azurite no ambiente local" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;text;align=left;verticalAlign=middle;whiteSpace=nowrap;" vertex="1" parent="1">
+          <mxGeometry x="472" y="637" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="insights" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/devops/Application_Insights.svg;" vertex="1" parent="1">
+          <mxGeometry x="786" y="638" width="28" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="insights_txt" value="&lt;b&gt;Application Insights&lt;/b&gt;&lt;br&gt;logs das execuções (context.log)" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;text;align=left;verticalAlign=middle;whiteSpace=nowrap;" vertex="1" parent="1">
+          <mxGeometry x="822" y="637" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_analista" value="analista" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="175" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_categoria" value="categoria" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="200" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_chamado" value="chamado  ← tabela capturada" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="225" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_chamado_sla" value="chamado_sla" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="250" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_chamado_status_historico" value="chamado_status_historico" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="275" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_cliente_organizacao" value="cliente_organizacao" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="300" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_csat_avaliacao" value="csat_avaliacao" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="325" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_fila" value="fila" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="350" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_sla" value="sla" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="375" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_solicitante" value="solicitante" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="400" width="210" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="e_git" value="git push / pull" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;startArrow=block;startFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="github" target="dev">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_deploy" value="deploy&lt;br&gt;func publish" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.24074074074074073;" edge="1" parent="1" source="dev" target="funcapp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_usuario" value="HTTP GET" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.89;" edge="1" parent="1" source="usuario" target="grupo_http">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_eco" value="HTTP GET&lt;br&gt;ECO_FUNCTION_URL" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="timerChamaHttp" target="httpEco">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_captura" value="conexão SQL (porta 1433, TLS)&lt;br&gt;&lt;b&gt;SELECT * FROM chamado&lt;/b&gt;" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=2.5;exitX=1;exitY=0.5;entryX=0;entryY=0.7727272727272727;" edge="1" parent="1" source="timerCapturaChamados" target="banco">
+          <mxGeometry x="0.03" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e_env" value="process.env" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;dashed=1;strokeColor=#C98A00;fontColor=#8A5E00;exitX=0.7950819672131147;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="env" target="timerCapturaChamados">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_storage" value="" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;dashed=1;exitX=0.15454545454545454;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="funcapp" target="storage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_insights" value="" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;dashed=1;exitX=0.696969696969697;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="funcapp" target="insights">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
