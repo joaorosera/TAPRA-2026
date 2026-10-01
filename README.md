@@ -21,11 +21,13 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 
 O desenho foi feito no draw.io e está em [`docs/arquitetura.drawio`](docs/arquitetura.drawio). Para editar, abra o arquivo em [app.diagrams.net](https://app.diagrams.net) ou na extensão *Draw.io Integration* do VS Code e, depois de salvar, exporte de novo para `docs/arquitetura.png` (*File > Export as > PNG*).
 
-- A **Function App** hospeda todas as functions do projeto (Node.js, Azure Functions v4).
-- Os **HTTP triggers** atendem chamadas do navegador e da própria `timerChamaHttp`.
-- A **`timerCapturaChamados`** abre uma conexão com o **banco de origem `itsm`** (SQL Server / Azure SQL) e captura os dados da tabela `chamado`.
-- Endereços e credenciais ficam em **variáveis de ambiente**: *Application settings* no Azure e `local.settings.json` no ambiente local, arquivo que não vai para o Git.
-- O **Azure Storage** (Azurite no ambiente local) guarda o estado dos timers, e o **Application Insights** recebe os logs das execuções.
+A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e do deploy. Componentes com a etiqueta *próxima etapa* e setas tracejadas ainda não foram implementados.
+
+- **Origem de dados:** banco `itsm` (SQL Server), fornecido pelo professor. A tabela capturada é a `chamado`.
+- **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a `timerCapturaChamados` a cada 5 minutos, que abre a conexão com o banco, lê a tabela `chamado` e fecha a conexão. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
+- **Armazenamento** *(próxima etapa)*: os dados capturados serão gravados no **Azure Data Lake Storage Gen2** (dados brutos de cada captura) e no **Azure SQL Database** (dados tratados, prontos para consulta).
+- **Visualização** *(próxima etapa)*: painéis e relatórios no **Power BI**, consultando o armazenamento.
+- **Desenvolvimento e deploy:** o código é escrito no **VS Code** (Core Tools e Azurite para rodar localmente) e versionado no **GitHub**. Hoje o deploy é manual (`func azure functionapp publish`). A próxima etapa é um pipeline no **GitHub Actions** que publique a Function App a cada push na `main`.
 
 ## Functions do projeto
 

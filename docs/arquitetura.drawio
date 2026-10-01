@@ -1,119 +1,202 @@
 <mxfile host="drawio" type="device">
   <diagram id="arquitetura-tapra-2026" name="Arquitetura">
-    <mxGraphModel dx="1480" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1490" pageHeight="720" background="#FFFFFF" math="0" shadow="0">
+    <mxGraphModel dx="1640" dy="840" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1630" pageHeight="840" background="#FFFFFF" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="funcapp" value="&lt;b style=&quot;font-size:15px&quot;&gt;Azure Function App — TAPRA-2026&lt;/b&gt;&lt;br&gt;Node.js · Azure Functions v4" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=2;fillColor=#F3F9FD;strokeColor=#0078D4;strokeWidth=2;align=left;verticalAlign=top;spacingLeft=62;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="340" y="40" width="660" height="540" as="geometry" />
+        <mxCell id="texto1" value="&lt;b&gt;TAPRA-2026 · Arquitetura do projeto&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="30" y="20" width="700" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="texto2" value="Captura de dados do ITSM com Azure Functions. As setas indicam o sentido dos dados e do deploy." style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;fontSize=12;fontColor=#5F5F5F;" vertex="1" parent="1">
+          <mxGeometry x="30" y="50" width="900" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="origem" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="30" y="150" width="220" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="texto3" value="&lt;b&gt;ORIGEM DE DADOS&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="30" y="162" width="220" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="banco_origem" value="" style="shape=cylinder3;html=1;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=9;fillColor=#1F6FD1;strokeColor=#0B4F9C;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="114" y="210" width="52" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="texto4" value="&lt;b&gt;Banco de origem ITSM&lt;/b&gt;&lt;br&gt;SQL Server · banco &lt;i&gt;itsm&lt;/i&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="40" y="282" width="200" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="texto5" value="10 tabelas do sistema de ITSM" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
+          <mxGeometry x="40" y="322" width="200" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="tabela_chamado" value="tabela capturada: &lt;b&gt;chamado&lt;/b&gt;" style="rounded=1;arcSize=20;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="45" y="354" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="texto6" value="servidor e credenciais&lt;br&gt;fornecidos pelo professor" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
+          <mxGeometry x="40" y="402" width="200" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="azure" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#0078D4;fillColor=#F5FAFE;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="420" y="100" width="780" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="azure_logo" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/other/Azure_A.svg;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="509" width="25" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="texto7" value="&lt;b&gt;Microsoft Azure&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;fontSize=13;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="1088" y="512" width="105" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ingestao" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=#FFFFFF;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="450" y="150" width="300" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="texto8" value="&lt;b&gt;INGESTÃO&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="450" y="162" width="300" height="20" as="geometry" />
         </mxCell>
         <mxCell id="funcapp_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/compute/Function_Apps.svg;" vertex="1" parent="1">
-          <mxGeometry x="356" y="52" width="42" height="37" as="geometry" />
+          <mxGeometry x="573" y="192" width="54" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="grupo_http" value="&lt;b&gt;HTTP Trigger&lt;/b&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=4;fillColor=#FFFFFF;strokeColor=#9DBBD8;dashed=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fontColor=#1B4F72;" vertex="1" parent="1">
-          <mxGeometry x="365" y="130" width="250" height="200" as="geometry" />
+        <mxCell id="texto9" value="&lt;b&gt;Azure Function App&lt;/b&gt;&lt;br&gt;Node.js · Azure Functions v4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="460" y="246" width="280" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="httpParametro" value="&lt;b&gt;httpParametro&lt;/b&gt;&lt;br&gt;GET /api/parametro?nome=" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#FFFFFF;strokeColor=#0078D4;" vertex="1" parent="1">
-          <mxGeometry x="385" y="170" width="210" height="56" as="geometry" />
+        <mxCell id="timerCapturaChamados" value="&lt;b&gt;timerCapturaChamados&lt;/b&gt;&lt;br&gt;Timer Trigger · a cada 5 min&lt;br&gt;abre a conexão, lê a tabela e fecha" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="470" y="292" width="260" height="62" as="geometry" />
         </mxCell>
-        <mxCell id="httpEco" value="&lt;b&gt;httpEco&lt;/b&gt;&lt;br&gt;GET /api/eco?mensagem=" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#FFFFFF;strokeColor=#0078D4;" vertex="1" parent="1">
-          <mxGeometry x="385" y="250" width="210" height="56" as="geometry" />
+        <mxCell id="icone10" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Storage_Accounts.svg;" vertex="1" parent="1">
+          <mxGeometry x="476" y="372" width="17" height="14" as="geometry" />
         </mxCell>
-        <mxCell id="grupo_timer" value="&lt;b&gt;Timer Trigger&lt;/b&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=4;fillColor=#FFFFFF;strokeColor=#9DBBD8;dashed=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fontColor=#1B4F72;" vertex="1" parent="1">
-          <mxGeometry x="725" y="130" width="250" height="290" as="geometry" />
+        <mxCell id="texto11" value="Storage Account: estado dos timers" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="498" y="370" width="240" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="timerLog" value="&lt;b&gt;timerLog&lt;/b&gt;&lt;br&gt;a cada 1 min · escreve um log" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#FFFFFF;strokeColor=#0078D4;" vertex="1" parent="1">
-          <mxGeometry x="745" y="170" width="210" height="56" as="geometry" />
+        <mxCell id="icone12" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/devops/Application_Insights.svg;" vertex="1" parent="1">
+          <mxGeometry x="478.5" y="392.5" width="12" height="17" as="geometry" />
         </mxCell>
-        <mxCell id="timerChamaHttp" value="&lt;b&gt;timerChamaHttp&lt;/b&gt;&lt;br&gt;a cada 2 min · chama o httpEco" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#FFFFFF;strokeColor=#0078D4;" vertex="1" parent="1">
-          <mxGeometry x="745" y="250" width="210" height="56" as="geometry" />
+        <mxCell id="texto13" value="Application Insights: logs das execuções" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="498" y="392" width="240" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="timerCapturaChamados" value="&lt;b&gt;timerCapturaChamados&lt;/b&gt;&lt;br&gt;a cada 5 min&lt;br&gt;captura a tabela &lt;i&gt;chamado&lt;/i&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="745" y="330" width="210" height="70" as="geometry" />
+        <mxCell id="icone14" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/general/Gear.svg;" vertex="1" parent="1">
+          <mxGeometry x="477" y="415.5" width="15" height="15" as="geometry" />
         </mxCell>
-        <mxCell id="env" value="&lt;b&gt;Variáveis de ambiente&lt;/b&gt; — Application settings (Azure) / local.settings.json (local, fora do Git)&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace;font-size:11px&quot;&gt;ECO_FUNCTION_URL · ITSM_DB_SERVER · ITSM_DB_PORT · ITSM_DB_NAME · ITSM_DB_USER · ITSM_DB_PASSWORD · ITSM_DB_ENCRYPT · ITSM_DB_TRUST_SERVER_CERTIFICATE&lt;/span&gt;&lt;br&gt;&lt;i&gt;Nenhuma credencial fica no código.&lt;/i&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=6;fillColor=#FFF8E1;strokeColor=#C98A00;align=left;spacingLeft=12;spacingRight=12;" vertex="1" parent="1">
-          <mxGeometry x="365" y="450" width="610" height="105" as="geometry" />
+        <mxCell id="texto15" value="Application settings: credenciais &lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;ITSM_DB_*&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="498" y="414" width="240" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="banco" value="&lt;b style=&quot;font-size:14px&quot;&gt;Banco de origem&lt;/b&gt;&lt;br&gt;SQL Server / Azure SQL · &lt;i&gt;itsm&lt;/i&gt;" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=3;fillColor=#F7F7F7;strokeColor=#5A5A5A;strokeWidth=2;align=left;verticalAlign=top;spacingLeft=52;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="1200" y="110" width="250" height="330" as="geometry" />
+        <mxCell id="texto16" value="Também hospeda as functions de exercício:&lt;br&gt;timerLog, timerChamaHttp, httpParametro e httpEco" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=10;fontColor=#5F5F5F;" vertex="1" parent="1">
+          <mxGeometry x="460" y="446" width="280" height="32" as="geometry" />
         </mxCell>
-        <mxCell id="banco_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/databases/SQL_Database.svg;" vertex="1" parent="1">
-          <mxGeometry x="1214" y="120" width="30" height="40" as="geometry" />
+        <mxCell id="armazenamento" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=#FFFFFF;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="870" y="150" width="300" height="340" as="geometry" />
         </mxCell>
-        <mxCell id="github" value="&lt;b&gt;Repositório GitHub&lt;/b&gt;&lt;br&gt;joaorosera/TAPRA-2026" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#24292F;strokeColor=#24292F;fontColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="30" y="40" width="210" height="46" as="geometry" />
+        <mxCell id="texto17" value="&lt;b&gt;ARMAZENAMENTO&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="870" y="162" width="300" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="dev" value="&lt;b&gt;Ambiente local da equipe&lt;/b&gt;&lt;br&gt;VS Code · Core Tools · Azurite&lt;br&gt;local.settings.json" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=1;arcSize=8;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="30" y="130" width="210" height="80" as="geometry" />
+        <mxCell id="tag18" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="980" y="186" width="80" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="usuario" value="Usuário / navegador" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#333333;strokeWidth=1.5;" vertex="1" parent="1">
-          <mxGeometry x="120" y="280" width="30" height="56" as="geometry" />
+        <mxCell id="sql_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/databases/SQL_Database.svg;" vertex="1" parent="1">
+          <mxGeometry x="1001" y="216" width="38" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="storage" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Storage_Accounts.svg;" vertex="1" parent="1">
-          <mxGeometry x="420" y="640" width="44" height="35" as="geometry" />
+        <mxCell id="texto19" value="&lt;b&gt;Azure SQL Database&lt;/b&gt;&lt;br&gt;dados tratados, prontos para consulta" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="880" y="272" width="280" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="storage_txt" value="&lt;b&gt;Azure Storage&lt;/b&gt; (AzureWebJobsStorage)&lt;br&gt;estado dos timers · Azurite no ambiente local" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;text;align=left;verticalAlign=middle;whiteSpace=nowrap;" vertex="1" parent="1">
-          <mxGeometry x="472" y="637" width="280" height="40" as="geometry" />
+        <mxCell id="datalake_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Data_Lake_Storage_Gen1.svg;" vertex="1" parent="1">
+          <mxGeometry x="995" y="340" width="50" height="41" as="geometry" />
         </mxCell>
-        <mxCell id="insights" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/devops/Application_Insights.svg;" vertex="1" parent="1">
-          <mxGeometry x="786" y="638" width="28" height="40" as="geometry" />
+        <mxCell id="texto20" value="&lt;b&gt;Azure Data Lake Storage Gen2&lt;/b&gt;&lt;br&gt;dados brutos de cada captura" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="880" y="388" width="280" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="insights_txt" value="&lt;b&gt;Application Insights&lt;/b&gt;&lt;br&gt;logs das execuções (context.log)" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;text;align=left;verticalAlign=middle;whiteSpace=nowrap;" vertex="1" parent="1">
-          <mxGeometry x="822" y="637" width="240" height="40" as="geometry" />
+        <mxCell id="visualizacao" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="150" width="230" height="340" as="geometry" />
         </mxCell>
-        <mxCell id="tabela_analista" value="analista" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="175" width="210" height="22" as="geometry" />
+        <mxCell id="texto21" value="&lt;b&gt;VISUALIZAÇÃO&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="162" width="230" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="tabela_categoria" value="categoria" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="200" width="210" height="22" as="geometry" />
+        <mxCell id="tag22" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="1445" y="186" width="80" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="tabela_chamado" value="chamado  ← tabela capturada" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="225" width="210" height="22" as="geometry" />
+        <mxCell id="powerbi_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/power_platform/PowerBI.svg;" vertex="1" parent="1">
+          <mxGeometry x="1465" y="262" width="39" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="tabela_chamado_sla" value="chamado_sla" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="250" width="210" height="22" as="geometry" />
+        <mxCell id="texto23" value="&lt;b&gt;Power BI&lt;/b&gt;&lt;br&gt;painéis e relatórios&lt;br&gt;dos chamados" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="322" width="210" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="tabela_chamado_status_historico" value="chamado_status_historico" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="275" width="210" height="22" as="geometry" />
-        </mxCell>
-        <mxCell id="tabela_cliente_organizacao" value="cliente_organizacao" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="300" width="210" height="22" as="geometry" />
-        </mxCell>
-        <mxCell id="tabela_csat_avaliacao" value="csat_avaliacao" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="325" width="210" height="22" as="geometry" />
-        </mxCell>
-        <mxCell id="tabela_fila" value="fila" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="350" width="210" height="22" as="geometry" />
-        </mxCell>
-        <mxCell id="tabela_sla" value="sla" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="375" width="210" height="22" as="geometry" />
-        </mxCell>
-        <mxCell id="tabela_solicitante" value="solicitante" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=12;rounded=0;align=left;spacingLeft=10;fontSize=11;fillColor=#FFFFFF;strokeColor=#C8C8C8;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="400" width="210" height="22" as="geometry" />
-        </mxCell>
-        <mxCell id="e_git" value="git push / pull" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;startArrow=block;startFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="github" target="dev">
+        <mxCell id="seta_captura" value="leitura a cada 5 min&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;SELECT * FROM chamado&lt;/span&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="origem" target="ingestao">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_deploy" value="deploy&lt;br&gt;func publish" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.24074074074074073;" edge="1" parent="1" source="dev" target="funcapp">
+        <mxCell id="seta_grava" value="grava os dados&lt;br&gt;capturados" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="armazenamento">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_usuario" value="HTTP GET" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.89;" edge="1" parent="1" source="usuario" target="grupo_http">
+        <mxCell id="seta_consulta" value="consulta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="armazenamento" target="visualizacao">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_eco" value="HTTP GET&lt;br&gt;ECO_FUNCTION_URL" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="timerChamaHttp" target="httpEco">
+        <mxCell id="devops" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="420" y="620" width="780" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="texto24" value="&lt;b&gt;DESENVOLVIMENTO E DEPLOY&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="420" y="632" width="780" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="vscode" value="" style="image;aspect=fixed;html=1;points=[];image=data:image/svg+xml,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxtYXNrIGlkPSJtYXNrMCIgbWFzay10eXBlPSJhbHBoYSIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMCIgeT0iMCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4MS41MzQgMjU0LjI1MkMxODUuNTY2IDI1NS44MjMgMTkwLjE2NCAyNTUuNzIyIDE5NC4yMzQgMjUzLjc2NEwyNDYuOTQgMjI4LjQwM0MyNTIuNDc4IDIyNS43MzggMjU2IDIyMC4xMzIgMjU2IDIxMy45ODNWNDIuMDE4MUMyNTYgMzUuODY4OSAyNTIuNDc4IDMwLjI2MzggMjQ2Ljk0IDI3LjU5ODhMMTk0LjIzNCAyLjIzNjgxQzE4OC44OTMgLTAuMzMzMTMyIDE4Mi42NDIgMC4yOTYzNDQgMTc3Ljk1NSAzLjcwNDE4QzE3Ny4yODUgNC4xOTEgMTc2LjY0NyA0LjczNDU0IDE3Ni4wNDkgNS4zMzM1NEw3NS4xNDkgOTcuMzg2MkwzMS4xOTkyIDY0LjAyNDdDMjcuMTA3OSA2MC45MTkxIDIxLjM4NTMgNjEuMTczNSAxNy41ODU1IDY0LjYzTDMuNDg5MzYgNzcuNDUyNUMtMS4xNTg1MyA4MS42ODA1IC0xLjE2Mzg2IDg4Ljk5MjYgMy40Nzc4NSA5My4yMjc0TDQxLjU5MjYgMTI4TDMuNDc3ODUgMTYyLjc3M0MtMS4xNjM4NiAxNjcuMDA4IC0xLjE1ODUzIDE3NC4zMiAzLjQ4OTM2IDE3OC41NDhMMTcuNTg1NSAxOTEuMzdDMjEuMzg1MyAxOTQuODI3IDI3LjEwNzkgMTk1LjA4MSAzMS4xOTkyIDE5MS45NzZMNzUuMTQ5IDE1OC42MTRMMTc2LjA0OSAyNTAuNjY3QzE3Ny42NDUgMjUyLjI2NCAxNzkuNTE5IDI1My40NjcgMTgxLjUzNCAyNTQuMjUyWk0xOTIuMDM5IDY5Ljg4NTNMMTE1LjQ3OSAxMjhMMTkyLjAzOSAxODYuMTE1VjY5Ljg4NTNaIiBmaWxsPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZD0iTTI0Ni45NCAyNy42MzgzTDE5NC4xOTMgMi4yNDEzOEMxODguMDg4IC0wLjY5ODMwMiAxODAuNzkxIDAuNTQxNzIxIDE3NS45OTkgNS4zMzMzMkwzLjMyMzcxIDE2Mi43NzNDLTEuMzIwODIgMTY3LjAwOCAtMS4zMTU0OCAxNzQuMzIgMy4zMzUyMyAxNzguNTQ4TDE3LjQzOTkgMTkxLjM3QzIxLjI0MjEgMTk0LjgyNyAyNi45NjgyIDE5NS4wODEgMzEuMDYxOSAxOTEuOTc2TDIzOS4wMDMgMzQuMjI2OUMyNDUuOTc5IDI4LjkzNDcgMjU1Ljk5OSAzMy45MTAzIDI1NS45OTkgNDIuNjY2N1Y0Mi4wNTQzQzI1NS45OTkgMzUuOTA3OCAyNTIuNDc4IDMwLjMwNDcgMjQ2Ljk0IDI3LjYzODNaIiBmaWxsPSIjMDA2NUE5Ii8+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIwX2QpIj4KPHBhdGggZD0iTTI0Ni45NCAyMjguMzYyTDE5NC4xOTMgMjUzLjc1OUMxODguMDg4IDI1Ni42OTggMTgwLjc5MSAyNTUuNDU4IDE3NS45OTkgMjUwLjY2N0wzLjMyMzcxIDkzLjIyNzJDLTEuMzIwODIgODguOTkyNSAtMS4zMTU0OCA4MS42ODAyIDMuMzM1MjMgNzcuNDUyM0wxNy40Mzk5IDY0LjYyOThDMjEuMjQyMSA2MS4xNzMzIDI2Ljk2ODIgNjAuOTE4OCAzMS4wNjE5IDY0LjAyNDVMMjM5LjAwMyAyMjEuNzczQzI0NS45NzkgMjI3LjA2NSAyNTUuOTk5IDIyMi4wOSAyNTUuOTk5IDIxMy4zMzNWMjEzLjk0NkMyNTUuOTk5IDIyMC4wOTIgMjUyLjQ3OCAyMjUuNjk1IDI0Ni45NCAyMjguMzYyWiIgZmlsbD0iIzAwN0FDQyIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIxX2QpIj4KPHBhdGggZD0iTTE5NC4xOTYgMjUzLjc2M0MxODguMDg5IDI1Ni43IDE4MC43OTIgMjU1LjQ1OSAxNzYgMjUwLjY2N0MxODEuOTA0IDI1Ni41NzEgMTkyIDI1Mi4zODkgMTkyIDI0NC4wMzlWMTEuOTYwNkMxOTIgMy42MTA1NyAxODEuOTA0IC0wLjU3MTE3NSAxNzYgNS4zMzMyMUMxODAuNzkyIDAuNTQxMTY2IDE4OC4wODkgLTAuNzAwNjA3IDE5NC4xOTYgMi4yMzY0OEwyNDYuOTM0IDI3LjU5ODVDMjUyLjQ3NiAzMC4yNjM1IDI1NiAzNS44Njg2IDI1NiA0Mi4wMTc4VjIxMy45ODNDMjU2IDIyMC4xMzIgMjUyLjQ3NiAyMjUuNzM3IDI0Ni45MzQgMjI4LjQwMkwxOTQuMTk2IDI1My43NjNaIiBmaWxsPSIjMUY5Q0YwIi8+CjwvZz4KPGcgc3R5bGU9Im1peC1ibGVuZC1tb2RlOm92ZXJsYXkiIG9wYWNpdHk9IjAuMjUiPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4MS4zNzggMjU0LjI1MkMxODUuNDEgMjU1LjgyMiAxOTAuMDA4IDI1NS43MjIgMTk0LjA3NyAyNTMuNzY0TDI0Ni43ODMgMjI4LjQwMkMyNTIuMzIyIDIyNS43MzcgMjU1Ljg0NCAyMjAuMTMyIDI1NS44NDQgMjEzLjk4M1Y0Mi4wMTc5QzI1NS44NDQgMzUuODY4NyAyNTIuMzIyIDMwLjI2MzYgMjQ2Ljc4NCAyNy41OTg2TDE5NC4wNzcgMi4yMzY2NUMxODguNzM3IC0wLjMzMzI5OSAxODIuNDg2IDAuMjk2MTc3IDE3Ny43OTggMy43MDQwMUMxNzcuMTI5IDQuMTkwODMgMTc2LjQ5MSA0LjczNDM3IDE3NS44OTIgNS4zMzMzN0w3NC45OTI3IDk3LjM4NkwzMS4wNDI5IDY0LjAyNDVDMjYuOTUxNyA2MC45MTg5IDIxLjIyOSA2MS4xNzM0IDE3LjQyOTIgNjQuNjI5OEwzLjMzMzExIDc3LjQ1MjNDLTEuMzE0NzggODEuNjgwMyAtMS4zMjAxMSA4OC45OTI1IDMuMzIxNiA5My4yMjczTDQxLjQzNjQgMTI4TDMuMzIxNiAxNjIuNzczQy0xLjMyMDExIDE2Ny4wMDggLTEuMzE0NzggMTc0LjMyIDMuMzMzMTEgMTc4LjU0OEwxNy40MjkyIDE5MS4zN0MyMS4yMjkgMTk0LjgyNyAyNi45NTE3IDE5NS4wODEgMzEuMDQyOSAxOTEuOTc2TDc0Ljk5MjcgMTU4LjYxNEwxNzUuODkyIDI1MC42NjdDMTc3LjQ4OCAyNTIuMjY0IDE3OS4zNjMgMjUzLjQ2NyAxODEuMzc4IDI1NC4yNTJaTTE5MS44ODMgNjkuODg1MUwxMTUuMzIzIDEyOEwxOTEuODgzIDE4Ni4xMTVWNjkuODg1MVoiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcikiLz4KPC9nPgo8L2c+CjxkZWZzPgo8ZmlsdGVyIGlkPSJmaWx0ZXIwX2QiIHg9Ii0yMS40ODk2IiB5PSI0MC41MjI1IiB3aWR0aD0iMjk4LjgyMiIgaGVpZ2h0PSIyMzYuMTQ5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIi8+CjxmZU9mZnNldC8+CjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjEwLjY2NjciLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJvdmVybGF5IiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJlZmZlY3QxX2Ryb3BTaGFkb3ciLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJlZmZlY3QxX2Ryb3BTaGFkb3ciIHJlc3VsdD0ic2hhcGUiLz4KPC9maWx0ZXI+CjxmaWx0ZXIgaWQ9ImZpbHRlcjFfZCIgeD0iMTU0LjY2NyIgeT0iLTIwLjY3MzUiIHdpZHRoPSIxMjIuNjY3IiBoZWlnaHQ9IjI5Ny4zNDciIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiLz4KPGZlT2Zmc2V0Lz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMTAuNjY2NyIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im92ZXJsYXkiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvdyIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvdyIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyIiB4MT0iMTI3Ljg0NCIgeTE9IjAuNjU5OTg4IiB4Mj0iMTI3Ljg0NCIgeTI9IjI1NS4zNCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSJ3aGl0ZSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IndoaXRlIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K;" vertex="1" parent="1">
+          <mxGeometry x="538" y="668" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="texto25" value="&lt;b&gt;VS Code&lt;/b&gt;&lt;br&gt;extensão Azure Functions&lt;br&gt;Core Tools · Azurite (local)" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="460" y="718" width="200" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="github" value="" style="image;aspect=fixed;html=1;points=[];image=data:image/svg+xml,PHN2ZyByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R2l0SHViPC90aXRsZT48cGF0aCBmaWxsPSIjMTgxNzE3IiBkPSJNMTIgLjI5N2MtNi42MyAwLTEyIDUuMzczLTEyIDEyIDAgNS4zMDMgMy40MzggOS44IDguMjA1IDExLjM4NS42LjExMy44Mi0uMjU4LjgyLS41NzcgMC0uMjg1LS4wMS0xLjA0LS4wMTUtMi4wNC0zLjMzOC43MjQtNC4wNDItMS42MS00LjA0Mi0xLjYxQzQuNDIyIDE4LjA3IDMuNjMzIDE3LjcgMy42MzMgMTcuN2MtMS4wODctLjc0NC4wODQtLjcyOS4wODQtLjcyOSAxLjIwNS4wODQgMS44MzggMS4yMzYgMS44MzggMS4yMzYgMS4wNyAxLjgzNSAyLjgwOSAxLjMwNSAzLjQ5NS45OTguMTA4LS43NzYuNDE3LTEuMzA1Ljc2LTEuNjA1LTIuNjY1LS4zLTUuNDY2LTEuMzMyLTUuNDY2LTUuOTMgMC0xLjMxLjQ2NS0yLjM4IDEuMjM1LTMuMjItLjEzNS0uMzAzLS41NC0xLjUyMy4xMDUtMy4xNzYgMCAwIDEuMDA1LS4zMjIgMy4zIDEuMjMuOTYtLjI2NyAxLjk4LS4zOTkgMy0uNDA1IDEuMDIuMDA2IDIuMDQuMTM4IDMgLjQwNSAyLjI4LTEuNTUyIDMuMjg1LTEuMjMgMy4yODUtMS4yMy42NDUgMS42NTMuMjQgMi44NzMuMTIgMy4xNzYuNzY1Ljg0IDEuMjMgMS45MSAxLjIzIDMuMjIgMCA0LjYxLTIuODA1IDUuNjI1LTUuNDc1IDUuOTIuNDIuMzYuODEgMS4wOTYuODEgMi4yMiAwIDEuNjA2LS4wMTUgMi44OTYtLjAxNSAzLjI4NiAwIC4zMTUuMjEuNjkuODI1LjU3QzIwLjU2NSAyMi4wOTIgMjQgMTcuNTkyIDI0IDEyLjI5N2MwLTYuNjI3LTUuMzczLTEyLTEyLTEyIi8+PC9zdmc+;" vertex="1" parent="1">
+          <mxGeometry x="788" y="668" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="texto26" value="&lt;b&gt;Repositório GitHub&lt;/b&gt;&lt;br&gt;joaorosera/TAPRA-2026" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="710" y="718" width="200" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="pipeline" value="" style="image;aspect=fixed;html=1;points=[];image=data:image/svg+xml,PHN2ZyByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R2l0SHViIEFjdGlvbnM8L3RpdGxlPjxwYXRoIGZpbGw9IiMyMDg4RkYiIGQ9Ik0xMC45ODQgMTMuODM2YS41LjUgMCAwIDEtLjM1My0uMTQ2bC0uNzQ1LS43NDNhLjUuNSAwIDEgMSAuNzA2LS43MDhsLjM5Mi4zOTEgMS4xODEtMS4xOGEuNS41IDAgMCAxIC43MDguNzA3bC0xLjUzNSAxLjUzM2EuNTA0LjUwNCAwIDAgMS0uMzU0LjE0NnptOS4zNTMtLjE0N2wxLjUzNC0xLjUzMmEuNS41IDAgMCAwLS43MDctLjcwN2wtMS4xODEgMS4xOC0uMzkyLS4zOTFhLjUuNSAwIDEgMC0uNzA2LjcwOGwuNzQ2Ljc0M2EuNDk3LjQ5NyAwIDAgMCAuNzA2LS4wMDF6TTQuNTI3IDcuNDUybDIuNTU3LTEuNTg1QTEgMSAwIDAgMCA3LjA5IDQuMTdMNC41MzMgMi41NkExIDEgMCAwIDAgMyAzLjQwNnYzLjE5NmExLjAwMSAxLjAwMSAwIDAgMCAxLjUyNy44NXptMi4wMy0yLjQzNkw0IDYuNjAyVjMuNDA2bDIuNTU3IDEuNjF6TTI0IDEyLjVjMCAxLjkzLTEuNTcgMy41LTMuNSAzLjVhMy41MDMgMy41MDMgMCAwIDEtMy40Ni0zaC0yLjA4YTMuNTAzIDMuNTAzIDAgMCAxLTMuNDYgMyAzLjUwMiAzLjUwMiAwIDAgMS0zLjQ2LTNoLS41NThjLS45NzIgMC0xLjg1LS4zOTktMi40ODItMS4wNDJWMTdjMCAxLjY1NCAxLjM0NiAzIDMgM2guMDRjLjI0NC0xLjY5MyAxLjctMyAzLjQ2LTMgMS45MyAwIDMuNSAxLjU3IDMuNSAzLjVTMTMuNDMgMjQgMTEuNSAyNGEzLjUwMiAzLjUwMiAwIDAgMS0zLjQ2LTNIOGMtMi4yMDYgMC00LTEuNzk0LTQtNFY5Ljg5OUE1LjAwOCA1LjAwOCAwIDAgMSAwIDVjMC0yLjc1NyAyLjI0My01IDUtNXM1IDIuMjQzIDUgNWE1LjAwNSA1LjAwNSAwIDAgMS00Ljk1MiA0Ljk5OEEyLjQ4MiAyLjQ4MiAwIDAgMCA3LjQ4MiAxMmguNTU4Yy4yNDQtMS42OTMgMS43LTMgMy40Ni0zYTMuNTAyIDMuNTAyIDAgMCAxIDMuNDYgM2gyLjA4YTMuNTAzIDMuNTAzIDAgMCAxIDMuNDYtM2MxLjkzIDAgMy41IDEuNTcgMy41IDMuNXptLTE1IDhjMCAxLjM3OCAxLjEyMiAyLjUgMi41IDIuNXMyLjUtMS4xMjIgMi41LTIuNS0xLjEyMi0yLjUtMi41LTIuNVM5IDE5LjEyMiA5IDIwLjV6TTUgOWMyLjIwNiAwIDQtMS43OTQgNC00UzcuMjA2IDEgNSAxIDEgMi43OTQgMSA1czEuNzk0IDQgNCA0em05IDMuNWMwLTEuMzc4LTEuMTIyLTIuNS0yLjUtMi41UzkgMTEuMTIyIDkgMTIuNXMxLjEyMiAyLjUgMi41IDIuNSAyLjUtMS4xMjIgMi41LTIuNXptOSAwYzAtMS4zNzgtMS4xMjItMi41LTIuNS0yLjVTMTggMTEuMTIyIDE4IDEyLjVzMS4xMjIgMi41IDIuNSAyLjUgMi41LTEuMTIyIDIuNS0yLjV6bS0xMyA4YS41LjUgMCAxIDAgMSAwIC41LjUgMCAwIDAtMSAwem0yIDBhLjUuNSAwIDEgMCAxIDAgLjUuNSAwIDAgMC0xIDB6bTEyIDBjMCAxLjkzLTEuNTcgMy41LTMuNSAzLjVhMy41MDMgMy41MDMgMCAwIDEtMy40Ni0zLjAwMmMtLjAwNy4wMDEtLjAxMy4wMDUtLjAyMS4wMDVsLS41MDYuMDE3aC0uMDE3YS41LjUgMCAwIDEtLjAxNi0uOTk5bC41MDYtLjAxN2MuMDE4LS4wMDIuMDM1LjAwNi4wNTIuMDA3QTMuNTAzIDMuNTAzIDAgMCAxIDIwLjUgMTdjMS45MyAwIDMuNSAxLjU3IDMuNSAzLjV6bS0xIDBjMC0xLjM3OC0xLjEyMi0yLjUtMi41LTIuNVMxOCAxOS4xMjIgMTggMjAuNXMxLjEyMiAyLjUgMi41IDIuNSAyLjUtMS4xMjIgMi41LTIuNXoiLz48L3N2Zz4=;" vertex="1" parent="1">
+          <mxGeometry x="1038" y="668" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="texto27" value="&lt;b&gt;Pipeline CI/CD&lt;/b&gt;&lt;br&gt;GitHub Actions" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="960" y="718" width="200" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="tag28" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="760" width="80" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="seta_push" value="git push" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;" edge="1" parent="1" source="vscode" target="github">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_captura" value="conexão SQL (porta 1433, TLS)&lt;br&gt;&lt;b&gt;SELECT * FROM chamado&lt;/b&gt;" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=2.5;exitX=1;exitY=0.5;entryX=0;entryY=0.7727272727272727;" edge="1" parent="1" source="timerCapturaChamados" target="banco">
-          <mxGeometry x="0.03" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
-        </mxCell>
-        <mxCell id="e_env" value="process.env" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;dashed=1;strokeColor=#C98A00;fontColor=#8A5E00;exitX=0.7950819672131147;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="env" target="timerCapturaChamados">
+        <mxCell id="seta_gatilho" value="push na main" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="github" target="pipeline">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_storage" value="" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;dashed=1;exitX=0.15454545454545454;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="funcapp" target="storage">
+        <mxCell id="seta_deploy_manual" value="deploy manual&lt;br&gt;(func publish)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=0.5;exitY=0;entryX=0.37;entryY=1;" edge="1" parent="1" source="vscode" target="ingestao">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_insights" value="" style="edgeStyle=none;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#333333;strokeWidth=1.5;fontSize=11;fontColor=#333333;labelBackgroundColor=#FFFFFF;dashed=1;exitX=0.696969696969697;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="funcapp" target="insights">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="seta_deploy_auto" value="deploy automático" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=0.5;exitY=0;entryX=0.63;entryY=1;" edge="1" parent="1" source="pipeline" target="ingestao">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1060" y="590" />
+              <mxPoint x="639" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legenda" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#9E9E9E;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="620" width="230" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="texto29" value="&lt;b&gt;LEGENDA&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="632" width="230" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_seta30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1385" y="672" as="sourcePoint" />
+            <mxPoint x="1435" y="672" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="texto31" value="fluxo já implementado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1445" y="663" width="150" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_seta32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1385" y="702" as="sourcePoint" />
+            <mxPoint x="1435" y="702" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="texto33" value="fluxo planejado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1445" y="693" width="150" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="tag34" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="1383" y="724" width="80" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="texto35" value="componente planejado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1470" y="724" width="125" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="texto36" value="Componentes sem etiqueta já existem no projeto." style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
+          <mxGeometry x="1382" y="756" width="210" height="34" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
