@@ -1,0 +1,18 @@
+# Arquivos que nao vao para o Azure na publicacao (func publish, VS Code e GitHub Actions)
+.git*
+.github
+.vscode
+docs
+*.md
+local.settings.json
+local.settings.json.example
+
+# Dados do emulador Azurite
+.azurite
+__azurite_db*.json
+__blobstorage__
+__queuestorage__
+
+# Ferramentas do ambiente local (devDependencies)
+node_modules/azure-functions-core-tools
+node_modules/azurite

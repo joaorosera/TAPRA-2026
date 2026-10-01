@@ -52,7 +52,7 @@
         <mxCell id="texto9" value="&lt;b&gt;Azure Function App&lt;/b&gt;&lt;br&gt;Node.js · Azure Functions v4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
           <mxGeometry x="460" y="246" width="280" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="timerCapturaChamados" value="&lt;b&gt;timerCapturaChamados&lt;/b&gt;&lt;br&gt;Timer Trigger · a cada 5 min&lt;br&gt;abre a conexão, lê a tabela e fecha" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
+        <mxCell id="timerCapturaChamados" value="&lt;b&gt;timerCapturaChamados&lt;/b&gt;&lt;br&gt;Timer Trigger · a cada 5 min&lt;br&gt;lê a tabela e grava no Data Lake" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="470" y="292" width="260" height="62" as="geometry" />
         </mxCell>
         <mxCell id="icone10" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Storage_Accounts.svg;" vertex="1" parent="1">
@@ -70,7 +70,7 @@
         <mxCell id="icone14" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/general/Gear.svg;" vertex="1" parent="1">
           <mxGeometry x="477" y="415.5" width="15" height="15" as="geometry" />
         </mxCell>
-        <mxCell id="texto15" value="Application settings: credenciais &lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;ITSM_DB_*&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="texto15" value="Application settings: &lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;ITSM_DB_*&lt;/span&gt;, &lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;DATALAKE_*&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="498" y="414" width="240" height="18" as="geometry" />
         </mxCell>
         <mxCell id="texto16" value="Também hospeda as functions de exercício:&lt;br&gt;timerLog, timerChamaHttp, httpParametro e httpEco" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=10;fontColor=#5F5F5F;" vertex="1" parent="1">
@@ -82,20 +82,20 @@
         <mxCell id="texto17" value="&lt;b&gt;ARMAZENAMENTO&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="870" y="162" width="300" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="tag18" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="980" y="186" width="80" height="18" as="geometry" />
+        <mxCell id="datalake_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Data_Lake_Storage_Gen1.svg;" vertex="1" parent="1">
+          <mxGeometry x="995" y="196" width="50" height="41" as="geometry" />
+        </mxCell>
+        <mxCell id="texto18" value="&lt;b&gt;Azure Data Lake Storage Gen2&lt;/b&gt;&lt;br&gt;camada raw: um JSON por captura&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace;font-size:10px&quot;&gt;raw/itsm/chamado/AAAA/MM/DD/&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="880" y="243" width="280" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="tag19" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="980" y="320" width="80" height="18" as="geometry" />
         </mxCell>
         <mxCell id="sql_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/databases/SQL_Database.svg;" vertex="1" parent="1">
-          <mxGeometry x="1001" y="216" width="38" height="50" as="geometry" />
+          <mxGeometry x="1001" y="346" width="38" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="texto19" value="&lt;b&gt;Azure SQL Database&lt;/b&gt;&lt;br&gt;dados tratados, prontos para consulta" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
-          <mxGeometry x="880" y="272" width="280" height="36" as="geometry" />
-        </mxCell>
-        <mxCell id="datalake_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Data_Lake_Storage_Gen1.svg;" vertex="1" parent="1">
-          <mxGeometry x="995" y="340" width="50" height="41" as="geometry" />
-        </mxCell>
-        <mxCell id="texto20" value="&lt;b&gt;Azure Data Lake Storage Gen2&lt;/b&gt;&lt;br&gt;dados brutos de cada captura" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
-          <mxGeometry x="880" y="388" width="280" height="36" as="geometry" />
+        <mxCell id="texto20" value="&lt;b&gt;Azure SQL Database&lt;/b&gt;&lt;br&gt;dados tratados, prontos para consulta" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="880" y="402" width="280" height="36" as="geometry" />
         </mxCell>
         <mxCell id="visualizacao" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="1370" y="150" width="230" height="340" as="geometry" />
@@ -104,22 +104,25 @@
           <mxGeometry x="1370" y="162" width="230" height="20" as="geometry" />
         </mxCell>
         <mxCell id="tag22" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1445" y="186" width="80" height="18" as="geometry" />
+          <mxGeometry x="1445" y="316" width="80" height="18" as="geometry" />
         </mxCell>
         <mxCell id="powerbi_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/power_platform/PowerBI.svg;" vertex="1" parent="1">
-          <mxGeometry x="1465" y="262" width="39" height="52" as="geometry" />
+          <mxGeometry x="1465" y="345" width="39" height="52" as="geometry" />
         </mxCell>
         <mxCell id="texto23" value="&lt;b&gt;Power BI&lt;/b&gt;&lt;br&gt;painéis e relatórios&lt;br&gt;dos chamados" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
-          <mxGeometry x="1380" y="322" width="210" height="52" as="geometry" />
+          <mxGeometry x="1380" y="403" width="210" height="52" as="geometry" />
         </mxCell>
         <mxCell id="seta_captura" value="leitura a cada 5 min&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;SELECT * FROM chamado&lt;/span&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="origem" target="ingestao">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="seta_grava" value="grava os dados&lt;br&gt;capturados" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="armazenamento">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="seta_grava" value="grava o JSON&lt;br&gt;de cada captura" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.1956;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="datalake_icone">
+          <mxGeometry relative="1" as="geometry" x="-0.5" />
         </mxCell>
-        <mxCell id="seta_consulta" value="consulta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="armazenamento" target="visualizacao">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="seta_carga" value="carga dos&lt;br&gt;dados tratados" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.6500;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="sql_icone">
+          <mxGeometry relative="1" as="geometry" x="-0.52" />
+        </mxCell>
+        <mxCell id="seta_consulta" value="consulta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.5;entryX=0;entryY=0.6500;" edge="1" parent="1" source="sql_icone" target="visualizacao">
+          <mxGeometry relative="1" as="geometry" x="0.49" />
         </mxCell>
         <mxCell id="devops" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="420" y="620" width="780" height="190" as="geometry" />
@@ -142,22 +145,19 @@
         <mxCell id="pipeline" value="" style="image;aspect=fixed;html=1;points=[];image=data:image/svg+xml,PHN2ZyByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R2l0SHViIEFjdGlvbnM8L3RpdGxlPjxwYXRoIGZpbGw9IiMyMDg4RkYiIGQ9Ik0xMC45ODQgMTMuODM2YS41LjUgMCAwIDEtLjM1My0uMTQ2bC0uNzQ1LS43NDNhLjUuNSAwIDEgMSAuNzA2LS43MDhsLjM5Mi4zOTEgMS4xODEtMS4xOGEuNS41IDAgMCAxIC43MDguNzA3bC0xLjUzNSAxLjUzM2EuNTA0LjUwNCAwIDAgMS0uMzU0LjE0NnptOS4zNTMtLjE0N2wxLjUzNC0xLjUzMmEuNS41IDAgMCAwLS43MDctLjcwN2wtMS4xODEgMS4xOC0uMzkyLS4zOTFhLjUuNSAwIDEgMC0uNzA2LjcwOGwuNzQ2Ljc0M2EuNDk3LjQ5NyAwIDAgMCAuNzA2LS4wMDF6TTQuNTI3IDcuNDUybDIuNTU3LTEuNTg1QTEgMSAwIDAgMCA3LjA5IDQuMTdMNC41MzMgMi41NkExIDEgMCAwIDAgMyAzLjQwNnYzLjE5NmExLjAwMSAxLjAwMSAwIDAgMCAxLjUyNy44NXptMi4wMy0yLjQzNkw0IDYuNjAyVjMuNDA2bDIuNTU3IDEuNjF6TTI0IDEyLjVjMCAxLjkzLTEuNTcgMy41LTMuNSAzLjVhMy41MDMgMy41MDMgMCAwIDEtMy40Ni0zaC0yLjA4YTMuNTAzIDMuNTAzIDAgMCAxLTMuNDYgMyAzLjUwMiAzLjUwMiAwIDAgMS0zLjQ2LTNoLS41NThjLS45NzIgMC0xLjg1LS4zOTktMi40ODItMS4wNDJWMTdjMCAxLjY1NCAxLjM0NiAzIDMgM2guMDRjLjI0NC0xLjY5MyAxLjctMyAzLjQ2LTMgMS45MyAwIDMuNSAxLjU3IDMuNSAzLjVTMTMuNDMgMjQgMTEuNSAyNGEzLjUwMiAzLjUwMiAwIDAgMS0zLjQ2LTNIOGMtMi4yMDYgMC00LTEuNzk0LTQtNFY5Ljg5OUE1LjAwOCA1LjAwOCAwIDAgMSAwIDVjMC0yLjc1NyAyLjI0My01IDUtNXM1IDIuMjQzIDUgNWE1LjAwNSA1LjAwNSAwIDAgMS00Ljk1MiA0Ljk5OEEyLjQ4MiAyLjQ4MiAwIDAgMCA3LjQ4MiAxMmguNTU4Yy4yNDQtMS42OTMgMS43LTMgMy40Ni0zYTMuNTAyIDMuNTAyIDAgMCAxIDMuNDYgM2gyLjA4YTMuNTAzIDMuNTAzIDAgMCAxIDMuNDYtM2MxLjkzIDAgMy41IDEuNTcgMy41IDMuNXptLTE1IDhjMCAxLjM3OCAxLjEyMiAyLjUgMi41IDIuNXMyLjUtMS4xMjIgMi41LTIuNS0xLjEyMi0yLjUtMi41LTIuNVM5IDE5LjEyMiA5IDIwLjV6TTUgOWMyLjIwNiAwIDQtMS43OTQgNC00UzcuMjA2IDEgNSAxIDEgMi43OTQgMSA1czEuNzk0IDQgNCA0em05IDMuNWMwLTEuMzc4LTEuMTIyLTIuNS0yLjUtMi41UzkgMTEuMTIyIDkgMTIuNXMxLjEyMiAyLjUgMi41IDIuNSAyLjUtMS4xMjIgMi41LTIuNXptOSAwYzAtMS4zNzgtMS4xMjItMi41LTIuNS0yLjVTMTggMTEuMTIyIDE4IDEyLjVzMS4xMjIgMi41IDIuNSAyLjUgMi41LTEuMTIyIDIuNS0yLjV6bS0xMyA4YS41LjUgMCAxIDAgMSAwIC41LjUgMCAwIDAtMSAwem0yIDBhLjUuNSAwIDEgMCAxIDAgLjUuNSAwIDAgMC0xIDB6bTEyIDBjMCAxLjkzLTEuNTcgMy41LTMuNSAzLjVhMy41MDMgMy41MDMgMCAwIDEtMy40Ni0zLjAwMmMtLjAwNy4wMDEtLjAxMy4wMDUtLjAyMS4wMDVsLS41MDYuMDE3aC0uMDE3YS41LjUgMCAwIDEtLjAxNi0uOTk5bC41MDYtLjAxN2MuMDE4LS4wMDIuMDM1LjAwNi4wNTIuMDA3QTMuNTAzIDMuNTAzIDAgMCAxIDIwLjUgMTdjMS45MyAwIDMuNSAxLjU3IDMuNSAzLjV6bS0xIDBjMC0xLjM3OC0xLjEyMi0yLjUtMi41LTIuNVMxOCAxOS4xMjIgMTggMjAuNXMxLjEyMiAyLjUgMi41IDIuNSAyLjUtMS4xMjIgMi41LTIuNXoiLz48L3N2Zz4=;" vertex="1" parent="1">
           <mxGeometry x="1038" y="668" width="44" height="44" as="geometry" />
         </mxCell>
-        <mxCell id="texto27" value="&lt;b&gt;Pipeline CI/CD&lt;/b&gt;&lt;br&gt;GitHub Actions" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
-          <mxGeometry x="960" y="718" width="200" height="36" as="geometry" />
-        </mxCell>
-        <mxCell id="tag28" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1020" y="760" width="80" height="18" as="geometry" />
+        <mxCell id="texto27" value="&lt;b&gt;Pipeline CI/CD&lt;/b&gt;&lt;br&gt;GitHub Actions&lt;br&gt;valida e publica a cada push" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+          <mxGeometry x="960" y="718" width="200" height="52" as="geometry" />
         </mxCell>
         <mxCell id="seta_push" value="git push" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;" edge="1" parent="1" source="vscode" target="github">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="seta_gatilho" value="push na main" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="github" target="pipeline">
+        <mxCell id="seta_gatilho" value="push na main" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;" edge="1" parent="1" source="github" target="pipeline">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="seta_deploy_manual" value="deploy manual&lt;br&gt;(func publish)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=0.5;exitY=0;entryX=0.37;entryY=1;" edge="1" parent="1" source="vscode" target="ingestao">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="seta_deploy_auto" value="deploy automático" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=0.5;exitY=0;entryX=0.63;entryY=1;" edge="1" parent="1" source="pipeline" target="ingestao">
+        <mxCell id="seta_deploy_auto" value="deploy automático" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=0.5;exitY=0;entryX=0.63;entryY=1;" edge="1" parent="1" source="pipeline" target="ingestao">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1060" y="590" />
@@ -168,34 +168,34 @@
         <mxCell id="legenda" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#9E9E9E;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="1370" y="620" width="230" height="190" as="geometry" />
         </mxCell>
-        <mxCell id="texto29" value="&lt;b&gt;LEGENDA&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
+        <mxCell id="texto28" value="&lt;b&gt;LEGENDA&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="1370" y="632" width="230" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="leg_seta30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;" edge="1" parent="1">
+        <mxCell id="leg_seta29" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1385" y="672" as="sourcePoint" />
             <mxPoint x="1435" y="672" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="texto31" value="fluxo já implementado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="texto30" value="fluxo já implementado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1445" y="663" width="150" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="leg_seta32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;" edge="1" parent="1">
+        <mxCell id="leg_seta31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1385" y="702" as="sourcePoint" />
             <mxPoint x="1435" y="702" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="texto33" value="fluxo planejado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="texto32" value="fluxo planejado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1445" y="693" width="150" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="tag34" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+        <mxCell id="tag33" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="1383" y="724" width="80" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="texto35" value="componente planejado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="texto34" value="componente planejado" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1470" y="724" width="125" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="texto36" value="Componentes sem etiqueta já existem no projeto." style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
+        <mxCell id="texto35" value="Componentes sem etiqueta já existem no projeto." style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
           <mxGeometry x="1382" y="756" width="210" height="34" as="geometry" />
         </mxCell>
       </root>

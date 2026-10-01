@@ -1,0 +1,61 @@
+# Pipeline da Function App: valida as functions a cada push e pull request,
+# e publica no Azure a cada push na main.
+#
+# A publicacao so roda depois de configurar no GitHub (Settings > Secrets and variables > Actions):
+#   - variavel AZURE_FUNCTIONAPP_NAME: nome da Function App no Azure
+#   - segredo  AZURE_FUNCTIONAPP_PUBLISH_PROFILE: perfil de publicacao baixado no portal
+#     (Function App > Overview > Get publish profile)
+# Sem a variavel, o job de publicacao e pulado e o pipeline so valida.
+name: Function App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validar:
+    name: Validar as functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # So as dependencias de producao: Core Tools e Azurite sao apenas para o ambiente local
+      - name: Instalar dependencias
+        run: npm ci --omit=dev
+
+      - name: Verificar a sintaxe
+        run: for arquivo in src/functions/*.js; do node --check "$arquivo"; done
+
+      - name: Carregar as functions
+        run: node -e "for (const f of require('fs').readdirSync('src/functions')) require('./src/functions/' + f)"
+
+  publicar:
+    name: Publicar no Azure
+    needs: validar
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AZURE_FUNCTIONAPP_NAME != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias de producao
+        run: npm ci --omit=dev
+
+      - name: Publicar na Function App
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
+          package: .
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
