@@ -11,6 +11,8 @@
     "ITSM_DB_USER": "<usuario>",
     "ITSM_DB_PASSWORD": "<senha>",
     "ITSM_DB_ENCRYPT": "true",
-    "ITSM_DB_TRUST_SERVER_CERTIFICATE": "false"
+    "ITSM_DB_TRUST_SERVER_CERTIFICATE": "false",
+    "DATALAKE_CONNECTION_STRING": "UseDevelopmentStorage=true",
+    "DATALAKE_CONTAINER": "raw"
   }
 }

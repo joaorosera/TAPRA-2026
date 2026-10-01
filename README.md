@@ -1,6 +1,6 @@
 # TAPRA-2026
 
-Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de dados de uma tabela do banco de origem (SQL Server, banco `itsm`).
+Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de dados de uma tabela do banco de origem (SQL Server, banco `itsm`) e a gravação desses dados no Data Lake.
 
 ## Integrantes da equipe
 
@@ -14,6 +14,8 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 - Azure Functions Core Tools v4
 - Azurite (emulador de storage, necessário para os timer triggers rodarem localmente)
 - SQL Server / Azure SQL (banco de origem `itsm`), acessado com o driver [`mssql`](https://www.npmjs.com/package/mssql)
+- Azure Data Lake Storage Gen2 (camada *raw*), acessado com o SDK [`@azure/storage-blob`](https://www.npmjs.com/package/@azure/storage-blob). No ambiente local, o Azurite faz esse papel
+- GitHub Actions (pipeline de validação e publicação)
 
 ## Arquitetura
 
@@ -24,10 +26,10 @@ O desenho foi feito no draw.io e está em [`docs/arquitetura.drawio`](docs/arqui
 A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e do deploy. Componentes com a etiqueta *próxima etapa* e setas tracejadas ainda não foram implementados.
 
 - **Origem de dados:** banco `itsm` (SQL Server), fornecido pelo professor. A tabela capturada é a `chamado`.
-- **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a `timerCapturaChamados` a cada 5 minutos, que abre a conexão com o banco, lê a tabela `chamado` e fecha a conexão. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
-- **Armazenamento** *(próxima etapa)*: os dados capturados serão gravados no **Azure Data Lake Storage Gen2** (dados brutos de cada captura) e no **Azure SQL Database** (dados tratados, prontos para consulta).
-- **Visualização** *(próxima etapa)*: painéis e relatórios no **Power BI**, consultando o armazenamento.
-- **Desenvolvimento e deploy:** o código é escrito no **VS Code** (Core Tools e Azurite para rodar localmente) e versionado no **GitHub**. Hoje o deploy é manual (`func azure functionapp publish`). A próxima etapa é um pipeline no **GitHub Actions** que publique a Function App a cada push na `main`.
+- **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a `timerCapturaChamados` a cada 5 minutos, que abre a conexão com o banco, lê a tabela `chamado`, fecha a conexão e grava os dados no Data Lake. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
+- **Armazenamento:** cada captura vira um arquivo JSON na camada *raw* do **Azure Data Lake Storage Gen2**, em `raw/itsm/chamado/AAAA/MM/DD/`. A carga dos dados tratados no **Azure SQL Database**, pronta para consulta, é a próxima etapa.
+- **Visualização** *(próxima etapa)*: painéis e relatórios no **Power BI**, consultando o Azure SQL Database.
+- **Desenvolvimento e deploy:** o código é escrito no **VS Code** (Core Tools e Azurite para rodar localmente) e versionado no **GitHub**. O pipeline do **GitHub Actions** valida as functions a cada push e publica a Function App a cada push na `main` (veja [Pipeline (GitHub Actions)](#pipeline-github-actions)). O deploy manual (`func azure functionapp publish`) continua disponível.
 
 ## Functions do projeto
 
@@ -37,7 +39,7 @@ A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e d
 | `httpParametro` | HTTP GET `/api/parametro?nome=Valor` | Recebe um parâmetro pela URL e imprime esse parâmetro na tela. |
 | `httpEco` | HTTP GET `/api/eco?mensagem=Texto` | Retorna a informação recebida acrescida de um texto de identificação. |
 | `timerChamaHttp` | Timer (a cada 2 minutos) | Faz uma chamada HTTP para a function `httpEco` e imprime a resposta no log. |
-| `timerCapturaChamados` | Timer (a cada 5 minutos) | Abre uma conexão com o banco de origem `itsm` e captura os dados da tabela `chamado`. |
+| `timerCapturaChamados` | Timer (a cada 5 minutos) | Captura os dados da tabela `chamado` do banco de origem `itsm` e grava um arquivo JSON no Data Lake. |
 
 ### 1. `timerLog` — Timer Trigger
 
@@ -86,24 +88,38 @@ A cada 2 minutos monta uma mensagem, faz uma chamada HTTP para a function `httpE
 
 A URL de destino vem da configuração `ECO_FUNCTION_URL`, para que o mesmo código funcione localmente e publicado no Azure.
 
-### 5. `timerCapturaChamados` — Timer Trigger que captura os dados de uma tabela do banco de origem
+### 5. `timerCapturaChamados` — Timer Trigger que captura uma tabela do banco de origem e grava no Data Lake
 
 Arquivo: [`src/functions/timerCapturaChamados.js`](src/functions/timerCapturaChamados.js)
 
 A cada 5 minutos (NCRONTAB `0 */5 * * * *`) a function:
 
-1. monta a configuração da conexão a partir das variáveis de ambiente `ITSM_DB_*` (nenhuma credencial fica no código);
+1. confere as variáveis de ambiente `ITSM_DB_*` e `DATALAKE_CONNECTION_STRING` (nenhuma credencial fica no código);
 2. abre uma conexão com o banco de origem `itsm` (SQL Server / Azure SQL);
 3. executa `SELECT * FROM chamado`, tabela escolhida pela equipe por ser a tabela central do ITSM;
-4. imprime no log a quantidade de registros capturados, as colunas e os primeiros registros;
-5. encerra a conexão.
+4. encerra a conexão;
+5. imprime no log a quantidade de registros capturados, as colunas e os primeiros registros;
+6. grava a captura como um arquivo JSON na camada *raw* do Data Lake.
 
 ```
 [timerCapturaChamados] abrindo conexao com o banco itsm
+[timerCapturaChamados] conexao encerrada
 [timerCapturaChamados] <N> registro(s) capturado(s) da tabela chamado
 [timerCapturaChamados] colunas: id_chamado, titulo, ...
 [timerCapturaChamados] primeiros registros: [{"id_chamado":1, ...}]
-[timerCapturaChamados] conexao encerrada
+[timerCapturaChamados] dados gravados no Data Lake: raw/itsm/chamado/2026/10/01/chamado_20261001T190500Z.json
+```
+
+Cada execução cria um arquivo novo no container `raw` (configurável por `DATALAKE_CONTAINER`), separado por data, com os metadados da captura e os registros como vieram do banco:
+
+```json
+{
+  "origem": "itsm",
+  "tabela": "chamado",
+  "capturadoEm": "2026-10-01T19:05:00.012Z",
+  "quantidade": 2,
+  "registros": [{ "id_chamado": 1, "titulo": "..." }, { "id_chamado": 2, "titulo": "..." }]
+}
 ```
 
 Se faltar alguma variável obrigatória, a execução registra um erro com o **nome** das variáveis ausentes (nunca os valores) e não tenta conectar.
@@ -119,7 +135,7 @@ npm install
 cp local.settings.json.example local.settings.json   # no Windows: copy local.settings.json.example local.settings.json
 ```
 
-Edite o `local.settings.json` e preencha as variáveis `ITSM_DB_*` com os dados de acesso ao banco `itsm`. Esse arquivo está no `.gitignore` e **não deve ser commitado**. Somente o modelo `local.settings.json.example`, com valores de exemplo, fica no repositório.
+Edite o `local.settings.json` e preencha as variáveis `ITSM_DB_*` com os dados de acesso ao banco `itsm`. As variáveis `DATALAKE_*` já vêm apontando para o Azurite. Esse arquivo está no `.gitignore` e **não deve ser commitado**. Somente o modelo `local.settings.json.example`, com valores de exemplo, fica no repositório.
 
 Os timer triggers precisam de uma conta de storage. Para desenvolvimento local, suba o emulador Azurite em um terminal:
 
@@ -144,6 +160,8 @@ Os timers passam a escrever no terminal automaticamente conforme o agendamento. 
 curl -X POST http://localhost:7071/admin/functions/timerCapturaChamados -H "Content-Type: application/json" -d "{}"
 ```
 
+No ambiente local, o Data Lake é o próprio Azurite. Para ver os arquivos gravados, abra a extensão *Azure Storage* do VS Code ou o Azure Storage Explorer em *Emulator & Attached > Storage Accounts > (Emulator - Default Ports) > Blob Containers > raw*.
+
 ## Configurações
 
 | Configuração | Descrição | Valor local |
@@ -158,15 +176,27 @@ curl -X POST http://localhost:7071/admin/functions/timerCapturaChamados -H "Cont
 | `ITSM_DB_PASSWORD` | Senha do banco | definida pela equipe |
 | `ITSM_DB_ENCRYPT` | Usa conexão criptografada (TLS). Mantenha `true` no Azure SQL (opcional) | `true` |
 | `ITSM_DB_TRUST_SERVER_CERTIFICATE` | Aceita certificado autoassinado. Use `true` só em SQL Server local (opcional) | `false` |
+| `DATALAKE_CONNECTION_STRING` | Connection string da conta do Data Lake (ADLS Gen2) onde as capturas são gravadas | `UseDevelopmentStorage=true` (Azurite) |
+| `DATALAKE_CONTAINER` | Container da camada *raw* no Data Lake (opcional) | `raw` |
 
-Ao publicar no Azure, defina `ECO_FUNCTION_URL` nas *Application settings* da Function App apontando para `https://<nome-da-function-app>.azurewebsites.net/api/eco`, e cadastre também as variáveis `ITSM_DB_*`.
+Ao publicar no Azure, defina `ECO_FUNCTION_URL` nas *Application settings* da Function App apontando para `https://<nome-da-function-app>.azurewebsites.net/api/eco`, e cadastre também as variáveis `ITSM_DB_*` e `DATALAKE_*`.
 
-> **Credenciais:** usuário e senha do banco existem apenas no `local.settings.json` (ignorado pelo Git) e nas *Application settings* da Function App. Nunca coloque esses valores no código, no `local.settings.json.example` ou no README.
+> **Credenciais:** usuário e senha do banco e a connection string do Data Lake existem apenas no `local.settings.json` (ignorado pelo Git) e nas *Application settings* da Function App. Nunca coloque esses valores no código, no `local.settings.json.example` ou no README.
 
 ## Publicação no Azure
 
 ```bash
 az login
+
+# conta do Data Lake: ADLS Gen2 é uma storage account com namespace hierárquico (--hns true)
+az storage account create \
+  --name <conta-do-data-lake> \
+  --resource-group <grupo> \
+  --location brazilsouth \
+  --sku Standard_LRS \
+  --kind StorageV2 \
+  --hns true
+
 az functionapp create \
   --resource-group <grupo> \
   --consumption-plan-location brazilsouth \
@@ -182,9 +212,28 @@ az functionapp config appsettings set \
   --settings ECO_FUNCTION_URL=https://<nome-da-function-app>.azurewebsites.net/api/eco \
              ITSM_DB_SERVER=<servidor>.database.windows.net \
              ITSM_DB_NAME=itsm \
-             ITSM_DB_USER=<usuario>
+             ITSM_DB_USER=<usuario> \
+             DATALAKE_CONTAINER=raw
 
 func azure functionapp publish <nome-da-function-app>
 ```
 
-Cadastre a `ITSM_DB_PASSWORD` pelo portal (*Function App > Settings > Environment variables*) para que a senha não fique no histórico do terminal. Se o banco for um Azure SQL, libere o acesso da Function App no firewall do servidor (*Networking > Allow Azure services and resources to access this server*).
+Cadastre a `ITSM_DB_PASSWORD` e a `DATALAKE_CONNECTION_STRING` pelo portal (*Function App > Settings > Environment variables*) para que os segredos não fiquem no histórico do terminal. A connection string do Data Lake está em *Storage account > Security + networking > Access keys*. Se o banco for um Azure SQL, libere o acesso da Function App no firewall do servidor (*Networking > Allow Azure services and resources to access this server*).
+
+O [`.funcignore`](.funcignore) deixa de fora da publicação a documentação, os dados do Azurite e as ferramentas do ambiente local (Core Tools e Azurite), que são grandes e não rodam no Azure.
+
+## Pipeline (GitHub Actions)
+
+O workflow [`.github/workflows/function-app.yml`](.github/workflows/function-app.yml) tem dois jobs:
+
+- **Validar as functions:** roda a cada push e pull request. Instala só as dependências de produção (`npm ci --omit=dev`), verifica a sintaxe e carrega todos os arquivos de `src/functions/`.
+- **Publicar no Azure:** roda a cada push na `main`, depois da validação, e publica a Function App com o [Azure Functions Action](https://github.com/Azure/functions-action). Fica pulado até a configuração abaixo ser feita.
+
+Para ligar a publicação, depois de criar a Function App:
+
+1. No portal, habilite *Function App > Settings > Configuration > General settings > SCM Basic Auth Publishing Credentials*. Function Apps novas vêm com essa opção desligada, e sem ela o perfil de publicação não funciona.
+2. Baixe o perfil de publicação em *Function App > Overview > Get publish profile*.
+3. No GitHub, em *Settings > Secrets and variables > Actions*, crie:
+   - o **segredo** `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`, com o conteúdo do arquivo baixado;
+   - a **variável** `AZURE_FUNCTIONAPP_NAME`, com o nome da Function App.
+4. Faça um push na `main` ou rode o workflow manualmente em *Actions > Function App > Run workflow*.
