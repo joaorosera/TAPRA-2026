@@ -86,6 +86,20 @@ Não há testes automatizados nem lint configurados. O pipeline só confere a si
 - A conexão com o banco é fechada **antes** da gravação no Data Lake, para não ficar aberta enquanto o upload acontece
 - O container é criado na primeira execução (`createIfNotExists`), então não precisa ser criado à mão
 
+## Azure
+
+Assinatura *Azure for Students* (tenant Univille). A Function App do projeto é a **`func-tapra-2026-jvr-cus`**:
+
+| Recurso | Nome | Observação |
+| --- | --- | --- |
+| Grupo de recursos | `rg-tapra-2026-cus` | Central US |
+| Function App | `func-tapra-2026-jvr-cus` | Linux, Consumption (Y1), Node 22. https://func-tapra-2026-jvr-cus.azurewebsites.net |
+| Storage | `sttapra2026jvrcus` | `AzureWebJobsStorage` e pacotes publicados. **Não** é Data Lake (sem namespace hierárquico) |
+| Application Insights | `func-tapra-2026-jvr-cus` | logs das execuções |
+
+- Também existe a `funcapp-tapra-ROSERA-WERNER` (grupo `RG-TAPRA-20262-ROSERA-WERNER`, Flex Consumption). **Não** é a usada pelo projeto
+- A publicação roda o pacote a partir de um blob (`WEBSITE_RUN_FROM_PACKAGE`). Depois de publicar sem o Core Tools, se a function nova não aparecer na lista, reinicie o app e chame `syncfunctiontriggers`
+
 ## Banco de origem `itsm`
 
 Tabelas: `analista`, `categoria`, `chamado`, `chamado_sla`, `chamado_status_historico`, `cliente_organizacao`, `csat_avaliacao`, `fila`, `sla`, `solicitante`.
@@ -140,22 +154,32 @@ Tabelas: `analista`, `categoria`, `chamado`, `chamado_sla`, `chamado_status_hist
 **Validação feita** (sem as credenciais do professor, com um SQL Server 2022 em Docker e uma tabela `chamado` fictícia de 7 linhas, com acentos e datas)
 - Fora do host, com os pacotes reais: variáveis ausentes geram erro com os nomes; a captura completa grava no Azurite um JSON com os 7 registros (acentos, datas em UTC e `null` corretos, `Content-Type` `application/json; charset=utf-8`); com o Data Lake fora do ar, a conexão com o banco já está fechada quando o erro é registrado; com a senha errada, o erro é registrado. A senha não aparece em nenhum log
 - No host local (Core Tools 4.14.0 + Azurite): as 5 functions foram registradas, `timerLog`, `timerChamaHttp` e `httpEco` executaram, e a `timerCapturaChamados` disparada pelo endpoint de administração capturou os 7 registros e gravou `raw/itsm/chamado/2026/10/01/chamado_20261001T225211Z.json` (111 ms)
-- Passos de validação do pipeline (sintaxe e carga das functions) rodados localmente sem erro
+- Passos de validação do pipeline (sintaxe e carga das functions) rodados localmente sem erro. No GitHub, o primeiro run do pipeline passou (publicação pulada, porque ainda não está configurada)
+
+**Publicado no Azure** (`func-tapra-2026-jvr-cus`, pacote zip só com as dependências de produção, via `az functionapp deployment source config-zip`)
+- Antes estavam publicadas só 4 functions (versão de 2026-09-11). Agora estão as 5, e `/api/eco` e `/api/parametro` respondem
+- A `timerCapturaChamados` disparada pelo endpoint de administração carregou com as dependências novas e registrou no Application Insights a falta de `ITSM_DB_SERVER`, `ITSM_DB_NAME`, `ITSM_DB_USER`, `ITSM_DB_PASSWORD` e `DATALAKE_CONNECTION_STRING`, como esperado
 
 ## Pendências
 
 - [ ] O professor vai passar as credenciais do banco `itsm` (em 2026-10-01 ainda não tinha passado). Preencher `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD` no `local.settings.json`, que fica só na máquina e está ignorado pelo Git
 - [ ] Com as credenciais, rodar a captura de verdade e conferir: schema da tabela `chamado`, necessidade de `ITSM_DB_TRUST_SERVER_CERTIFICATE=true` (SQL Server local) e liberação no firewall (Azure SQL)
-- [ ] Criar no Azure a conta ADLS Gen2 (storage account com `--hns true`) e a Function App. Os passos estão no README, em "Publicação no Azure"
-- [ ] Ao publicar no Azure, cadastrar as variáveis `ITSM_DB_*` e `DATALAKE_*` nas *Application settings* (a senha e a connection string pelo portal)
-- [ ] Ligar a publicação do pipeline: habilitar *SCM Basic Auth Publishing Credentials* na Function App, criar o segredo `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` e a variável `AZURE_FUNCTIONAPP_NAME` no GitHub (passo a passo no README, em "Pipeline (GitHub Actions)"). Até lá, o job de publicação fica pulado e o pipeline só valida
+- [ ] Criar a conta ADLS Gen2 (storage account com `--hns true`) no grupo `rg-tapra-2026-cus`. O `sttapra2026jvrcus` não serve, porque não tem namespace hierárquico
+- [ ] Cadastrar as variáveis `ITSM_DB_*` e `DATALAKE_*` nas *Application settings* da `func-tapra-2026-jvr-cus` (a senha e a connection string pelo portal). Até lá, a `timerCapturaChamados` registra a cada 5 minutos o erro de variáveis não configuradas
+- [ ] Ligar a publicação do pipeline na `func-tapra-2026-jvr-cus`: habilitar *SCM Basic Auth Publishing Credentials* na Function App, criar o segredo `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` e a variável `AZURE_FUNCTIONAPP_NAME` no GitHub (passo a passo no README, em "Pipeline (GitHub Actions)"). Até lá, o job de publicação fica pulado e o pipeline só valida
 - [ ] Próximas etapas do diagrama: carga dos dados tratados no Azure SQL Database e Visualização (Power BI)
 - [ ] Confirmar com o professor se a origem de dados deve ter também uma API, como no modelo. Hoje o projeto só lê o banco `itsm`
 
 ## Observações do ambiente (laboratório)
 
 - Os computadores do laboratório têm Node fora do LTS (Node 25 em 2026-09-30, **Node 26.4** em 2026-10-01). O host avisa `Incompatible Node.js version`, mas funciona. Se aparecer erro estranho, use o Node 22 LTS. No Azure, publique com `--runtime-version 22`
-- O **Azure CLI (`az`) está quebrado** no laboratório: qualquer comando falha com `ImportError: DLL load failed while importing win32file`, no PowerShell e no Git Bash. Para mexer no Azure, use a extensão Azure do VS Code (já conectada) ou o portal
+- O **Azure CLI (`az`) está quebrado** no laboratório: qualquer comando falha com `ImportError: DLL load failed while importing win32file`, no PowerShell e no Git Bash. A causa: os `.pyd` do pywin32 em `C:\Program Files\Microsoft SDKs\Azure\CLI2\Lib\site-packages\win32` foram compilados para o Python 3.12, e o `az` roda no Python 3.13. Para contornar sem mexer na instalação, baixe o wheel `pywin32-311-cp313-cp313-win_amd64.whl` do PyPI, extraia as pastas `win32/` e `pywin32_system32/` numa pasta qualquer e rode o `az` assim (Git Bash):
+  ```bash
+  FIX=<pasta>  # onde foi extraido o wheel
+  PYTHONPATH="$FIX/win32;$FIX/win32/lib" PATH="$FIX/pywin32_system32:$PATH" \
+    "/c/Program Files/Microsoft SDKs/Azure/CLI2/python.exe" -Bm azure.cli login --use-device-code
+  ```
+  Também dá para usar a extensão Azure do VS Code (já conectada) ou o portal
 - Não há draw.io desktop instalado. Edite o diagrama em app.diagrams.net
 - Não há identidade git configurada na máquina. Faça commit com `git -c user.name="..." -c user.email="..." commit ...` para não gravar a identidade de um colega na configuração global
 - Parar o terminal do `npm start` ou do `npm run azurite` nem sempre encerra o `func.exe` e o `node` do Azurite. Se as portas 7071 ou 10000–10002 ficarem ocupadas, encerre esses processos
