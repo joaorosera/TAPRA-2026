@@ -77,6 +77,8 @@ npm start                        # terminal 2: host em http://localhost:7071
 curl -X POST http://localhost:7071/admin/functions/timerCapturaChamados -H "Content-Type: application/json" -d "{}"
 ```
 
+O script `npm run azurite` grava o estado do emulador em `../.azurite-tapra-2026`, **fora da raiz do projeto**. Não mova isso para dentro do projeto: o Functions host vigia a raiz para recarregar o código, cada gravação do Azurite derruba o script host, e o host reiniciado re-adquire o *host lock lease* — que é outra gravação no Azurite — realimentando o ciclo. O sintoma é `No script host available` e `No service for type 'IScriptJobHost'` no log, com HTTP 500 no endpoint de administração.
+
 Não há testes automatizados nem lint configurados. O pipeline só confere a sintaxe e se todos os arquivos de `src/functions/` carregam com as dependências de produção (`npm ci --omit=dev`), o que pega, por exemplo, um pacote usado no código e esquecido no `package.json`.
 
 ## Data Lake
@@ -159,6 +161,18 @@ Tabelas: `analista`, `categoria`, `chamado`, `chamado_sla`, `chamado_status_hist
 **Publicado no Azure** (`func-tapra-2026-jvr-cus`, pacote zip só com as dependências de produção, via `az functionapp deployment source config-zip`)
 - Antes estavam publicadas só 4 functions (versão de 2026-09-11). Agora estão as 5, e `/api/eco` e `/api/parametro` respondem
 - A `timerCapturaChamados` disparada pelo endpoint de administração carregou com as dependências novas e registrou no Application Insights a falta de `ITSM_DB_SERVER`, `ITSM_DB_NAME`, `ITSM_DB_USER`, `ITSM_DB_PASSWORD` e `DATALAKE_CONNECTION_STRING`, como esperado
+
+### 2026-10-02: Correcao do loop de reinicio do host local
+
+- O `npm run azurite` gravava o estado do emulador em `.azurite`, **dentro da raiz do projeto**, que e a pasta vigiada pelo Functions host. Isso punha o host num loop de reinicio: cada gravacao do Azurite derrubava o script host e o host reiniciado re-adquiria o *host lock lease*, gerando a gravacao seguinte
+- Efeito pratico: o endpoint de administracao usado para disparar a `timerCapturaChamados` respondia **HTTP 500** (`No service for type 'IScriptJobHost' has been registered`) de forma intermitente, e as chamadas HTTP caiam na janela de reinicio
+- Corrigido apontando o script para `../.azurite-tapra-2026`. Documentado no README e na secao "Comandos"
+
+**Validação feita** (Node 22.23.3, Core Tools 4.14.0, maquina local sem Docker)
+- Com o Azurite dentro do projeto: 4 ocorrencias de `No script host available`, 1 `unhandled host error`, disparo da captura em HTTP 500
+- Com o Azurite fora do projeto: zero `No script host available`, zero `unhandled host error`, disparo da captura em **HTTP 202 nas 3 tentativas** e `/api/eco` em HTTP 200 nas 3
+- As 5 functions foram registradas; `timerLog`, `timerChamaHttp`, `httpEco` e `httpParametro` executaram corretamente (inclusive o HTTP 400 do `httpParametro` sem parametro)
+- A `timerCapturaChamados` executou e registrou `getaddrinfo ENOTFOUND` com o servidor ainda em placeholder, sem a linha `conexao encerrada` (o pool nunca abriu, entao o `if (pool)` do `finally` nao disparou) e **sem a senha nem o usuario aparecerem no log**
 
 ## Pendências
 
