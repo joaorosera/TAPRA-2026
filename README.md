@@ -143,6 +143,8 @@ Os timer triggers precisam de uma conta de storage. Para desenvolvimento local, 
 npm run azurite
 ```
 
+O script grava os dados do emulador em `../.azurite-tapra-2026`, **fora da pasta do projeto**, e isso é de propósito. O Functions host vigia a raiz do projeto para recarregar o código quando um arquivo muda; se o Azurite escrever ali dentro, cada gravação derruba o host, que ao reiniciar re-adquire o *host lock lease* — outra gravação no Azurite — e o ciclo se realimenta. O sintoma é o host reiniciando sem parar, com `No script host available` no log e HTTP 500 no endpoint de administração.
+
 Em outro terminal, inicie as functions:
 
 ```bash

@@ -5,7 +5,7 @@
   "main": "src/functions/*.js",
   "scripts": {
     "start": "func start",
-    "azurite": "azurite --silent --location .azurite"
+    "azurite": "azurite --silent --location ../.azurite-tapra-2026"
   },
   "dependencies": {
     "@azure/functions": "^4.5.1",
