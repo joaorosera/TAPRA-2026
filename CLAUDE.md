@@ -102,7 +102,7 @@ Assinatura *Azure for Students* (tenant Univille). A Function App do projeto é 
 | Storage | `sttapra2026jvrcus` | `AzureWebJobsStorage` e pacotes publicados. **Não** é Data Lake (sem namespace hierárquico) |
 | Application Insights | `func-tapra-2026-jvr-cus` | logs das execuções |
 | Data Lake (ADLS Gen2) | `dltapra2026jvrcus` | criado em 2026-10-02 com `--hns true`. É a conta usada pelo `DATALAKE_CONNECTION_STRING` |
-| Azure SQL (origem de dev) | `sql-tapra-2026-jvr-cus` | criado em 2026-10-02. Banco `itsm`, no *free offer* (`GP_S_Gen5_2`, `useFreeLimit: true`). **Substituto**, não é o banco do professor |
+| Azure SQL (origem de dev) | `sql-tapra-2026-jvr-cus` | criado em 2026-10-02. Banco `itsm` no tier **Basic** (5 DTU, 2 GB, ~US$5/mês no crédito de estudante). **Substituto**, não é o banco do professor. Veja abaixo por que não ficou no *free offer* |
 
 - Também existe a `funcapp-tapra-ROSERA-WERNER` (grupo `RG-TAPRA-20262-ROSERA-WERNER`, Flex Consumption). **Não** é a usada pelo projeto
 - A publicação roda o pacote a partir de um blob (`WEBSITE_RUN_FROM_PACKAGE`). Depois de publicar sem o Core Tools, se a function nova não aparecer na lista, reinicie o app e chame `syncfunctiontriggers`
@@ -126,6 +126,8 @@ Para o projeto ter uma origem que funciona **localmente e na Function App public
 - A captura usa `usr_read_itsm`, um usuário contido com apenas `db_datareader`, espelhando o padrão somente-leitura do professor. O admin `sqladmin_tapra` só é usado pelo seed
 - Firewall do server: `PermitirServicosAzure` (0.0.0.0, a regra especial que libera os serviços do Azure) e `MaquinaLocalJoao`. **O IP residencial muda**; se a conexão local passar a dar timeout, é a primeira coisa a reconferir
 - **Trocar para o banco do professor é uma única Application setting** (`ITSM_DB_SERVER`), mais o usuário e a senha. Nenhuma linha de código muda
+
+**Por que o banco não está no *free offer*.** Ele foi criado no *free offer* (GP serverless, 100.000 vCore-segundos/mês) e isso **não sustenta o timer de 5 minutos**. O `autoPauseDelay` mínimo do serverless é 15 minutos, e uma consulta a cada 5 minutos nunca deixa o banco alcançar a inatividade necessária para pausar. Sem pausar, ele cobra o piso de `minCapacity` 0,5 vCore 24h por dia: `0,5 × 86.400 = 43.200` vCore-segundos/dia, o que esgota os 100.000 gratuitos em **2,3 dias**. Pior, o `freeLimitExhaustionBehavior: AutoPause` então pausa o banco **até virar o mês**, e a captura passa a falhar a cada 5 minutos. Trocar para `BillForUsage` em serverless sairia perto de US$188/mês. Por isso o banco foi movido para o tier **Basic**, que é sempre ligado, tem custo fixo e não mede vCore-segundo. Se alguém recriar esse banco, **não use o free offer com o timer ligado**.
 
 ## Diagrama de arquitetura
 
@@ -214,6 +216,14 @@ Para o projeto ter uma origem que funciona **localmente e na Function App public
 - A `timerCapturaChamados` disparada pelo endpoint de administracao capturou os 12 registros e gravou `raw/itsm/chamado/2026/10/03/chamado_20261003T014730Z.json` (6267 bytes) na conta `dltapra2026jvrcus`
 - O conteudo do blob no Data Lake **real** foi conferido com o mesmo criterio do teste local: `quantidade` igual ao tamanho de `registros`, 9 acentos preservados, 3 `NULL`, `BIT` como `boolean`, datas em ISO 8601 com `Z`, `application/json; charset=utf-8`
 - O container `raw` mostra as entradas de diretorio com 0 byte, o que confirma o namespace hierarquico da conta
+
+**Banco movido do *free offer* para o tier Basic**
+- O *free offer* e incompativel com o timer de 5 minutos, pelo calculo descrito em "Origem substituta": os 100.000 vCore-segundos gratuitos duram 2,3 dias, e depois o banco pausa ate virar o mes
+- `az sql db update` recusa `--service-objective Basic` enquanto o free limit estiver ligado (`ProvisioningDisabled`); e preciso passar `--use-free-limit false` na mesma chamada
+- Depois da troca: `edition: Basic`, `autoPauseDelay: null` (sempre ligado), dados preservados
+
+**Validação feita** (depois da troca de tier)
+- A captura disparada no Azure voltou a gravar normalmente, e o container `raw` mostra **o timer rodando sozinho**: arquivos em `T015000Z` e `T015500Z` que ninguem disparou, cumprindo o `0 */5 * * * *`
 
 **Nenhuma mudanca desta rodada altera o que roda no Azure:** o script do Azurite e so do ambiente local, e `scripts/` e os `.md` ficam fora do pacote pelo `.funcignore`. O codigo das functions nao mudou, e por isso a captura publicada funcionou sem republicar.
 

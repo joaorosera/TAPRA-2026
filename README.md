@@ -181,6 +181,8 @@ node scripts/seedOrigemDev.js --recriar   # descarta a tabela antes (apaga os da
 
 São 12 registros fictícios, escolhidos para a captura exercitar acento, `NULL`, datas em meses diferentes e todos os status do fluxo. O script fica em `scripts/` e **não** em `src/functions/`, porque todo `.js` daquela pasta é carregado como function pelo host; o `.funcignore` também deixa `scripts` fora do pacote publicado.
 
+Esse banco fica no tier **Basic** de propósito. O *free offer* do Azure SQL (GP serverless) **não sustenta um timer de 5 minutos**: a consulta frequente impede o banco de pausar, ele passa a cobrar o piso de vCore 24h por dia, e os vCore-segundos gratuitos do mês acabam em pouco mais de dois dias — depois disso o banco pausa até virar o mês e a captura falha. Se recriar esse banco, não use o *free offer* com o timer ligado.
+
 > O schema da tabela é uma **suposição** feita a partir das outras tabelas do ITSM. Quando o schema real do `chamado` for conhecido, é o `CREATE TABLE` do script que precisa ser conferido — a `timerCapturaChamados` não, porque executa `SELECT *` e serializa as colunas que vierem. Trocar a origem substituta pelo banco do professor é mudar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD`, sem alterar código.
 
 ## Configurações
