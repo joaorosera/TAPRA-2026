@@ -139,6 +139,7 @@ Para o projeto ter uma origem que funciona **localmente e na Function App public
 - Já implementados (seta contínua, sem etiqueta): Function App, Data Lake (camada raw) e pipeline do GitHub Actions. Ainda *próxima etapa*: Azure SQL Database (dados tratados) e Power BI
 - A divisão Data Lake (dados brutos de cada captura) e SQL Database (dados tratados) foi uma suposição baseada no modelo. Confirme com o professor antes de implementar a carga no SQL Database
 - O `.drawio` foi gerado por um script Python e o PNG foi renderizado no viewer oficial do draw.io (Chrome headless, escala 2x). Editar à mão em app.diagrams.net também funciona, desde que se exporte o PNG de novo
+- Para renderizar sem o draw.io desktop: monte um HTML com `<div class="mxgraph" data-mxgraph="...">` apontando para `https://viewer.diagrams.net/js/viewer-static.min.js` e tire um screenshot com `msedge --headless=new --force-device-scale-factor=2 --window-size=1611,820 --virtual-time-budget=25000 --screenshot=...`. **O JSON do atributo precisa ser escapado com `html.escape`**: o XML do diagrama contém `&quot;` nos estilos, e sem o escape o parser de HTML decodifica essas entidades e quebra o JSON (a página sai em branco com um erro de parse). Um PNG de ~30 KB em vez de ~270 KB é o sinal de que isso aconteceu
 
 ## Histórico
 
