@@ -28,8 +28,8 @@
         <mxCell id="tabela_chamado" value="tabela capturada: &lt;b&gt;chamado&lt;/b&gt;" style="rounded=1;arcSize=20;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="45" y="354" width="190" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="texto6" value="servidor e credenciais&lt;br&gt;fornecidos pelo professor" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
-          <mxGeometry x="40" y="402" width="200" height="34" as="geometry" />
+        <mxCell id="texto6" value="&lt;i&gt;origem substituta:&lt;/i&gt; Azure SQL&lt;br&gt;da equipe. O professor passou as&lt;br&gt;credenciais, mas não o servidor" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
+          <mxGeometry x="40" y="402" width="200" height="50" as="geometry" />
         </mxCell>
         <mxCell id="azure" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#0078D4;fillColor=#F5FAFE;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="420" y="100" width="780" height="450" as="geometry" />
