@@ -208,15 +208,22 @@ Para o projeto ter uma origem que funciona **localmente e na Function App public
 - Arquivo conferido byte a byte no Azurite, nao so pela mensagem de log: `raw/itsm/chamado/2026/10/03/chamado_20261003T013156Z.json`, 6267 bytes, `application/json; charset=utf-8`; `quantidade` igual ao tamanho de `registros`; 9 titulos com acento preservados; 3 `NULL` preservados; `BIT` convertido para `boolean`; datas em ISO 8601 com sufixo `Z`
 - A senha e o usuario **nao aparecem em nenhum log**
 
-**Pendente nesta rodada:** cadastrar as Application settings da `func-tapra-2026-jvr-cus` (a ferramenta usada nao tem permissao para alterar configuracao de app publicado nem para ler a chave da storage account), e com isso rodar a captura publicada no Azure.
+**Publicado no Azure: captura funcionando**
+- Cadastradas as *Application settings* `ECO_FUNCTION_URL`, `ITSM_DB_*` e `DATALAKE_*` na `func-tapra-2026-jvr-cus`
+- `/api/eco` e `/api/parametro` responderam HTTP 200 na app publicada
+- A `timerCapturaChamados` disparada pelo endpoint de administracao capturou os 12 registros e gravou `raw/itsm/chamado/2026/10/03/chamado_20261003T014730Z.json` (6267 bytes) na conta `dltapra2026jvrcus`
+- O conteudo do blob no Data Lake **real** foi conferido com o mesmo criterio do teste local: `quantidade` igual ao tamanho de `registros`, 9 acentos preservados, 3 `NULL`, `BIT` como `boolean`, datas em ISO 8601 com `Z`, `application/json; charset=utf-8`
+- O container `raw` mostra as entradas de diretorio com 0 byte, o que confirma o namespace hierarquico da conta
+
+**Nenhuma mudanca desta rodada altera o que roda no Azure:** o script do Azurite e so do ambiente local, e `scripts/` e os `.md` ficam fora do pacote pelo `.funcignore`. O codigo das functions nao mudou, e por isso a captura publicada funcionou sem republicar.
 
 ## Pendências
 
 - [ ] **Falta o endereço do banco do professor.** Em 2026-10-02 ele passou só `usr_read_itsm05` e a senha, sem o FQDN, e sem isso as credenciais não servem. Quando chegar, trocar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD` (local e nas *Application settings*) e conferir o schema real da `chamado` contra o `CREATE TABLE` do `scripts/seedOrigemDev.js`
 - [x] ~~Criar a conta ADLS Gen2~~ — `dltapra2026jvrcus`, criada em 2026-10-02 com `--hns true`
 - [x] ~~Rodar a captura de verdade~~ — feita em 2026-10-02 contra a origem substituta, localmente, com o JSON conferido no Data Lake emulado. Ver "Validação feita" em 2026-10-02
-- [ ] Cadastrar as variáveis `ITSM_DB_*` e `DATALAKE_*` nas *Application settings* da `func-tapra-2026-jvr-cus`. Até lá, a `timerCapturaChamados` registra a cada 5 minutos o erro de variáveis não configuradas. Os valores estão em "Origem substituta"; a senha de leitura está no `local.settings.json` e a connection string sai de `az storage account show-connection-string -g rg-tapra-2026-cus -n dltapra2026jvrcus`
-- [ ] Com as *Application settings* no lugar, disparar a captura **publicada** e conferir o arquivo no Data Lake real
+- [x] ~~Cadastrar as variáveis `ITSM_DB_*` e `DATALAKE_*` nas *Application settings*~~ — feito em 2026-10-02
+- [x] ~~Disparar a captura publicada e conferir o arquivo no Data Lake real~~ — feito em 2026-10-02, 12 registros gravados e conteúdo conferido
 - [ ] Ligar a publicação do pipeline na `func-tapra-2026-jvr-cus`: habilitar *SCM Basic Auth Publishing Credentials* na Function App, criar o segredo `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` e a variável `AZURE_FUNCTIONAPP_NAME` no GitHub (passo a passo no README, em "Pipeline (GitHub Actions)"). Até lá, o job de publicação fica pulado e o pipeline só valida
 - [ ] Próximas etapas do diagrama: carga dos dados tratados no Azure SQL Database e Visualização (Power BI)
 - [ ] Confirmar com o professor se a origem de dados deve ter também uma API, como no modelo. Hoje o projeto só lê o banco `itsm`
