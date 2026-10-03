@@ -20,6 +20,7 @@ Trabalho em equipe da disciplina TAPRA (2026): Azure Functions em Node.js que, e
 
 ```
 src/functions/          uma function por arquivo (todo .js aqui é carregado pelo host)
+scripts/                apoio que NAO roda no host (ex.: seed do banco de origem de dev)
 docs/                   desenho da arquitetura (.drawio editável + .png exportado)
 .github/workflows/      pipeline do GitHub Actions (valida e publica)
 .funcignore             o que fica fora do pacote publicado no Azure
@@ -77,7 +78,9 @@ npm start                        # terminal 2: host em http://localhost:7071
 curl -X POST http://localhost:7071/admin/functions/timerCapturaChamados -H "Content-Type: application/json" -d "{}"
 ```
 
-O script `npm run azurite` grava o estado do emulador em `../.azurite-tapra-2026`, **fora da raiz do projeto**. Não mova isso para dentro do projeto: o Functions host vigia a raiz para recarregar o código, cada gravação do Azurite derruba o script host, e o host reiniciado re-adquire o *host lock lease* — que é outra gravação no Azurite — realimentando o ciclo. O sintoma é `No script host available` e `No service for type 'IScriptJobHost'` no log, com HTTP 500 no endpoint de administração.
+O script `npm run azurite` usa `--skipApiVersionCheck` porque o `@azure/storage-blob` 12.34.0 negocia a API de storage `2026-10-06`, que o Azurite **3.37.0 (a ultima publicada)** ainda nao conhece; sem o flag a gravacao no Data Lake falha so no ambiente local, com `The API version 2026-10-06 is not supported by Azurite`. O Storage real do Azure aceita essa versao, entao fixar o SDK numa versao antiga faria o local divergir do que roda publicado — por isso o flag, que e a saida que o proprio Azurite sugere na mensagem de erro.
+
+O mesmo script grava o estado do emulador em `../.azurite-tapra-2026`, **fora da raiz do projeto**. Não mova isso para dentro do projeto: o Functions host vigia a raiz para recarregar o código, cada gravação do Azurite derruba o script host, e o host reiniciado re-adquire o *host lock lease* — que é outra gravação no Azurite — realimentando o ciclo. O sintoma é `No script host available` e `No service for type 'IScriptJobHost'` no log, com HTTP 500 no endpoint de administração.
 
 Não há testes automatizados nem lint configurados. O pipeline só confere a sintaxe e se todos os arquivos de `src/functions/` carregam com as dependências de produção (`npm ci --omit=dev`), o que pega, por exemplo, um pacote usado no código e esquecido no `package.json`.
 
@@ -98,6 +101,8 @@ Assinatura *Azure for Students* (tenant Univille). A Function App do projeto é 
 | Function App | `func-tapra-2026-jvr-cus` | Linux, Consumption (Y1), Node 22. https://func-tapra-2026-jvr-cus.azurewebsites.net |
 | Storage | `sttapra2026jvrcus` | `AzureWebJobsStorage` e pacotes publicados. **Não** é Data Lake (sem namespace hierárquico) |
 | Application Insights | `func-tapra-2026-jvr-cus` | logs das execuções |
+| Data Lake (ADLS Gen2) | `dltapra2026jvrcus` | criado em 2026-10-02 com `--hns true`. É a conta usada pelo `DATALAKE_CONNECTION_STRING` |
+| Azure SQL (origem de dev) | `sql-tapra-2026-jvr-cus` | criado em 2026-10-02. Banco `itsm`, no *free offer* (`GP_S_Gen5_2`, `useFreeLimit: true`). **Substituto**, não é o banco do professor |
 
 - Também existe a `funcapp-tapra-ROSERA-WERNER` (grupo `RG-TAPRA-20262-ROSERA-WERNER`, Flex Consumption). **Não** é a usada pelo projeto
 - A publicação roda o pacote a partir de um blob (`WEBSITE_RUN_FROM_PACKAGE`). Depois de publicar sem o Core Tools, se a function nova não aparecer na lista, reinicie o app e chame `syncfunctiontriggers`
@@ -109,6 +114,18 @@ Tabelas: `analista`, `categoria`, `chamado`, `chamado_sla`, `chamado_status_hist
 - A equipe escolheu a tabela `chamado` para a captura por ser a tabela central do ITSM
 - A consulta usa o nome sem schema (`SELECT * FROM chamado`), então vale para `dbo` ou para o schema padrão do usuário. Se a tabela estiver em outro schema, qualifique o nome
 - A conexão é aberta e fechada a cada execução, como pede a atividade
+
+### Origem substituta (2026-10-02)
+
+O professor passou **apenas usuário e senha** (`usr_read_itsm05`), nunca o endereço do servidor. Sem o FQDN o driver `mssql` para no DNS (`getaddrinfo ENOTFOUND`), antes de autenticar, então essas credenciais continuam inutilizáveis. Uma busca na assinatura confirmou que não existe nenhum SQL Server visível para a equipe (`az sql server list` vazio antes de 2026-10-02).
+
+Para o projeto ter uma origem que funciona **localmente e na Function App publicada**, a equipe criou o Azure SQL `sql-tapra-2026-jvr-cus`, com o banco `itsm` e a tabela `chamado`:
+
+- `scripts/seedOrigemDev.js` cria a tabela e insere 12 registros fictícios (com acento, `NULL`, datas em três meses e os seis status). Roda fora do host, com as mesmas variáveis `ITSM_DB_*`; `process.env` tem precedência sobre o `local.settings.json`, então o seed usa o admin do server e a function usa o usuário de leitura
+- **O schema da tabela é uma suposição**, construída a partir da lista de tabelas acima. Quando o schema real aparecer, é o `CREATE TABLE` do seed que precisa ser conferido — a function não, porque faz `SELECT *` e serializa o que vier
+- A captura usa `usr_read_itsm`, um usuário contido com apenas `db_datareader`, espelhando o padrão somente-leitura do professor. O admin `sqladmin_tapra` só é usado pelo seed
+- Firewall do server: `PermitirServicosAzure` (0.0.0.0, a regra especial que libera os serviços do Azure) e `MaquinaLocalJoao`. **O IP residencial muda**; se a conexão local passar a dar timeout, é a primeira coisa a reconferir
+- **Trocar para o banco do professor é uma única Application setting** (`ITSM_DB_SERVER`), mais o usuário e a senha. Nenhuma linha de código muda
 
 ## Diagrama de arquitetura
 
@@ -174,12 +191,32 @@ Tabelas: `analista`, `categoria`, `chamado`, `chamado_sla`, `chamado_status_hist
 - As 5 functions foram registradas; `timerLog`, `timerChamaHttp`, `httpEco` e `httpParametro` executaram corretamente (inclusive o HTTP 400 do `httpParametro` sem parametro)
 - A `timerCapturaChamados` executou e registrou `getaddrinfo ENOTFOUND` com o servidor ainda em placeholder, sem a linha `conexao encerrada` (o pool nunca abriu, entao o `if (pool)` do `finally` nao disparou) e **sem a senha nem o usuario aparecerem no log**
 
+### 2026-10-02: Origem substituta, Data Lake real e captura funcionando
+
+**Contexto:** o professor passou so usuario e senha (`usr_read_itsm05`), sem o endereco do servidor. Como o FQDN e o endereco de rede, as credenciais ficam inutilizaveis sem ele, e `az sql server list` confirmou que nao ha nenhum SQL Server visivel na assinatura. Para o trabalho funcionar local e publicado, a equipe criou uma origem propria. Detalhes em "Origem substituta".
+
+**Feito**
+- Criada a conta **ADLS Gen2 `dltapra2026jvrcus`** (`--hns true`, `min-tls-version TLS1_2`, sem acesso publico a blob) no `rg-tapra-2026-cus`. Fecha a pendencia da conta de Data Lake: o `sttapra2026jvrcus` nao servia por nao ter namespace hierarquico
+- Registrado o resource provider `Microsoft.Sql` na assinatura, que vinha como `NotRegistered` e fazia o `az sql server create` falhar com `MissingSubscriptionRegistration`
+- Criado o **Azure SQL `sql-tapra-2026-jvr-cus`** com o banco `itsm` no *free offer* (`GP_S_Gen5_2`, `useFreeLimit: true`, sem consumo do credito de estudante), duas regras de firewall e o usuario de leitura `usr_read_itsm` (`db_datareader`)
+- Criado o `scripts/seedOrigemDev.js` (12 registros na tabela `chamado`) e acrescentado `scripts` ao `.funcignore`, para a pasta nao ir no pacote publicado
+- Corrigido o `npm run azurite` com `--skipApiVersionCheck`: o `@azure/storage-blob` 12.34.0 negocia a API `2026-10-06`, que o Azurite 3.37.0 (a ultima publicada) nao conhece, e sem o flag a gravacao no Data Lake falha so no ambiente local
+
+**Validação feita** (captura real, local, contra o Azure SQL)
+- 12 registros capturados da tabela `chamado`, com as 19 colunas corretas
+- A conexao foi encerrada **antes** da gravacao, na ordem que a atividade pede
+- Arquivo conferido byte a byte no Azurite, nao so pela mensagem de log: `raw/itsm/chamado/2026/10/03/chamado_20261003T013156Z.json`, 6267 bytes, `application/json; charset=utf-8`; `quantidade` igual ao tamanho de `registros`; 9 titulos com acento preservados; 3 `NULL` preservados; `BIT` convertido para `boolean`; datas em ISO 8601 com sufixo `Z`
+- A senha e o usuario **nao aparecem em nenhum log**
+
+**Pendente nesta rodada:** cadastrar as Application settings da `func-tapra-2026-jvr-cus` (a ferramenta usada nao tem permissao para alterar configuracao de app publicado nem para ler a chave da storage account), e com isso rodar a captura publicada no Azure.
+
 ## Pendências
 
-- [ ] O professor vai passar as credenciais do banco `itsm` (em 2026-10-01 ainda não tinha passado). Preencher `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD` no `local.settings.json`, que fica só na máquina e está ignorado pelo Git
-- [ ] Com as credenciais, rodar a captura de verdade e conferir: schema da tabela `chamado`, necessidade de `ITSM_DB_TRUST_SERVER_CERTIFICATE=true` (SQL Server local) e liberação no firewall (Azure SQL)
-- [ ] Criar a conta ADLS Gen2 (storage account com `--hns true`) no grupo `rg-tapra-2026-cus`. O `sttapra2026jvrcus` não serve, porque não tem namespace hierárquico
-- [ ] Cadastrar as variáveis `ITSM_DB_*` e `DATALAKE_*` nas *Application settings* da `func-tapra-2026-jvr-cus` (a senha e a connection string pelo portal). Até lá, a `timerCapturaChamados` registra a cada 5 minutos o erro de variáveis não configuradas
+- [ ] **Falta o endereço do banco do professor.** Em 2026-10-02 ele passou só `usr_read_itsm05` e a senha, sem o FQDN, e sem isso as credenciais não servem. Quando chegar, trocar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD` (local e nas *Application settings*) e conferir o schema real da `chamado` contra o `CREATE TABLE` do `scripts/seedOrigemDev.js`
+- [x] ~~Criar a conta ADLS Gen2~~ — `dltapra2026jvrcus`, criada em 2026-10-02 com `--hns true`
+- [x] ~~Rodar a captura de verdade~~ — feita em 2026-10-02 contra a origem substituta, localmente, com o JSON conferido no Data Lake emulado. Ver "Validação feita" em 2026-10-02
+- [ ] Cadastrar as variáveis `ITSM_DB_*` e `DATALAKE_*` nas *Application settings* da `func-tapra-2026-jvr-cus`. Até lá, a `timerCapturaChamados` registra a cada 5 minutos o erro de variáveis não configuradas. Os valores estão em "Origem substituta"; a senha de leitura está no `local.settings.json` e a connection string sai de `az storage account show-connection-string -g rg-tapra-2026-cus -n dltapra2026jvrcus`
+- [ ] Com as *Application settings* no lugar, disparar a captura **publicada** e conferir o arquivo no Data Lake real
 - [ ] Ligar a publicação do pipeline na `func-tapra-2026-jvr-cus`: habilitar *SCM Basic Auth Publishing Credentials* na Function App, criar o segredo `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` e a variável `AZURE_FUNCTIONAPP_NAME` no GitHub (passo a passo no README, em "Pipeline (GitHub Actions)"). Até lá, o job de publicação fica pulado e o pipeline só valida
 - [ ] Próximas etapas do diagrama: carga dos dados tratados no Azure SQL Database e Visualização (Power BI)
 - [ ] Confirmar com o professor se a origem de dados deve ter também uma API, como no modelo. Hoje o projeto só lê o banco `itsm`
