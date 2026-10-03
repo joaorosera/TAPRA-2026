@@ -143,7 +143,11 @@ Os timer triggers precisam de uma conta de storage. Para desenvolvimento local, 
 npm run azurite
 ```
 
-O script grava os dados do emulador em `../.azurite-tapra-2026`, **fora da pasta do projeto**, e isso é de propósito. O Functions host vigia a raiz do projeto para recarregar o código quando um arquivo muda; se o Azurite escrever ali dentro, cada gravação derruba o host, que ao reiniciar re-adquire o *host lock lease* — outra gravação no Azurite — e o ciclo se realimenta. O sintoma é o host reiniciando sem parar, com `No script host available` no log e HTTP 500 no endpoint de administração.
+O script usa `--skipApiVersionCheck` e grava os dados do emulador em `../.azurite-tapra-2026`, **fora da pasta do projeto**. As duas coisas são de propósito.
+
+O `--skipApiVersionCheck` existe porque o `@azure/storage-blob` negocia uma versão da API de storage mais nova do que o Azurite conhece — mesmo na última versão publicada dele. Sem o flag, a gravação no Data Lake falha **só no ambiente local**, com `The API version ... is not supported by Azurite`. O Storage real do Azure aceita a versão, então fixar o SDK numa versão antiga faria o ambiente local divergir do publicado.
+
+Já a pasta fora do projeto é de propósito porque o Functions host vigia a raiz do projeto para recarregar o código quando um arquivo muda; se o Azurite escrever ali dentro, cada gravação derruba o host, que ao reiniciar re-adquire o *host lock lease* — outra gravação no Azurite — e o ciclo se realimenta. O sintoma é o host reiniciando sem parar, com `No script host available` no log e HTTP 500 no endpoint de administração.
 
 Em outro terminal, inicie as functions:
 
@@ -163,6 +167,21 @@ curl -X POST http://localhost:7071/admin/functions/timerCapturaChamados -H "Cont
 ```
 
 No ambiente local, o Data Lake é o próprio Azurite. Para ver os arquivos gravados, abra a extensão *Azure Storage* do VS Code ou o Azure Storage Explorer em *Emulator & Attached > Storage Accounts > (Emulator - Default Ports) > Blob Containers > raw*.
+
+## Banco de origem para desenvolvimento
+
+O banco `itsm` do professor exige o endereço do servidor, que não foi informado — e sem o FQDN o driver `mssql` para no DNS, antes de autenticar, então usuário e senha sozinhos não conectam. Para a captura poder ser exercitada de verdade, a equipe mantém um **Azure SQL próprio como origem substituta**, com o banco `itsm` e a tabela `chamado`.
+
+Para popular essa tabela, com as variáveis `ITSM_DB_*` apontando para o servidor e um usuário que possa escrever:
+
+```bash
+node scripts/seedOrigemDev.js             # cria a tabela se faltar e popula se estiver vazia
+node scripts/seedOrigemDev.js --recriar   # descarta a tabela antes (apaga os dados)
+```
+
+São 12 registros fictícios, escolhidos para a captura exercitar acento, `NULL`, datas em meses diferentes e todos os status do fluxo. O script fica em `scripts/` e **não** em `src/functions/`, porque todo `.js` daquela pasta é carregado como function pelo host; o `.funcignore` também deixa `scripts` fora do pacote publicado.
+
+> O schema da tabela é uma **suposição** feita a partir das outras tabelas do ITSM. Quando o schema real do `chamado` for conhecido, é o `CREATE TABLE` do script que precisa ser conferido — a `timerCapturaChamados` não, porque executa `SELECT *` e serializa as colunas que vierem. Trocar a origem substituta pelo banco do professor é mudar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD`, sem alterar código.
 
 ## Configurações
 
