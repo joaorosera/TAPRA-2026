@@ -1,6 +1,6 @@
 # TAPRA-2026
 
-Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de dados de uma tabela do banco de origem (SQL Server, banco `itsm`) e a gravação desses dados no Data Lake.
+Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de cada uma das tabelas do banco de origem (SQL Server, schema `itsm`) e a gravação desses dados no Data Lake.
 
 ## Integrantes da equipe
 
@@ -13,7 +13,7 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 - Node.js / JavaScript
 - Azure Functions Core Tools v4
 - Azurite (emulador de storage, necessário para os timer triggers rodarem localmente)
-- SQL Server / Azure SQL (banco de origem `itsm`), acessado com o driver [`mssql`](https://www.npmjs.com/package/mssql)
+- SQL Server / Azure SQL (banco de origem `db-univille`, schema `itsm`), acessado com o driver [`mssql`](https://www.npmjs.com/package/mssql)
 - Azure Data Lake Storage Gen2 (camada *raw*), acessado com o SDK [`@azure/storage-blob`](https://www.npmjs.com/package/@azure/storage-blob). No ambiente local, o Azurite faz esse papel
 - GitHub Actions (pipeline de validação e publicação)
 
@@ -25,9 +25,9 @@ O desenho foi feito no draw.io e está em [`docs/arquitetura.drawio`](docs/arqui
 
 A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e do deploy. Componentes com a etiqueta *próxima etapa* e setas tracejadas ainda não foram implementados.
 
-- **Origem de dados:** banco `itsm` (SQL Server), fornecido pelo professor. A tabela capturada é a `chamado`.
-- **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a `timerCapturaChamados` a cada 5 minutos, que abre a conexão com o banco, lê a tabela `chamado`, fecha a conexão e grava os dados no Data Lake. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
-- **Armazenamento:** cada captura vira um arquivo JSON na camada *raw* do **Azure Data Lake Storage Gen2**, em `raw/itsm/chamado/AAAA/MM/DD/`. A carga dos dados tratados no **Azure SQL Database**, pronta para consulta, é a próxima etapa.
+- **Origem de dados:** banco `db-univille` (Azure SQL), fornecido pelo professor, com as 10 tabelas do ITSM no schema `itsm`. Todas são capturadas.
+- **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a cada 5 minutos uma function de captura para cada tabela (`timerCapturaChamado`, `timerCapturaAnalista` etc.). Cada uma abre a conexão com o banco, lê a sua tabela, fecha a conexão e grava os dados no Data Lake. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
+- **Armazenamento:** cada captura vira um arquivo JSON na camada *raw* do **Azure Data Lake Storage Gen2**, em `raw/itsm/<tabela>/AAAA/MM/DD/`. A carga dos dados tratados no **Azure SQL Database**, pronta para consulta, é a próxima etapa.
 - **Visualização** *(próxima etapa)*: painéis e relatórios no **Power BI**, consultando o Azure SQL Database.
 - **Desenvolvimento e deploy:** o código é escrito no **VS Code** (Core Tools e Azurite para rodar localmente) e versionado no **GitHub**. O pipeline do **GitHub Actions** valida as functions a cada push e publica a Function App a cada push na `main` (veja [Pipeline (GitHub Actions)](#pipeline-github-actions)). O deploy manual (`func azure functionapp publish`) continua disponível.
 
@@ -39,7 +39,7 @@ A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e d
 | `httpParametro` | HTTP GET `/api/parametro?nome=Valor` | Recebe um parâmetro pela URL e imprime esse parâmetro na tela. |
 | `httpEco` | HTTP GET `/api/eco?mensagem=Texto` | Retorna a informação recebida acrescida de um texto de identificação. |
 | `timerChamaHttp` | Timer (a cada 2 minutos) | Faz uma chamada HTTP para a function `httpEco` e imprime a resposta no log. |
-| `timerCapturaChamados` | Timer (a cada 5 minutos) | Captura os dados da tabela `chamado` do banco de origem `itsm` e grava um arquivo JSON no Data Lake. |
+| `timerCaptura<Tabela>` (10 functions) | Timer (a cada 5 minutos) | Uma por tabela do schema `itsm`: captura os dados da tabela e grava um arquivo JSON no Data Lake. Lista completa na seção 5. |
 
 ### 1. `timerLog` — Timer Trigger
 
@@ -88,41 +88,55 @@ A cada 2 minutos monta uma mensagem, faz uma chamada HTTP para a function `httpE
 
 A URL de destino vem da configuração `ECO_FUNCTION_URL`, para que o mesmo código funcione localmente e publicado no Azure.
 
-### 5. `timerCapturaChamados` — Timer Trigger que captura uma tabela do banco de origem e grava no Data Lake
+### 5. `timerCaptura<Tabela>` — Timer Triggers que capturam as tabelas do banco de origem e gravam no Data Lake
 
-Arquivo: [`src/functions/timerCapturaChamados.js`](src/functions/timerCapturaChamados.js)
+Cada tabela do schema `itsm` tem a sua function, num arquivo próprio em [`src/functions/`](src/functions/):
 
-A cada 5 minutos (NCRONTAB `0 */5 * * * *`) a function:
+| Function | Tabela |
+| --- | --- |
+| [`timerCapturaAnalista`](src/functions/timerCapturaAnalista.js) | `itsm.analista` |
+| [`timerCapturaCategoria`](src/functions/timerCapturaCategoria.js) | `itsm.categoria` |
+| [`timerCapturaChamado`](src/functions/timerCapturaChamado.js) | `itsm.chamado` |
+| [`timerCapturaChamadoSla`](src/functions/timerCapturaChamadoSla.js) | `itsm.chamado_sla` |
+| [`timerCapturaChamadoStatusHistorico`](src/functions/timerCapturaChamadoStatusHistorico.js) | `itsm.chamado_status_historico` |
+| [`timerCapturaClienteOrganizacao`](src/functions/timerCapturaClienteOrganizacao.js) | `itsm.cliente_organizacao` |
+| [`timerCapturaCsatAvaliacao`](src/functions/timerCapturaCsatAvaliacao.js) | `itsm.csat_avaliacao` |
+| [`timerCapturaFila`](src/functions/timerCapturaFila.js) | `itsm.fila` |
+| [`timerCapturaSla`](src/functions/timerCapturaSla.js) | `itsm.sla` |
+| [`timerCapturaSolicitante`](src/functions/timerCapturaSolicitante.js) | `itsm.solicitante` |
+
+Os arquivos das functions só declaram o gatilho e a tabela. A captura em si fica em [`src/lib/capturaTabela.js`](src/lib/capturaTabela.js), fora de `src/functions/` porque todo arquivo daquela pasta é carregado como function. A cada 5 minutos (NCRONTAB `0 */5 * * * *`) cada function:
 
 1. confere as variáveis de ambiente `ITSM_DB_*` e `DATALAKE_CONNECTION_STRING` (nenhuma credencial fica no código);
-2. abre uma conexão com o banco de origem `itsm` (SQL Server / Azure SQL);
-3. executa `SELECT * FROM chamado`, tabela escolhida pela equipe por ser a tabela central do ITSM;
+2. abre uma conexão própria com o banco de origem (Azure SQL);
+3. executa `SELECT * FROM [itsm].[<tabela>]` (o schema vem de `ITSM_DB_SCHEMA`, padrão `itsm`);
 4. encerra a conexão;
 5. imprime no log a quantidade de registros capturados, as colunas e os primeiros registros;
 6. grava a captura como um arquivo JSON na camada *raw* do Data Lake.
 
 ```
-[timerCapturaChamados] abrindo conexao com o banco itsm
-[timerCapturaChamados] conexao encerrada
-[timerCapturaChamados] <N> registro(s) capturado(s) da tabela chamado
-[timerCapturaChamados] colunas: id_chamado, titulo, ...
-[timerCapturaChamados] primeiros registros: [{"id_chamado":1, ...}]
-[timerCapturaChamados] dados gravados no Data Lake: raw/itsm/chamado/2026/10/01/chamado_20261001T190500Z.json
+[timerCapturaChamado] abrindo conexao com o banco db-univille
+[timerCapturaChamado] conexao encerrada
+[timerCapturaChamado] <N> registro(s) capturado(s) da tabela itsm.chamado
+[timerCapturaChamado] colunas: id_chamado, titulo, ...
+[timerCapturaChamado] primeiros registros: [{"id_chamado":1, ...}]
+[timerCapturaChamado] dados gravados no Data Lake: raw/itsm/chamado/2026/10/07/chamado_20261007T190500Z.json
 ```
 
-Cada execução cria um arquivo novo no container `raw` (configurável por `DATALAKE_CONTAINER`), separado por data, com os metadados da captura e os registros como vieram do banco:
+Cada execução cria um arquivo novo no container `raw` (configurável por `DATALAKE_CONTAINER`), separado por tabela e por data, com os metadados da captura e os registros como vieram do banco:
 
 ```json
 {
-  "origem": "itsm",
+  "origem": "db-univille",
+  "schema": "itsm",
   "tabela": "chamado",
-  "capturadoEm": "2026-10-01T19:05:00.012Z",
+  "capturadoEm": "2026-10-07T19:05:00.012Z",
   "quantidade": 2,
   "registros": [{ "id_chamado": 1, "titulo": "..." }, { "id_chamado": 2, "titulo": "..." }]
 }
 ```
 
-Se faltar alguma variável obrigatória, a execução registra um erro com o **nome** das variáveis ausentes (nunca os valores) e não tenta conectar.
+Se faltar alguma variável obrigatória, a execução registra um erro com o **nome** das variáveis ausentes (nunca os valores) e não tenta conectar. A falha de uma tabela não afeta as outras, porque cada function tem a sua execução e a sua conexão.
 
 ## Como executar localmente
 
@@ -135,7 +149,7 @@ npm install
 cp local.settings.json.example local.settings.json   # no Windows: copy local.settings.json.example local.settings.json
 ```
 
-Edite o `local.settings.json` e preencha as variáveis `ITSM_DB_*` com os dados de acesso ao banco `itsm`. As variáveis `DATALAKE_*` já vêm apontando para o Azurite. Esse arquivo está no `.gitignore` e **não deve ser commitado**. Somente o modelo `local.settings.json.example`, com valores de exemplo, fica no repositório.
+Edite o `local.settings.json` e preencha `ITSM_DB_USER` e `ITSM_DB_PASSWORD` com o usuário e a senha do banco passados pelo professor. O servidor, o banco e o schema já vêm preenchidos. As variáveis `DATALAKE_*` já vêm apontando para o Azurite. Esse arquivo está no `.gitignore` e **não deve ser commitado**. Somente o modelo `local.settings.json.example`, com valores de exemplo, fica no repositório.
 
 Os timer triggers precisam de uma conta de storage. Para desenvolvimento local, suba o emulador Azurite em um terminal:
 
@@ -160,17 +174,25 @@ O host sobe em `http://localhost:7071` e expõe:
 - `http://localhost:7071/api/parametro?nome=Joao`
 - `http://localhost:7071/api/eco?mensagem=teste`
 
-Os timers passam a escrever no terminal automaticamente conforme o agendamento. Para executar a captura na hora, sem esperar os 5 minutos, chame o endpoint de administração do host local:
+Os timers passam a escrever no terminal automaticamente conforme o agendamento. Para executar a captura de uma tabela na hora, sem esperar os 5 minutos, chame o endpoint de administração do host local com o nome da function:
 
 ```bash
-curl -X POST http://localhost:7071/admin/functions/timerCapturaChamados -H "Content-Type: application/json" -d "{}"
+curl -X POST http://localhost:7071/admin/functions/timerCapturaChamado -H "Content-Type: application/json" -d "{}"
+```
+
+Para disparar as 10 capturas de uma vez (Git Bash):
+
+```bash
+for f in Analista Categoria Chamado ChamadoSla ChamadoStatusHistorico ClienteOrganizacao CsatAvaliacao Fila Sla Solicitante; do
+  curl -s -o /dev/null -w "timerCaptura$f: HTTP %{http_code}\n" -X POST "http://localhost:7071/admin/functions/timerCaptura$f" -H "Content-Type: application/json" -d "{}"
+done
 ```
 
 No ambiente local, o Data Lake é o próprio Azurite. Para ver os arquivos gravados, abra a extensão *Azure Storage* do VS Code ou o Azure Storage Explorer em *Emulator & Attached > Storage Accounts > (Emulator - Default Ports) > Blob Containers > raw*.
 
 ## Banco de origem para desenvolvimento
 
-O banco `itsm` do professor exige o endereço do servidor, que não foi informado — e sem o FQDN o driver `mssql` para no DNS, antes de autenticar, então usuário e senha sozinhos não conectam. Para a captura poder ser exercitada de verdade, a equipe mantém um **Azure SQL próprio como origem substituta**, com o banco `itsm` e a tabela `chamado`.
+A origem oficial é o banco `db-univille` do professor, no servidor `sv-univille-ca.database.windows.net`, com as tabelas no schema `itsm`. Antes de o endereço do servidor ser informado, a equipe criou um **Azure SQL próprio como origem substituta**, com o banco `itsm` e só a tabela `chamado`, no schema `dbo`. Ele continua disponível para testes: aponte as variáveis `ITSM_DB_*` para ele e defina `ITSM_DB_SCHEMA=dbo`. Nesse banco, as outras 9 capturas registram erro de tabela inexistente, o que é esperado.
 
 Para popular essa tabela, com as variáveis `ITSM_DB_*` apontando para o servidor e um usuário que possa escrever:
 
@@ -183,7 +205,7 @@ São 12 registros fictícios, escolhidos para a captura exercitar acento, `NULL`
 
 Esse banco fica no tier **Basic** de propósito. O *free offer* do Azure SQL (GP serverless) **não sustenta um timer de 5 minutos**: a consulta frequente impede o banco de pausar, ele passa a cobrar o piso de vCore 24h por dia, e os vCore-segundos gratuitos do mês acabam em pouco mais de dois dias — depois disso o banco pausa até virar o mês e a captura falha. Se recriar esse banco, não use o *free offer* com o timer ligado.
 
-> O schema da tabela é uma **suposição** feita a partir das outras tabelas do ITSM. Quando o schema real do `chamado` for conhecido, é o `CREATE TABLE` do script que precisa ser conferido — a `timerCapturaChamados` não, porque executa `SELECT *` e serializa as colunas que vierem. Trocar a origem substituta pelo banco do professor é mudar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD`, sem alterar código.
+> O schema da tabela substituta é uma **suposição** feita a partir das outras tabelas do ITSM. Para conferir com o real, compare o `CREATE TABLE` do script com o `itsm.chamado` do professor. As functions não dependem disso, porque executam `SELECT *` e serializam as colunas que vierem. Trocar entre a origem substituta e o banco do professor é só mudar as variáveis `ITSM_DB_*`, sem alterar código.
 
 ## Configurações
 
@@ -192,11 +214,12 @@ Esse banco fica no tier **Basic** de propósito. O *free offer* do Azure SQL (GP
 | `AzureWebJobsStorage` | Conta de storage usada pelo host e pelos timer triggers | `UseDevelopmentStorage=true` (Azurite) |
 | `FUNCTIONS_WORKER_RUNTIME` | Runtime da function app | `node` |
 | `ECO_FUNCTION_URL` | URL da function `httpEco` chamada pelo `timerChamaHttp` | `http://localhost:7071/api/eco` |
-| `ITSM_DB_SERVER` | Servidor do banco de origem | `<servidor>.database.windows.net` |
+| `ITSM_DB_SERVER` | Servidor do banco de origem | `sv-univille-ca.database.windows.net` |
 | `ITSM_DB_PORT` | Porta do SQL Server (opcional) | `1433` |
-| `ITSM_DB_NAME` | Nome do banco de origem | `itsm` |
-| `ITSM_DB_USER` | Usuário do banco | definido pela equipe |
-| `ITSM_DB_PASSWORD` | Senha do banco | definida pela equipe |
+| `ITSM_DB_NAME` | Nome do banco de origem | `db-univille` |
+| `ITSM_DB_SCHEMA` | Schema das tabelas capturadas (opcional). Use `dbo` na origem substituta | `itsm` |
+| `ITSM_DB_USER` | Usuário do banco | fornecido pelo professor |
+| `ITSM_DB_PASSWORD` | Senha do banco | fornecida pelo professor |
 | `ITSM_DB_ENCRYPT` | Usa conexão criptografada (TLS). Mantenha `true` no Azure SQL (opcional) | `true` |
 | `ITSM_DB_TRUST_SERVER_CERTIFICATE` | Aceita certificado autoassinado. Use `true` só em SQL Server local (opcional) | `false` |
 | `DATALAKE_CONNECTION_STRING` | Connection string da conta do Data Lake (ADLS Gen2) onde as capturas são gravadas | `UseDevelopmentStorage=true` (Azurite) |
@@ -233,8 +256,9 @@ az functionapp config appsettings set \
   --name <nome-da-function-app> \
   --resource-group <grupo> \
   --settings ECO_FUNCTION_URL=https://<nome-da-function-app>.azurewebsites.net/api/eco \
-             ITSM_DB_SERVER=<servidor>.database.windows.net \
-             ITSM_DB_NAME=itsm \
+             ITSM_DB_SERVER=sv-univille-ca.database.windows.net \
+             ITSM_DB_NAME=db-univille \
+             ITSM_DB_SCHEMA=itsm \
              ITSM_DB_USER=<usuario> \
              DATALAKE_CONTAINER=raw
 

@@ -32,7 +32,7 @@ jobs:
         run: npm ci --omit=dev
 
       - name: Verificar a sintaxe
-        run: for arquivo in src/functions/*.js; do node --check "$arquivo"; done
+        run: for arquivo in src/functions/*.js src/lib/*.js; do node --check "$arquivo"; done
 
       - name: Carregar as functions
         run: node -e "for (const f of require('fs').readdirSync('src/functions')) require('./src/functions/' + f)"

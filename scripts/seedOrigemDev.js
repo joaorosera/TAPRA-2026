@@ -1,7 +1,7 @@
 // Cria e popula a tabela `chamado` no banco de origem de DESENVOLVIMENTO.
 //
-// Serve para a timerCapturaChamados ter uma origem real enquanto o endereco do
-// banco `itsm` do professor nao for informado. Nao roda dentro do Functions
+// Serve para testar a timerCapturaChamado fora do banco do professor (use
+// ITSM_DB_SCHEMA=dbo, porque a tabela e criada no dbo). Nao roda dentro do Functions
 // host: fica fora de src/functions/ de proposito, porque todo .js daquela pasta
 // e carregado como function.
 //
