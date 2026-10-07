@@ -20,6 +20,7 @@ Trabalho em equipe da disciplina TAPRA (2026): Azure Functions em Node.js que, e
 
 ```
 src/functions/          uma function por arquivo (todo .js aqui é carregado pelo host)
+src/lib/                código compartilhado pelas functions (ex.: capturaTabela.js)
 scripts/                apoio que NAO roda no host (ex.: seed do banco de origem de dev)
 docs/                   desenho da arquitetura (.drawio editável + .png exportado)
 .github/workflows/      pipeline do GitHub Actions (valida e publica)
@@ -39,15 +40,17 @@ O `main` do `package.json` é `src/functions/*.js`, então **todo arquivo nessa 
 | `httpParametro` | HTTP GET `/api/parametro?nome=` | Devolve o parâmetro recebido (400 se faltar) |
 | `httpEco` | HTTP GET `/api/eco?mensagem=` | Devolve a mensagem com um texto de identificação |
 | `timerChamaHttp` | Timer `0 */2 * * * *` | Chama a `httpEco` pela URL em `ECO_FUNCTION_URL` |
-| `timerCapturaChamados` | Timer `0 */5 * * * *` | Captura a tabela `chamado` do banco `itsm` e grava um JSON no Data Lake |
+| `timerCaptura*` (10) | Timer `0 */5 * * * *` | Uma por tabela do banco `itsm`: captura a tabela e grava um JSON no Data Lake |
+
+As 10 de captura: `timerCapturaAnalistas` (`analista`), `timerCapturaCategorias` (`categoria`), `timerCapturaChamados` (`chamado`), `timerCapturaChamadosSla` (`chamado_sla`), `timerCapturaChamadosStatusHistorico` (`chamado_status_historico`), `timerCapturaClientesOrganizacao` (`cliente_organizacao`), `timerCapturaCsatAvaliacoes` (`csat_avaliacao`), `timerCapturaFilas` (`fila`), `timerCapturaSlas` (`sla`) e `timerCapturaSolicitantes` (`solicitante`). Cada arquivo só tem o agendamento e o nome da tabela; o fluxo (validar variáveis, ler, fechar a conexão, gravar, tratar o erro) está em `src/lib/capturaTabela.js`. A `timerCapturaChamados` manteve o nome que já estava publicado.
 
 ## Convenções
 
-- Um arquivo por function, autocontido, no estilo dos existentes: 4 espaços, aspas simples, `const { app } = require('@azure/functions')`
+- Um arquivo por function, no estilo dos existentes. As functions de captura são a exceção ao "autocontido": compartilham `src/lib/capturaTabela.js`, para as 10 não repetirem a mesma lógica. Estilo: 4 espaços, aspas simples, `const { app } = require('@azure/functions')`
 - Nomes de functions em camelCase com prefixo do gatilho (`timer...`, `http...`)
 - Toda mensagem de log começa com `[nomeDaFunction]`. Os textos dos logs ficam em português **sem acento** (`conexao`, `nao`)
 - Falhas em timers são tratadas com `try/catch` e `context.error(...)`, sem relançar a exceção
-- **Credenciais nunca vão para o código, o README ou o `local.settings.json.example`.** Tudo vem de `process.env`, que é o `local.settings.json` no ambiente local e as *Application settings* no Azure. Logs de erro podem citar o **nome** de uma variável, nunca o valor
+- **Credenciais nunca vão para o código, o README ou o `local.settings.json.example`.** Tudo vem de `process.env`, que é o `local.settings.json` no ambiente local e as *Application settings* no Azure. Logs de erro podem citar o **nome** de uma variável, nunca o valor. A captura troca o usuário e a senha por `<ITSM_DB_USER>`/`<ITSM_DB_PASSWORD>` nas mensagens de erro do driver, porque o SQL Server responde `Login failed for user '<usuario>'`
 - Ao criar uma variável de ambiente, atualize juntos o `local.settings.json.example`, a tabela "Configurações" do README e a tabela abaixo. O diagrama só cita os grupos `ITSM_DB_*` e `DATALAKE_*` na linha *Application settings*; atualize essa linha se surgir um grupo novo
 
 ## Variáveis de ambiente
@@ -86,7 +89,7 @@ Não há testes automatizados nem lint configurados. O pipeline só confere a si
 
 ## Data Lake
 
-- Cada execução da `timerCapturaChamados` grava **um arquivo novo** (nunca sobrescreve) no container `raw`: `raw/itsm/chamado/AAAA/MM/DD/chamado_AAAAMMDDTHHMMSSZ.json`, com a data e a hora da captura em UTC
+- Cada execução de uma `timerCaptura*` grava **um arquivo novo** (nunca sobrescreve) no container `raw`: `raw/itsm/<tabela>/AAAA/MM/DD/<tabela>_AAAAMMDDTHHMMSSZ.json`, com a data e a hora da captura em UTC
 - O JSON tem `origem`, `tabela`, `capturadoEm`, `quantidade` e `registros` (as linhas como vieram do `mssql`; datas em ISO 8601 UTC)
 - A conexão com o banco é fechada **antes** da gravação no Data Lake, para não ficar aberta enquanto o upload acontece
 - O container é criado na primeira execução (`createIfNotExists`), então não precisa ser criado à mão
@@ -111,8 +114,8 @@ Assinatura *Azure for Students* (tenant Univille). A Function App do projeto é 
 
 Tabelas: `analista`, `categoria`, `chamado`, `chamado_sla`, `chamado_status_historico`, `cliente_organizacao`, `csat_avaliacao`, `fila`, `sla`, `solicitante`.
 
-- A equipe escolheu a tabela `chamado` para a captura por ser a tabela central do ITSM
-- A consulta usa o nome sem schema (`SELECT * FROM chamado`), então vale para `dbo` ou para o schema padrão do usuário. Se a tabela estiver em outro schema, qualifique o nome
+- Na atividade 2B a equipe capturou só a `chamado` (tabela central do ITSM). Desde 2026-10-07 as 10 tabelas são capturadas, uma function por tabela
+- A consulta usa o nome sem schema (`SELECT * FROM <tabela>`), então vale para `dbo` ou para o schema padrão do usuário. Se a tabela estiver em outro schema, qualifique o nome
 - A conexão é aberta e fechada a cada execução, como pede a atividade
 
 ### Origem substituta (2026-10-02)
@@ -121,8 +124,8 @@ O professor passou **apenas usuário e senha** (`usr_read_itsm05`), nunca o ende
 
 Para o projeto ter uma origem que funciona **localmente e na Function App publicada**, a equipe criou o Azure SQL `sql-tapra-2026-jvr-cus`, com o banco `itsm` e a tabela `chamado`:
 
-- `scripts/seedOrigemDev.js` cria a tabela e insere 12 registros fictícios (com acento, `NULL`, datas em três meses e os seis status). Roda fora do host, com as mesmas variáveis `ITSM_DB_*`; `process.env` tem precedência sobre o `local.settings.json`, então o seed usa o admin do server e a function usa o usuário de leitura
-- **O schema da tabela é uma suposição**, construída a partir da lista de tabelas acima. Quando o schema real aparecer, é o `CREATE TABLE` do seed que precisa ser conferido — a function não, porque faz `SELECT *` e serializa o que vier
+- `scripts/seedOrigemDev.js` cria e popula as 10 tabelas: 12 chamados fictícios (com acento, `NULL`, datas em três meses e os seis status), os cadastros que eles referenciam, e `chamado_sla`, `chamado_status_historico` e `csat_avaliacao` calculados em SQL a partir dos chamados. Só cria tabela que falta e só popula tabela vazia; `--recriar` descarta as 10 antes. Roda fora do host, com as mesmas variáveis `ITSM_DB_*`; `process.env` tem precedência sobre o `local.settings.json`, então o seed usa o admin do server e a function usa o usuário de leitura
+- **Os schemas das 10 tabelas são suposições**, construídas a partir dos nomes das tabelas. Não há `FOREIGN KEY`, mas os ids batem entre as tabelas. Quando o schema real aparecer, são os `CREATE TABLE` do seed que precisam ser conferidos — as functions não, porque faz `SELECT *` e serializa o que vier
 - A captura usa `usr_read_itsm`, um usuário contido com apenas `db_datareader`, espelhando o padrão somente-leitura do professor. O admin `sqladmin_tapra` só é usado pelo seed
 - Firewall do server: `PermitirServicosAzure` (0.0.0.0, a regra especial que libera os serviços do Azure) e `MaquinaLocalJoao`. **O IP residencial muda**; se a conexão local passar a dar timeout, é a primeira coisa a reconferir
 - **Trocar para o banco do professor é uma única Application setting** (`ITSM_DB_SERVER`), mais o usuário e a senha. Nenhuma linha de código muda
@@ -136,10 +139,10 @@ Para o projeto ter uma origem que funciona **localmente e na Function App public
 - Segue o modelo passado pelo professor (`DESENHO_PROJETO.png`): camadas **Origem de dados → Ingestão → Armazenamento → Visualização**, com Ingestão e Armazenamento dentro da caixa *Microsoft Azure*, e embaixo a caixa **Desenvolvimento e deploy**. As setas indicam o sentido dos dados e do deploy
 - Diferenças em relação ao modelo, feitas de propósito: no modelo, as setas da origem e do Power BI estavam invertidas em relação ao fluxo dos dados, e a da origem saía da borda do Azure, não da Function App. Usamos GitHub e GitHub Actions no lugar de Azure Repos e Azure Pipelines, porque o repositório está no GitHub. O Data Lake é o ADLS Gen2, porque o Gen1 foi descontinuado. Ficou sem a fonte "API", porque o projeto não tem API de origem
 - O que ainda não existe aparece com a etiqueta *próxima etapa* e seta tracejada cinza. Ao implementar uma etapa, remova a etiqueta e troque a seta para contínua, no estilo das já implementadas
-- Já implementados (seta contínua, sem etiqueta): Function App, Data Lake (camada raw) e pipeline do GitHub Actions. Ainda *próxima etapa*: Azure SQL Database (dados tratados) e Power BI
+- Já implementados (seta contínua, sem etiqueta): Function App (as `timerCaptura*`, uma por tabela), Data Lake (camada raw) e pipeline do GitHub Actions. Ainda *próxima etapa*: Azure SQL Database (dados tratados) e Power BI
 - A divisão Data Lake (dados brutos de cada captura) e SQL Database (dados tratados) foi uma suposição baseada no modelo. Confirme com o professor antes de implementar a carga no SQL Database
 - O `.drawio` foi gerado por um script Python e o PNG foi renderizado no viewer oficial do draw.io (Chrome headless, escala 2x). Editar à mão em app.diagrams.net também funciona, desde que se exporte o PNG de novo
-- Para renderizar sem o draw.io desktop: monte um HTML com `<div class="mxgraph" data-mxgraph="...">` apontando para `https://viewer.diagrams.net/js/viewer-static.min.js` e tire um screenshot com `msedge --headless=new --force-device-scale-factor=2 --window-size=1611,820 --virtual-time-budget=25000 --screenshot=...`. **O JSON do atributo precisa ser escapado com `html.escape`**: o XML do diagrama contém `&quot;` nos estilos, e sem o escape o parser de HTML decodifica essas entidades e quebra o JSON (a página sai em branco com um erro de parse). Um PNG de ~30 KB em vez de ~270 KB é o sinal de que isso aconteceu
+- Para renderizar sem o draw.io desktop: monte um HTML com `<div class="mxgraph" data-mxgraph="...">` apontando para `https://viewer.diagrams.net/js/viewer-static.min.js` e tire um screenshot com `msedge --headless=new --force-device-scale-factor=2 --window-size=1611,860 --virtual-time-budget=25000 --screenshot=...`. **O JSON do atributo precisa ser escapado com `html.escape`**: o XML do diagrama contém `&quot;` nos estilos, e sem o escape o parser de HTML decodifica essas entidades e quebra o JSON (a página sai em branco com um erro de parse). Um PNG de ~30 KB em vez de ~300 KB é o sinal de que isso aconteceu. Ponha `overflow:hidden` no `html,body` e não passe `border` no JSON, senão aparecem barras de rolagem no screenshot. A altura 860 (antes 820) é a que cabe a borda de baixo das caixas inferiores
 
 ## Histórico
 
@@ -228,13 +231,34 @@ Para o projeto ter uma origem que funciona **localmente e na Function App public
 
 **Nenhuma mudanca desta rodada altera o que roda no Azure:** o script do Azurite e so do ambiente local, e `scripts/` e os `.md` ficam fora do pacote pelo `.funcignore`. O codigo das functions nao mudou, e por isso a captura publicada funcionou sem republicar.
 
+### 2026-10-07: Captura das 10 tabelas
+
+**Atividade:** criar uma Azure Function para a extração de cada uma das tabelas do `itsm`, com as credenciais só em variáveis de ambiente, e com commits de todos os membros da equipe.
+
+**Feito**
+- Criado `src/lib/capturaTabela.js` com o fluxo que antes estava dentro da `timerCapturaChamados`, parametrizado pelo nome da function e da tabela. O caminho no Data Lake passou a usar o nome da tabela (`raw/itsm/<tabela>/...`), e para a `chamado` ficou igual ao de antes
+- Criadas 9 functions novas e a `timerCapturaChamados` reduzida ao mesmo formato: cada arquivo só tem o agendamento (`0 */5 * * * *`) e a tabela. Nenhuma variável de ambiente nova
+- Mensagens de erro do driver passam a ter usuário e senha trocados pelo nome da variável. Antes, uma senha errada gravava `Login failed for user '<usuario real>'` no log
+- `scripts/seedOrigemDev.js` passou a criar e popular as 10 tabelas (antes só a `chamado`)
+- Diagrama: a caixa da function virou `timerCaptura*` (uma por tabela), a origem diz "capturadas: as 10 tabelas", e o caminho e a consulta usam `<tabela>`. PNG renderizado de novo, agora sem cortar a borda de baixo
+- Nesta máquina do laboratório o `local.settings.json` não existia e foi recriado a partir do modelo, já com o usuário e a senha do professor (o servidor continua em placeholder)
+
+**Validação feita** (SQL Server 2022 em Docker com o banco `itsm` do seed, Azurite em Docker, captura com um login só `db_datareader`)
+- Seed: as 10 tabelas criadas e populadas (fila 3, categoria 10, cliente_organizacao 5, sla 4, analista 6, solicitante 10, chamado 12, chamado_sla 12, chamado_status_historico 32, csat_avaliacao 5); segunda execução sem inserir nada; `--recriar` descarta e recria
+- Fora do host, com os pacotes reais: as 10 functions registradas e executadas, cada uma gravou `raw/itsm/<tabela>/2026/10/07/<tabela>_...Z.json` com `quantidade` igual ao tamanho de `registros` e igual ao esperado, `application/json; charset=utf-8`, conexão encerrada antes da gravação e todo log com o prefixo `[nomeDaFunction]`. Usuário e senha não aparecem em nenhum log
+- Falhas: sem variáveis, o erro lista os nomes; Data Lake fora do ar, a conexão já está fechada quando o erro sai; senha errada, o log mostra `Login failed for user '<ITSM_DB_USER>'`
+- No host local (Core Tools 4.14.0 + `npm run azurite`, Node 25.9): as 14 functions registradas; as 10 `timerCaptura*` disparadas pelo endpoint de administração responderam HTTP 202 e gravaram um arquivo cada no Azurite; zero `No script host available`; usuário e senha não aparecem no log do host
+- Passos de validação do pipeline (sintaxe e carga das functions) sem erro
+
 ## Pendências
 
-- [ ] **Falta o endereço do banco do professor.** Em 2026-10-02 ele passou só `usr_read_itsm05` e a senha, sem o FQDN, e sem isso as credenciais não servem. Quando chegar, trocar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD` (local e nas *Application settings*) e conferir o schema real da `chamado` contra o `CREATE TABLE` do `scripts/seedOrigemDev.js`
+- [ ] **Falta o endereço do banco do professor.** Em 2026-10-02 ele passou só `usr_read_itsm05` e a senha, sem o FQDN, e sem isso as credenciais não servem. Quando chegar, trocar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD` (local e nas *Application settings*) e conferir o schema real das 10 tabelas contra os `CREATE TABLE` do `scripts/seedOrigemDev.js`
 - [x] ~~Criar a conta ADLS Gen2~~ — `dltapra2026jvrcus`, criada em 2026-10-02 com `--hns true`
 - [x] ~~Rodar a captura de verdade~~ — feita em 2026-10-02 contra a origem substituta, localmente, com o JSON conferido no Data Lake emulado. Ver "Validação feita" em 2026-10-02
 - [x] ~~Cadastrar as variáveis `ITSM_DB_*` e `DATALAKE_*` nas *Application settings*~~ — feito em 2026-10-02
 - [x] ~~Disparar a captura publicada e conferir o arquivo no Data Lake real~~ — feito em 2026-10-02, 12 registros gravados e conteúdo conferido
+- [ ] **Rodar o seed no Azure SQL `sql-tapra-2026-jvr-cus`** (com o admin `sqladmin_tapra`) antes de publicar as functions novas. Hoje lá só existe a `chamado`, e as outras 9 functions falhariam a cada 5 minutos com `Invalid object name`
+- [ ] Publicar a versão com as 10 functions na `func-tapra-2026-jvr-cus` (nenhuma Application setting nova)
 - [ ] Ligar a publicação do pipeline na `func-tapra-2026-jvr-cus`: habilitar *SCM Basic Auth Publishing Credentials* na Function App, criar o segredo `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` e a variável `AZURE_FUNCTIONAPP_NAME` no GitHub (passo a passo no README, em "Pipeline (GitHub Actions)"). Até lá, o job de publicação fica pulado e o pipeline só valida
 - [ ] Próximas etapas do diagrama: carga dos dados tratados no Azure SQL Database e Visualização (Power BI)
 - [ ] Confirmar com o professor se a origem de dados deve ter também uma API, como no modelo. Hoje o projeto só lê o banco `itsm`

@@ -25,7 +25,7 @@
         <mxCell id="texto5" value="10 tabelas do sistema de ITSM" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
           <mxGeometry x="40" y="322" width="200" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="tabela_chamado" value="tabela capturada: &lt;b&gt;chamado&lt;/b&gt;" style="rounded=1;arcSize=20;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
+        <mxCell id="tabela_chamado" value="capturadas: &lt;b&gt;as 10 tabelas&lt;/b&gt;" style="rounded=1;arcSize=20;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="45" y="354" width="190" height="30" as="geometry" />
         </mxCell>
         <mxCell id="texto6" value="&lt;i&gt;origem substituta:&lt;/i&gt; Azure SQL&lt;br&gt;da equipe. O professor passou as&lt;br&gt;credenciais, mas não o servidor" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=11;fontColor=#5F5F5F;" vertex="1" parent="1">
@@ -52,7 +52,7 @@
         <mxCell id="texto9" value="&lt;b&gt;Azure Function App&lt;/b&gt;&lt;br&gt;Node.js · Azure Functions v4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
           <mxGeometry x="460" y="246" width="280" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="timerCapturaChamados" value="&lt;b&gt;timerCapturaChamados&lt;/b&gt;&lt;br&gt;Timer Trigger · a cada 5 min&lt;br&gt;lê a tabela e grava no Data Lake" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
+        <mxCell id="timerCapturaChamados" value="&lt;b&gt;timerCaptura*&lt;/b&gt; (uma por tabela)&lt;br&gt;Timer Trigger · a cada 5 min&lt;br&gt;lê a tabela e grava no Data Lake" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;fontSize=12;fontFamily=Helvetica;" vertex="1" parent="1">
           <mxGeometry x="470" y="292" width="260" height="62" as="geometry" />
         </mxCell>
         <mxCell id="icone10" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Storage_Accounts.svg;" vertex="1" parent="1">
@@ -85,7 +85,7 @@
         <mxCell id="datalake_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Data_Lake_Storage_Gen1.svg;" vertex="1" parent="1">
           <mxGeometry x="995" y="196" width="50" height="41" as="geometry" />
         </mxCell>
-        <mxCell id="texto18" value="&lt;b&gt;Azure Data Lake Storage Gen2&lt;/b&gt;&lt;br&gt;camada raw: um JSON por captura&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace;font-size:10px&quot;&gt;raw/itsm/chamado/AAAA/MM/DD/&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+        <mxCell id="texto18" value="&lt;b&gt;Azure Data Lake Storage Gen2&lt;/b&gt;&lt;br&gt;camada raw: um JSON por captura&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace;font-size:10px&quot;&gt;raw/itsm/&amp;lt;tabela&amp;gt;/AAAA/MM/DD/&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
           <mxGeometry x="880" y="243" width="280" height="52" as="geometry" />
         </mxCell>
         <mxCell id="tag19" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
@@ -112,7 +112,7 @@
         <mxCell id="texto23" value="&lt;b&gt;Power BI&lt;/b&gt;&lt;br&gt;painéis e relatórios&lt;br&gt;dos chamados" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
           <mxGeometry x="1380" y="403" width="210" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="seta_captura" value="leitura a cada 5 min&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;SELECT * FROM chamado&lt;/span&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="origem" target="ingestao">
+        <mxCell id="seta_captura" value="leitura a cada 5 min&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;SELECT * FROM &amp;lt;tabela&amp;gt;&lt;/span&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="origem" target="ingestao">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="seta_grava" value="grava o JSON&lt;br&gt;de cada captura" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.1956;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="datalake_icone">

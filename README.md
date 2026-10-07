@@ -1,6 +1,6 @@
 # TAPRA-2026
 
-Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de dados de uma tabela do banco de origem (SQL Server, banco `itsm`) e a gravação desses dados no Data Lake.
+Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de dados das 10 tabelas do banco de origem (SQL Server, banco `itsm`) e a gravação desses dados no Data Lake.
 
 ## Integrantes da equipe
 
@@ -25,9 +25,9 @@ O desenho foi feito no draw.io e está em [`docs/arquitetura.drawio`](docs/arqui
 
 A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e do deploy. Componentes com a etiqueta *próxima etapa* e setas tracejadas ainda não foram implementados.
 
-- **Origem de dados:** banco `itsm` (SQL Server), fornecido pelo professor. A tabela capturada é a `chamado`.
-- **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a `timerCapturaChamados` a cada 5 minutos, que abre a conexão com o banco, lê a tabela `chamado`, fecha a conexão e grava os dados no Data Lake. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
-- **Armazenamento:** cada captura vira um arquivo JSON na camada *raw* do **Azure Data Lake Storage Gen2**, em `raw/itsm/chamado/AAAA/MM/DD/`. A carga dos dados tratados no **Azure SQL Database**, pronta para consulta, é a próxima etapa.
+- **Origem de dados:** banco `itsm` (SQL Server), fornecido pelo professor. As 10 tabelas são capturadas, cada uma pela sua function.
+- **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa as functions de captura (`timerCaptura*`, uma por tabela) a cada 5 minutos: cada uma abre a conexão com o banco, lê a sua tabela, fecha a conexão e grava os dados no Data Lake. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
+- **Armazenamento:** cada captura vira um arquivo JSON na camada *raw* do **Azure Data Lake Storage Gen2**, em `raw/itsm/<tabela>/AAAA/MM/DD/`. A carga dos dados tratados no **Azure SQL Database**, pronta para consulta, é a próxima etapa.
 - **Visualização** *(próxima etapa)*: painéis e relatórios no **Power BI**, consultando o Azure SQL Database.
 - **Desenvolvimento e deploy:** o código é escrito no **VS Code** (Core Tools e Azurite para rodar localmente) e versionado no **GitHub**. O pipeline do **GitHub Actions** valida as functions a cada push e publica a Function App a cada push na `main` (veja [Pipeline (GitHub Actions)](#pipeline-github-actions)). O deploy manual (`func azure functionapp publish`) continua disponível.
 
@@ -39,7 +39,7 @@ A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e d
 | `httpParametro` | HTTP GET `/api/parametro?nome=Valor` | Recebe um parâmetro pela URL e imprime esse parâmetro na tela. |
 | `httpEco` | HTTP GET `/api/eco?mensagem=Texto` | Retorna a informação recebida acrescida de um texto de identificação. |
 | `timerChamaHttp` | Timer (a cada 2 minutos) | Faz uma chamada HTTP para a function `httpEco` e imprime a resposta no log. |
-| `timerCapturaChamados` | Timer (a cada 5 minutos) | Captura os dados da tabela `chamado` do banco de origem `itsm` e grava um arquivo JSON no Data Lake. |
+| `timerCaptura*` (10 functions) | Timer (a cada 5 minutos) | Cada uma captura os dados de uma tabela do banco de origem `itsm` e grava um arquivo JSON no Data Lake. Lista na seção 5. |
 
 ### 1. `timerLog` — Timer Trigger
 
@@ -88,15 +88,30 @@ A cada 2 minutos monta uma mensagem, faz uma chamada HTTP para a function `httpE
 
 A URL de destino vem da configuração `ECO_FUNCTION_URL`, para que o mesmo código funcione localmente e publicado no Azure.
 
-### 5. `timerCapturaChamados` — Timer Trigger que captura uma tabela do banco de origem e grava no Data Lake
+### 5. `timerCaptura*` — Timer Triggers que capturam as tabelas do banco de origem e gravam no Data Lake
 
-Arquivo: [`src/functions/timerCapturaChamados.js`](src/functions/timerCapturaChamados.js)
+Há uma function para cada tabela do banco `itsm`:
 
-A cada 5 minutos (NCRONTAB `0 */5 * * * *`) a function:
+| Function | Tabela |
+| --- | --- |
+| [`timerCapturaAnalistas`](src/functions/timerCapturaAnalistas.js) | `analista` |
+| [`timerCapturaCategorias`](src/functions/timerCapturaCategorias.js) | `categoria` |
+| [`timerCapturaChamados`](src/functions/timerCapturaChamados.js) | `chamado` |
+| [`timerCapturaChamadosSla`](src/functions/timerCapturaChamadosSla.js) | `chamado_sla` |
+| [`timerCapturaChamadosStatusHistorico`](src/functions/timerCapturaChamadosStatusHistorico.js) | `chamado_status_historico` |
+| [`timerCapturaClientesOrganizacao`](src/functions/timerCapturaClientesOrganizacao.js) | `cliente_organizacao` |
+| [`timerCapturaCsatAvaliacoes`](src/functions/timerCapturaCsatAvaliacoes.js) | `csat_avaliacao` |
+| [`timerCapturaFilas`](src/functions/timerCapturaFilas.js) | `fila` |
+| [`timerCapturaSlas`](src/functions/timerCapturaSlas.js) | `sla` |
+| [`timerCapturaSolicitantes`](src/functions/timerCapturaSolicitantes.js) | `solicitante` |
+
+Cada arquivo só define o agendamento e o nome da tabela. A lógica de captura é a mesma para todas e fica em [`src/lib/capturaTabela.js`](src/lib/capturaTabela.js), fora de `src/functions/` porque todo `.js` daquela pasta é carregado como function pelo host. Para capturar uma tabela nova, basta criar mais um arquivo no mesmo formato.
+
+A cada 5 minutos (NCRONTAB `0 */5 * * * *`) cada function:
 
 1. confere as variáveis de ambiente `ITSM_DB_*` e `DATALAKE_CONNECTION_STRING` (nenhuma credencial fica no código);
 2. abre uma conexão com o banco de origem `itsm` (SQL Server / Azure SQL);
-3. executa `SELECT * FROM chamado`, tabela escolhida pela equipe por ser a tabela central do ITSM;
+3. executa `SELECT * FROM <tabela>`;
 4. encerra a conexão;
 5. imprime no log a quantidade de registros capturados, as colunas e os primeiros registros;
 6. grava a captura como um arquivo JSON na camada *raw* do Data Lake.
@@ -110,7 +125,7 @@ A cada 5 minutos (NCRONTAB `0 */5 * * * *`) a function:
 [timerCapturaChamados] dados gravados no Data Lake: raw/itsm/chamado/2026/10/01/chamado_20261001T190500Z.json
 ```
 
-Cada execução cria um arquivo novo no container `raw` (configurável por `DATALAKE_CONTAINER`), separado por data, com os metadados da captura e os registros como vieram do banco:
+Cada execução cria um arquivo novo no container `raw` (configurável por `DATALAKE_CONTAINER`), separado por tabela e por data, com os metadados da captura e os registros como vieram do banco:
 
 ```json
 {
@@ -122,7 +137,7 @@ Cada execução cria um arquivo novo no container `raw` (configurável por `DATA
 }
 ```
 
-Se faltar alguma variável obrigatória, a execução registra um erro com o **nome** das variáveis ausentes (nunca os valores) e não tenta conectar.
+Se faltar alguma variável obrigatória, a execução registra um erro com o **nome** das variáveis ausentes (nunca os valores) e não tenta conectar. Se o erro do banco trouxer o valor do usuário ou da senha (como o `Login failed for user '...'` do SQL Server), o log mostra só o nome da variável no lugar.
 
 ## Como executar localmente
 
@@ -160,7 +175,7 @@ O host sobe em `http://localhost:7071` e expõe:
 - `http://localhost:7071/api/parametro?nome=Joao`
 - `http://localhost:7071/api/eco?mensagem=teste`
 
-Os timers passam a escrever no terminal automaticamente conforme o agendamento. Para executar a captura na hora, sem esperar os 5 minutos, chame o endpoint de administração do host local:
+Os timers passam a escrever no terminal automaticamente conforme o agendamento. Para executar uma captura na hora, sem esperar os 5 minutos, chame o endpoint de administração do host local com o nome da function:
 
 ```bash
 curl -X POST http://localhost:7071/admin/functions/timerCapturaChamados -H "Content-Type: application/json" -d "{}"
@@ -170,20 +185,20 @@ No ambiente local, o Data Lake é o próprio Azurite. Para ver os arquivos grava
 
 ## Banco de origem para desenvolvimento
 
-O banco `itsm` do professor exige o endereço do servidor, que não foi informado — e sem o FQDN o driver `mssql` para no DNS, antes de autenticar, então usuário e senha sozinhos não conectam. Para a captura poder ser exercitada de verdade, a equipe mantém um **Azure SQL próprio como origem substituta**, com o banco `itsm` e a tabela `chamado`.
+O banco `itsm` do professor exige o endereço do servidor, que não foi informado — e sem o FQDN o driver `mssql` para no DNS, antes de autenticar, então usuário e senha sozinhos não conectam. Para a captura poder ser exercitada de verdade, a equipe mantém um **Azure SQL próprio como origem substituta**, com o banco `itsm` e as 10 tabelas.
 
-Para popular essa tabela, com as variáveis `ITSM_DB_*` apontando para o servidor e um usuário que possa escrever:
+Para criar e popular as tabelas, com as variáveis `ITSM_DB_*` apontando para o servidor e um usuário que possa escrever:
 
 ```bash
-node scripts/seedOrigemDev.js             # cria a tabela se faltar e popula se estiver vazia
-node scripts/seedOrigemDev.js --recriar   # descarta a tabela antes (apaga os dados)
+node scripts/seedOrigemDev.js             # cria as tabelas que faltam e popula as vazias
+node scripts/seedOrigemDev.js --recriar   # descarta as tabelas antes (apaga os dados)
 ```
 
-São 12 registros fictícios, escolhidos para a captura exercitar acento, `NULL`, datas em meses diferentes e todos os status do fluxo. O script fica em `scripts/` e **não** em `src/functions/`, porque todo `.js` daquela pasta é carregado como function pelo host; o `.funcignore` também deixa `scripts` fora do pacote publicado.
+São dados fictícios: 12 chamados com acento, `NULL`, datas em meses diferentes e todos os status do fluxo, mais os cadastros que eles referenciam (analistas, categorias, filas, solicitantes, organizações e SLAs). O `chamado_sla`, o `chamado_status_historico` e o `csat_avaliacao` são calculados a partir dos chamados, para os prazos, as transições e as avaliações baterem com as datas de cada um. O script fica em `scripts/` e **não** em `src/functions/`, porque todo `.js` daquela pasta é carregado como function pelo host; o `.funcignore` também deixa `scripts` fora do pacote publicado.
 
 Esse banco fica no tier **Basic** de propósito. O *free offer* do Azure SQL (GP serverless) **não sustenta um timer de 5 minutos**: a consulta frequente impede o banco de pausar, ele passa a cobrar o piso de vCore 24h por dia, e os vCore-segundos gratuitos do mês acabam em pouco mais de dois dias — depois disso o banco pausa até virar o mês e a captura falha. Se recriar esse banco, não use o *free offer* com o timer ligado.
 
-> O schema da tabela é uma **suposição** feita a partir das outras tabelas do ITSM. Quando o schema real do `chamado` for conhecido, é o `CREATE TABLE` do script que precisa ser conferido — a `timerCapturaChamados` não, porque executa `SELECT *` e serializa as colunas que vierem. Trocar a origem substituta pelo banco do professor é mudar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD`, sem alterar código.
+> Os schemas das tabelas são **suposições** feitas a partir dos nomes das tabelas do ITSM. Quando o schema real for conhecido, são os `CREATE TABLE` do script que precisam ser conferidos — as functions não, porque executam `SELECT *` e serializam as colunas que vierem. Trocar a origem substituta pelo banco do professor é mudar `ITSM_DB_SERVER`, `ITSM_DB_USER` e `ITSM_DB_PASSWORD`, sem alterar código.
 
 ## Configurações
 
