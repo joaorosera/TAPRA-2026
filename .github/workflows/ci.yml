@@ -9,8 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 --version
-      - run: python3 -m py_compile function_app.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # So as dependencias de producao: Core Tools e Azurite sao apenas para o ambiente local
+      - run: npm ci --omit=dev
+      - run: for arquivo in src/functions/*.js src/lib/*.js; do node --check "$arquivo"; done
+      - run: node -e "for (const f of require('fs').readdirSync('src/functions')) require('./src/functions/' + f)"
 
   deploy:
     needs: validar
@@ -22,9 +28,11 @@ jobs:
       AZURE_FUNCTIONAPP_NAME: 'func-tapra-2026-jvr-cus'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: '3.13'
+          node-version: 22
+          cache: npm
+      - run: npm ci --omit=dev
       - uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -34,4 +42,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: .
-          remote-build: true
+          respect-funcignore: true
