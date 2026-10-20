@@ -85,7 +85,7 @@
         <mxCell id="datalake_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/storage/Data_Lake_Storage_Gen1.svg;" vertex="1" parent="1">
           <mxGeometry x="995" y="196" width="50" height="41" as="geometry" />
         </mxCell>
-        <mxCell id="texto18" value="&lt;b&gt;Azure Data Lake Storage Gen2&lt;/b&gt;&lt;br&gt;camada raw: um JSON por captura&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace;font-size:10px&quot;&gt;raw/itsm/&amp;lt;tabela&amp;gt;/AAAA/MM/DD/&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+        <mxCell id="texto18" value="&lt;b&gt;Azure Data Lake Storage Gen2&lt;/b&gt;&lt;br&gt;camada bronze: um JSON por captura&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace;font-size:10px&quot;&gt;bronze/itsm/&amp;lt;tabela&amp;gt;/ano=/mes=/dia=/&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
           <mxGeometry x="880" y="243" width="280" height="52" as="geometry" />
         </mxCell>
         <mxCell id="tag19" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">

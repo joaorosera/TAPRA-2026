@@ -1,4 +1,4 @@
-// Captura de uma tabela do banco de origem para a camada raw do Data Lake.
+// Captura de uma tabela do banco de origem para a camada bronze do Data Lake.
 //
 // Compartilhado pelas functions timerCaptura* (uma por tabela). Fica fora de
 // src/functions/ de proposito, porque todo .js daquela pasta e carregado pelo
@@ -62,17 +62,22 @@ async function lerTabela(tabela, prefixo, context) {
     }
 }
 
-// Camada bruta (raw) do Data Lake: um arquivo JSON por captura, separado por tabela e data
-// Ex.: raw/itsm/chamado/2026/10/01/chamado_20261001T190500Z.json
+// Fonte dos dados: primeira pasta dentro do container. Fixa, porque nao depende
+// do schema (a origem substituta usa dbo e continua sendo o ITSM)
+const FONTE = 'itsm';
+
+// Camada bronze do Data Lake: um arquivo JSON por captura, separado por fonte,
+// entidade (a tabela) e data, com as pastas de data no formato chave=valor
+// Ex.: bronze/itsm/chamado/ano=2026/mes=10/dia=16/chamado_20261016T134500Z.json
 function montarCaminhoArquivo(tabela, dataCaptura) {
     const iso = dataCaptura.toISOString();
     const [ano, mes, dia] = iso.slice(0, 10).split('-');
     const carimbo = iso.replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
-    return `itsm/${tabela}/${ano}/${mes}/${dia}/${tabela}_${carimbo}.json`;
+    return `${FONTE}/${tabela}/ano=${ano}/mes=${mes}/dia=${dia}/${tabela}_${carimbo}.json`;
 }
 
 async function gravarNoDataLake(tabela, registros, dataCaptura) {
-    const nomeContainer = process.env.DATALAKE_CONTAINER || 'raw';
+    const nomeContainer = process.env.DATALAKE_CONTAINER || 'bronze';
     const servico = BlobServiceClient.fromConnectionString(process.env.DATALAKE_CONNECTION_STRING);
     const container = servico.getContainerClient(nomeContainer);
     await container.createIfNotExists();
