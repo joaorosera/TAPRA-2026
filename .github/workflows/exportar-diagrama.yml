@@ -15,7 +15,7 @@ jobs:
       # Escala 2, como o PNG ja versionado
       - name: Exportar para PNG
         run: |
-          docker run --rm -v "$PWD/docs:/data" -w /data rlespinasse/drawio-desktop-headless \
+          docker run --rm --shm-size=1g -v "$PWD/docs:/data" -w /data rlespinasse/drawio-desktop-headless \
             --export --format png --scale 2 --output arquitetura.png arquitetura.drawio
 
       - uses: actions/upload-artifact@v4
