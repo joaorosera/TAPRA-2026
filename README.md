@@ -21,7 +21,7 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 
 ![Arquitetura do projeto TAPRA-2026](docs/arquitetura.png)
 
-O desenho foi feito no draw.io e está em [`docs/arquitetura.drawio`](docs/arquitetura.drawio). Para editar, abra o arquivo em [app.diagrams.net](https://app.diagrams.net) ou na extensão *Draw.io Integration* do VS Code e, depois de salvar, exporte de novo para `docs/arquitetura.png` (*File > Export as > PNG*).
+O desenho foi feito no draw.io e está em [`docs/arquitetura.drawio`](docs/arquitetura.drawio). Para editar, abra o arquivo em [app.diagrams.net](https://app.diagrams.net) ou na extensão *Draw.io Integration* do VS Code e, depois de salvar, exporte de novo para `docs/arquitetura.png` (*File > Export as > PNG*). Sem o draw.io desktop, rode o workflow *Actions > Exportar diagrama > Run workflow* e baixe o PNG gerado no artefato `arquitetura-png`.
 
 A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e do deploy. Componentes com a etiqueta *próxima etapa* e setas tracejadas ainda não foram implementados.
 
@@ -296,3 +296,9 @@ Para ligar a publicação, depois de criar a Function App:
    - o **segredo** `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`, com o conteúdo do arquivo baixado;
    - a **variável** `AZURE_FUNCTIONAPP_NAME`, com o nome da Function App.
 4. Faça um push na `main` ou rode o workflow manualmente em *Actions > Function App > Run workflow*.
+
+Outros workflows, todos disparados à mão em *Actions > (workflow) > Run workflow*:
+
+- [`ci.yml`](.github/workflows/ci.yml) (*CI/CD*): roda a cada push na `main`, liga a Function App, define `DATALAKE_CONTAINER=bronze` e publica. Pushes que só mudam `docs/` ou arquivos `.md` não publicam.
+- [`parar-function-app.yml`](.github/workflows/parar-function-app.yml) (*Parar Function App*): para a `func-tapra-2026-jvr-cus` para economizar crédito. O próximo deploy liga de novo.
+- [`exportar-diagrama.yml`](.github/workflows/exportar-diagrama.yml) (*Exportar diagrama*): exporta o `docs/arquitetura.drawio` para PNG com o draw.io headless.
