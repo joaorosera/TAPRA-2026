@@ -12,11 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Escala 2, como o PNG ja versionado
+      # Escala 2 e margem de 20, como o PNG ja versionado
       - name: Exportar para PNG
         run: |
           docker run --rm --shm-size=1g -v "$PWD/docs:/data" -w /data rlespinasse/drawio-desktop-headless \
-            --export --format png --scale 2 --output arquitetura.png arquitetura.drawio
+            --export --format png --scale 2 --border 20 --output arquitetura.png arquitetura.drawio
 
       - uses: actions/upload-artifact@v4
         with:
