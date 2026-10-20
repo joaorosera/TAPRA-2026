@@ -1,0 +1,24 @@
+# Exporta docs/arquitetura.drawio para PNG com o draw.io headless, para quem nao
+# tem o draw.io desktop instalado. Rode em Actions > Exportar diagrama > Run workflow,
+# baixe o artefato arquitetura-png e substitua o docs/arquitetura.png.
+name: Exportar diagrama
+
+on:
+  workflow_dispatch:
+
+jobs:
+  exportar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Escala 2, como o PNG ja versionado
+      - name: Exportar para PNG
+        run: |
+          docker run --rm -v "$PWD/docs:/data" -w /data rlespinasse/drawio-desktop-headless \
+            --export --format png --scale 2 --output arquitetura.png arquitetura.drawio
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arquitetura-png
+          path: docs/arquitetura.png
