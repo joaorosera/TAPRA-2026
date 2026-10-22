@@ -20,8 +20,28 @@ jobs:
       - run: for arquivo in src/functions/*.js src/lib/*.js; do node --check "$arquivo"; done
       - run: node -e "for (const f of require('fs').readdirSync('src/functions')) require('./src/functions/' + f)"
 
+  # Validacoes de qualidade pedidas na atividade de CI, nas ferramentas de Node.js:
+  # ESLint no lugar de flake8/pylint/ruff, Prettier no lugar de black/yapf e a
+  # regra de ordem dos imports do ESLint no lugar do isort
+  qualidade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # --ignore-scripts pula o download do Core Tools, que estas validacoes nao usam
+      - run: npm ci --ignore-scripts
+      - name: Linting (ESLint)
+        run: npm run lint
+      - name: Formatacao (Prettier)
+        run: npm run format:check
+      - name: Verificacao de imports (ESLint import-x/order)
+        run: npm run imports
+
   deploy:
-    needs: validar
+    needs: [validar, qualidade]
     runs-on: ubuntu-latest
     permissions:
       id-token: write

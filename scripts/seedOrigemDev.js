@@ -84,6 +84,8 @@ CREATE TABLE chamado (
 
 // Dados ficticios com acento, NULL, datas em meses diferentes e todos os status,
 // para a captura exercitar conversao de texto, de data e de valor ausente.
+// Uma linha por registro de proposito: o Prettier quebraria cada um em 18 linhas.
+// prettier-ignore
 const REGISTROS = [
     ['INC0000101', 'Não consigo acessar a VPN', 'Erro de autenticação ao conectar fora do câmpus.', 11, 3, 1, 1, 1, 'Alta', 'Resolvido', 'Portal', '2026-08-04T12:10:00Z', '2026-08-04T12:35:00Z', '2026-08-04T15:02:00Z', '2026-08-05T12:00:00Z', 0, 0, '2026-08-05T12:00:00Z'],
     ['INC0000102', 'Impressora do 3º andar sem comunicação', null, 12, 4, 2, 2, 1, 'Media', 'Fechado', 'Telefone', '2026-08-11T17:45:00Z', '2026-08-11T18:20:00Z', '2026-08-12T13:30:00Z', '2026-08-14T13:30:00Z', 1, 0, '2026-08-14T13:30:00Z'],
@@ -131,9 +133,7 @@ async function main() {
             console.log('[seedOrigemDev] tabela chamado descartada (--recriar)');
         }
 
-        const existe = await pool.request().query(
-            'SELECT COUNT(*) AS total FROM sys.tables WHERE name = \'chamado\''
-        );
+        const existe = await pool.request().query("SELECT COUNT(*) AS total FROM sys.tables WHERE name = 'chamado'");
         if (existe.recordset[0].total === 0) {
             await pool.request().query(DDL);
             console.log('[seedOrigemDev] tabela chamado criada');
@@ -149,7 +149,8 @@ async function main() {
         }
 
         for (const r of REGISTROS) {
-            await pool.request()
+            await pool
+                .request()
                 .input('codigo', sql.VarChar(20), r[0])
                 .input('titulo', sql.NVarChar(200), r[1])
                 .input('descricao', sql.NVarChar(sql.MAX), r[2])

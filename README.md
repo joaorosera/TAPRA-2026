@@ -16,6 +16,7 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 - SQL Server / Azure SQL (banco de origem `db-univille`, schema `itsm`), acessado com o driver [`mssql`](https://www.npmjs.com/package/mssql)
 - Azure Data Lake Storage Gen2 (camada *bronze*), acessado com o SDK [`@azure/storage-blob`](https://www.npmjs.com/package/@azure/storage-blob). No ambiente local, o Azurite faz esse papel
 - GitHub Actions (pipeline de validação e publicação)
+- ESLint e Prettier (lint, formatação e ordem dos imports no CI)
 
 ## Arquitetura
 
@@ -283,10 +284,11 @@ O [`.funcignore`](.funcignore) deixa de fora da publicação a documentação, o
 
 ## Pipeline (GitHub Actions)
 
-O workflow [`.github/workflows/function-app.yml`](.github/workflows/function-app.yml) tem dois jobs:
+O workflow [`.github/workflows/function-app.yml`](.github/workflows/function-app.yml) tem três jobs:
 
 - **Validar as functions:** roda a cada push e pull request. Instala só as dependências de produção (`npm ci --omit=dev`), verifica a sintaxe e carrega todos os arquivos de `src/functions/`.
-- **Publicar no Azure:** roda a cada push na `main`, depois da validação, e publica a Function App com o [Azure Functions Action](https://github.com/Azure/functions-action). Fica pulado até a configuração abaixo ser feita.
+- **Validar a qualidade do código:** roda a cada push e pull request, com as validações descritas em [Validações de qualidade (CI)](#validações-de-qualidade-ci).
+- **Publicar no Azure:** roda a cada push na `main`, depois das duas validações, e publica a Function App com o [Azure Functions Action](https://github.com/Azure/functions-action). Fica pulado até a configuração abaixo ser feita.
 
 Para ligar a publicação, depois de criar a Function App:
 
@@ -297,8 +299,26 @@ Para ligar a publicação, depois de criar a Function App:
    - a **variável** `AZURE_FUNCTIONAPP_NAME`, com o nome da Function App.
 4. Faça um push na `main` ou rode o workflow manualmente em *Actions > Function App > Run workflow*.
 
-Outros workflows, todos disparados à mão em *Actions > (workflow) > Run workflow*:
+Outros workflows:
 
-- [`ci.yml`](.github/workflows/ci.yml) (*CI/CD*): roda a cada push na `main`, liga a Function App, define `DATALAKE_CONTAINER=bronze` e publica. Pushes que só mudam `docs/` ou arquivos `.md` não publicam.
-- [`parar-function-app.yml`](.github/workflows/parar-function-app.yml) (*Parar Function App*): para a `func-tapra-2026-jvr-cus` para economizar crédito. O próximo deploy liga de novo.
-- [`exportar-diagrama.yml`](.github/workflows/exportar-diagrama.yml) (*Exportar diagrama*): exporta o `docs/arquitetura.drawio` para PNG com o draw.io headless.
+- [`ci.yml`](.github/workflows/ci.yml) (*CI/CD*): roda a cada push na `main`. Faz as mesmas duas validações e, só se as duas passarem, liga a Function App, define `DATALAKE_CONTAINER=bronze` e publica. Pushes que só mudam `docs/` ou arquivos `.md` não publicam.
+- [`parar-function-app.yml`](.github/workflows/parar-function-app.yml) (*Parar Function App*, disparado à mão em *Actions > Parar Function App > Run workflow*): para a `func-tapra-2026-jvr-cus` para economizar crédito. O próximo deploy liga de novo.
+- [`exportar-diagrama.yml`](.github/workflows/exportar-diagrama.yml) (*Exportar diagrama*, disparado à mão em *Actions > Exportar diagrama > Run workflow*): exporta o `docs/arquitetura.drawio` para PNG com o draw.io headless.
+
+### Validações de qualidade (CI)
+
+A atividade de CI pede lint (flake8, pylint ou ruff), formatação automática (black ou yapf) e verificação de imports (isort). Essas ferramentas são de Python; como o projeto é em Node.js, cada uma foi implementada com a ferramenta equivalente do ecossistema JavaScript, num passo próprio do job:
+
+| Validação pedida | Ferramentas de Python | Usado no projeto | Configuração | Comando |
+| --- | --- | --- | --- | --- |
+| Linting | flake8, pylint, ruff | [ESLint](https://eslint.org) com as regras recomendadas, mais `eqeqeq`, `no-var` e `prefer-const` | [`eslint.config.js`](eslint.config.js) | `npm run lint` |
+| Formatação automática | black, yapf | [Prettier](https://prettier.io): 4 espaços, aspas simples, linhas de até 160 caracteres | [`.prettierrc.json`](.prettierrc.json) | `npm run format:check` |
+| Verificação de imports | isort | Regra `import-x/order` do ESLint: os `require` ficam agrupados (módulos do Node, pacotes do npm, arquivos do projeto) e em ordem alfabética | [`eslint.imports.config.js`](eslint.imports.config.js) | `npm run imports` |
+
+Se qualquer uma falhar, o pipeline fica vermelho e a publicação no Azure não acontece. Para rodar localmente antes do push:
+
+```bash
+npm run lint           # aponta os problemas
+npm run format         # formata todos os .js (como o black)
+npm run imports:fix    # reordena os require (como o isort)
+```

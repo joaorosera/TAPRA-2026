@@ -5,7 +5,12 @@
   "main": "src/functions/*.js",
   "scripts": {
     "start": "func start",
-    "azurite": "azurite --silent --skipApiVersionCheck --location ../.azurite-tapra-2026"
+    "azurite": "azurite --silent --skipApiVersionCheck --location ../.azurite-tapra-2026",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.js\"",
+    "format:check": "prettier --check \"**/*.js\"",
+    "imports": "eslint -c eslint.imports.config.js .",
+    "imports:fix": "eslint -c eslint.imports.config.js --fix ."
   },
   "dependencies": {
     "@azure/functions": "^4.5.1",
@@ -13,7 +18,13 @@
     "mssql": "^12.7.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "azure-functions-core-tools": "^4.0.6280",
-    "azurite": "^3.33.0"
+    "azurite": "^3.33.0",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import-x": "^4.17.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10"
   }
 }

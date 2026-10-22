@@ -37,9 +37,37 @@ jobs:
       - name: Carregar as functions
         run: node -e "for (const f of require('fs').readdirSync('src/functions')) require('./src/functions/' + f)"
 
+  # Validacoes de qualidade pedidas na atividade de CI, nas ferramentas de Node.js:
+  # ESLint no lugar de flake8/pylint/ruff, Prettier no lugar de black/yapf e a
+  # regra de ordem dos imports do ESLint no lugar do isort
+  qualidade:
+    name: Validar a qualidade do codigo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Com as devDependencies, onde estao as ferramentas. O --ignore-scripts pula o
+      # download do Core Tools, que estas validacoes nao usam
+      - name: Instalar dependencias
+        run: npm ci --ignore-scripts
+
+      - name: Linting (ESLint)
+        run: npm run lint
+
+      - name: Formatacao (Prettier)
+        run: npm run format:check
+
+      - name: Verificacao de imports (ESLint import-x/order)
+        run: npm run imports
+
   publicar:
     name: Publicar no Azure
-    needs: validar
+    needs: [validar, qualidade]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AZURE_FUNCTIONAPP_NAME != ''
     runs-on: ubuntu-latest
     steps:

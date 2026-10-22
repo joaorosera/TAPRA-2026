@@ -16,6 +16,11 @@ __queuestorage__
 # Scripts de apoio que nao rodam no Functions host
 scripts
 
+# Configuracao das validacoes do CI (lint, formatacao e imports)
+eslint.config.js
+eslint.imports.config.js
+.prettierrc.json
+
 # Ferramentas do ambiente local (devDependencies)
 node_modules/azure-functions-core-tools
 node_modules/azurite
