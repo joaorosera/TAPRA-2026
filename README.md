@@ -28,7 +28,7 @@ A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e d
 
 - **Origem de dados:** banco `db-univille` (Azure SQL), fornecido pelo professor, com as 10 tabelas do ITSM no schema `itsm`. Todas são capturadas.
 - **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a cada 5 minutos uma function de captura para cada tabela (`timerCapturaChamado`, `timerCapturaAnalista` etc.). Cada uma abre a conexão com o banco, lê a sua tabela, fecha a conexão e grava os dados no Data Lake. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
-- **Armazenamento:** cada captura vira um arquivo JSON no container *bronze* do **Azure Data Lake Storage Gen2**, em `bronze/itsm/<tabela>/ano=AAAA/mes=MM/dia=DD/`. A carga dos dados tratados no **Azure SQL Database**, pronta para consulta, é a próxima etapa.
+- **Armazenamento:** cada captura vira um arquivo JSON no container *bronze* do **Azure Data Lake Storage Gen2**, em `bronze/itsm/<tabela>/ano=AAAA/mes=MM/dia=DD/`. As tabelas de destino já estão criadas no **Azure SQL Database** (veja [Banco de destino](#banco-de-destino)); a carga dos dados tratados nelas, prontos para consulta, é a próxima etapa.
 - **Visualização** *(próxima etapa)*: painéis e relatórios no **Power BI**, consultando o Azure SQL Database.
 - **Desenvolvimento e deploy:** o código é escrito no **VS Code** (Core Tools e Azurite para rodar localmente) e versionado no **GitHub**. O pipeline do **GitHub Actions** valida as functions a cada push e publica a Function App a cada push na `main` (veja [Pipeline (GitHub Actions)](#pipeline-github-actions)). O deploy manual (`func azure functionapp publish`) continua disponível.
 
@@ -202,6 +202,17 @@ done
 ```
 
 No ambiente local, o Data Lake é o próprio Azurite. Para ver os arquivos gravados, abra a extensão *Azure Storage* do VS Code ou o Azure Storage Explorer em *Emulator & Attached > Storage Accounts > (Emulator - Default Ports) > Blob Containers > bronze*.
+
+## Banco de destino
+
+O destino dos dados é o banco `db-tapra-rosera-werner`, no servidor `sv-tapra-rosera-werber.database.windows.net` (Azure SQL, tier Basic). O script [`sql/criarTabelasDestino.sql`](sql/criarTabelasDestino.sql) cria nele, no schema `dbo`, uma tabela para cada uma das 10 tabelas extraídas: `analista`, `categoria`, `chamado`, `chamado_sla`, `chamado_status_historico`, `cliente_organizacao`, `csat_avaliacao`, `fila`, `sla` e `solicitante`.
+
+As tabelas têm os mesmos nomes, colunas, tipos e nulidade da origem. A estrutura foi montada a partir dos arquivos da camada *bronze* e conferida com o `INFORMATION_SCHEMA` do `db-univille`. Por exemplo, os ids de `chamado`, `chamado_sla`, `chamado_status_historico` e `csat_avaliacao` aparecem como texto no JSON porque na origem são `BIGINT`, que o driver `mssql` devolve como string para não perder precisão. Duas diferenças em relação à origem são de propósito:
+
+- **Sem `IDENTITY`:** os ids vêm da origem e são gravados como estão, sem precisar de `SET IDENTITY_INSERT` na carga.
+- **Sem chaves estrangeiras:** cada tabela é capturada por uma function própria, em horários independentes, então a carga de uma não pode depender da ordem das outras. As chaves primárias e os `UNIQUE` da origem foram mantidos.
+
+As tabelas são criadas vazias. O script pode ser executado mais de uma vez, porque tabela que já existe não é alterada, e termina listando as 10 tabelas com a quantidade de colunas de cada uma. Para executar, use o *Query editor* do banco no portal (*SQL database > Query editor*, entrando com a conta do Microsoft Entra) ou a extensão *SQL Server (mssql)* do VS Code. O servidor só aceita conexões dos IPs liberados no firewall (*SQL server > Security > Networking*); o Query editor oferece liberar o IP de quem está acessando.
 
 ## Banco de origem para desenvolvimento
 
