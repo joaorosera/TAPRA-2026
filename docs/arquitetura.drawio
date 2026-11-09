@@ -88,13 +88,10 @@
         <mxCell id="texto18" value="&lt;b&gt;Azure Data Lake Storage Gen2&lt;/b&gt;&lt;br&gt;camada bronze: um JSON por captura&lt;br&gt;&lt;span style=&quot;font-family:Consolas,monospace;font-size:10px&quot;&gt;bronze/itsm/&amp;lt;tabela&amp;gt;/ano=/mes=/dia=/&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
           <mxGeometry x="880" y="243" width="280" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="tag19" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="980" y="320" width="80" height="18" as="geometry" />
-        </mxCell>
         <mxCell id="sql_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/databases/SQL_Database.svg;" vertex="1" parent="1">
           <mxGeometry x="1001" y="346" width="38" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="texto20" value="&lt;b&gt;Azure SQL Database&lt;/b&gt;&lt;br&gt;dados tratados, prontos para consulta" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
+        <mxCell id="texto20" value="&lt;b&gt;Azure SQL Database&lt;/b&gt;&lt;br&gt;db-tapra-rosera-werner · 10 tabelas no dbo,&lt;br&gt;prontas para consulta" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;" vertex="1" parent="1">
           <mxGeometry x="880" y="402" width="280" height="36" as="geometry" />
         </mxCell>
         <mxCell id="visualizacao" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
@@ -118,7 +115,7 @@
         <mxCell id="seta_grava" value="grava o JSON&lt;br&gt;de cada captura" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.1956;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="datalake_icone">
           <mxGeometry relative="1" as="geometry" x="-0.5" />
         </mxCell>
-        <mxCell id="seta_carga" value="carga dos&lt;br&gt;dados tratados" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.6500;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="sql_icone">
+        <mxCell id="seta_carga" value="timerCargaDestino&lt;br&gt;carga 1x ao dia" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;exitX=1;exitY=0.6500;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="sql_icone">
           <mxGeometry relative="1" as="geometry" x="-0.52" />
         </mxCell>
         <mxCell id="seta_consulta" value="consulta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.5;entryX=0;entryY=0.6500;" edge="1" parent="1" source="sql_icone" target="visualizacao">

@@ -1,19 +1,16 @@
 -- Tabelas do banco de destino (db-tapra-rosera-werner), schema dbo.
 --
 -- Uma tabela para cada tabela extraida do schema itsm do banco de origem
--- (db-univille), com as mesmas colunas, tipos e nulidade. A estrutura foi
--- conferida com os arquivos da camada bronze do Data Lake e com o
--- INFORMATION_SCHEMA da origem.
+-- (db-univille), com as mesmas colunas, tipos, nulidade e integridades (PKs,
+-- UNIQUE e FKs). A estrutura foi conferida com os arquivos da camada bronze do
+-- Data Lake e com o INFORMATION_SCHEMA da origem.
 --
--- Diferencas em relacao a origem, de proposito:
---   - sem IDENTITY: os ids vem da origem e sao gravados como estao, sem
---     precisar de SET IDENTITY_INSERT na carga;
---   - sem FOREIGN KEY: cada tabela e capturada por uma function propria, em
---     horarios independentes, entao a carga de uma nao pode depender da ordem
---     das outras. As PKs e os UNIQUE da origem foram mantidos.
+-- Unica diferenca em relacao a origem, de proposito: sem IDENTITY, porque os
+-- ids vem da origem e sao gravados como estao, sem precisar de
+-- SET IDENTITY_INSERT na carga.
 --
--- Pode ser executado mais de uma vez: tabela que ja existe nao e alterada.
--- As tabelas sao criadas vazias; a carga dos dados e a proxima etapa.
+-- Pode ser executado mais de uma vez: tabela ou FK que ja existe nao e alterada.
+-- A carga dos dados e feita pela function timerCargaDestino.
 
 IF OBJECT_ID('dbo.fila', 'U') IS NULL
 CREATE TABLE dbo.fila (
@@ -185,12 +182,44 @@ CREATE TABLE dbo.csat_avaliacao (
     CONSTRAINT PK_csat_avaliacao PRIMARY KEY (id_csat_avaliacao)
 );
 
+-- Mesmas chaves estrangeiras da origem. Ficam depois de todos os CREATE TABLE
+-- para funcionar tambem num banco onde as tabelas ja existiam sem elas.
+IF OBJECT_ID('dbo.FK_analista_fila', 'F') IS NULL
+    ALTER TABLE dbo.analista ADD CONSTRAINT FK_analista_fila FOREIGN KEY (id_fila_atual) REFERENCES dbo.fila (id_fila);
+IF OBJECT_ID('dbo.FK_solicitante_cliente_organizacao', 'F') IS NULL
+    ALTER TABLE dbo.solicitante ADD CONSTRAINT FK_solicitante_cliente_organizacao FOREIGN KEY (id_cliente_organizacao) REFERENCES dbo.cliente_organizacao (id_cliente_organizacao);
+IF OBJECT_ID('dbo.FK_chamado_analista', 'F') IS NULL
+    ALTER TABLE dbo.chamado ADD CONSTRAINT FK_chamado_analista FOREIGN KEY (id_analista_atual) REFERENCES dbo.analista (id_analista);
+IF OBJECT_ID('dbo.FK_chamado_reporter', 'F') IS NULL
+    ALTER TABLE dbo.chamado ADD CONSTRAINT FK_chamado_reporter FOREIGN KEY (id_reporter) REFERENCES dbo.solicitante (id_solicitante);
+IF OBJECT_ID('dbo.FK_chamado_categoria', 'F') IS NULL
+    ALTER TABLE dbo.chamado ADD CONSTRAINT FK_chamado_categoria FOREIGN KEY (id_categoria) REFERENCES dbo.categoria (id_categoria);
+IF OBJECT_ID('dbo.FK_chamado_cliente_organizacao', 'F') IS NULL
+    ALTER TABLE dbo.chamado ADD CONSTRAINT FK_chamado_cliente_organizacao FOREIGN KEY (id_cliente_organizacao) REFERENCES dbo.cliente_organizacao (id_cliente_organizacao);
+IF OBJECT_ID('dbo.FK_chamado_fila', 'F') IS NULL
+    ALTER TABLE dbo.chamado ADD CONSTRAINT FK_chamado_fila FOREIGN KEY (id_fila_atual) REFERENCES dbo.fila (id_fila);
+IF OBJECT_ID('dbo.FK_chamado_sla_chamado', 'F') IS NULL
+    ALTER TABLE dbo.chamado_sla ADD CONSTRAINT FK_chamado_sla_chamado FOREIGN KEY (id_chamado) REFERENCES dbo.chamado (id_chamado);
+IF OBJECT_ID('dbo.FK_chamado_sla_sla', 'F') IS NULL
+    ALTER TABLE dbo.chamado_sla ADD CONSTRAINT FK_chamado_sla_sla FOREIGN KEY (id_sla) REFERENCES dbo.sla (id_sla);
+IF OBJECT_ID('dbo.FK_chamado_status_historico_chamado', 'F') IS NULL
+    ALTER TABLE dbo.chamado_status_historico ADD CONSTRAINT FK_chamado_status_historico_chamado FOREIGN KEY (id_chamado) REFERENCES dbo.chamado (id_chamado);
+IF OBJECT_ID('dbo.FK_chamado_status_historico_analista', 'F') IS NULL
+    ALTER TABLE dbo.chamado_status_historico ADD CONSTRAINT FK_chamado_status_historico_analista FOREIGN KEY (id_analista_responsavel) REFERENCES dbo.analista (id_analista);
+IF OBJECT_ID('dbo.FK_chamado_status_historico_fila', 'F') IS NULL
+    ALTER TABLE dbo.chamado_status_historico ADD CONSTRAINT FK_chamado_status_historico_fila FOREIGN KEY (id_fila) REFERENCES dbo.fila (id_fila);
+IF OBJECT_ID('dbo.FK_csat_avaliacao_chamado', 'F') IS NULL
+    ALTER TABLE dbo.csat_avaliacao ADD CONSTRAINT FK_csat_avaliacao_chamado FOREIGN KEY (id_chamado) REFERENCES dbo.chamado (id_chamado);
+IF OBJECT_ID('dbo.FK_csat_avaliacao_analista', 'F') IS NULL
+    ALTER TABLE dbo.csat_avaliacao ADD CONSTRAINT FK_csat_avaliacao_analista FOREIGN KEY (id_analista) REFERENCES dbo.analista (id_analista);
+
 -- Conferencia: as 10 tabelas no schema dbo
-SELECT t.name AS tabela, COUNT(c.column_id) AS colunas
+SELECT t.name AS tabela, COUNT(c.column_id) AS colunas,
+       (SELECT COUNT(*) FROM sys.foreign_keys f WHERE f.parent_object_id = t.object_id) AS fks
 FROM sys.tables t
 JOIN sys.columns c ON c.object_id = t.object_id
 WHERE t.schema_id = SCHEMA_ID('dbo')
   AND t.name IN ('analista', 'categoria', 'chamado', 'chamado_sla', 'chamado_status_historico',
                  'cliente_organizacao', 'csat_avaliacao', 'fila', 'sla', 'solicitante')
-GROUP BY t.name
+GROUP BY t.name, t.object_id
 ORDER BY t.name;

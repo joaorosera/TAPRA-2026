@@ -1,6 +1,6 @@
 # TAPRA-2026
 
-Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de cada uma das tabelas do banco de origem (SQL Server, schema `itsm`) e a gravação desses dados no Data Lake.
+Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Timer Trigger** e **HTTP Trigger**, incluindo a captura de cada uma das tabelas do banco de origem (SQL Server, schema `itsm`), a gravação desses dados no Data Lake e a carga diária deles no banco de destino.
 
 ## Integrantes da equipe
 
@@ -13,7 +13,7 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 - Node.js / JavaScript
 - Azure Functions Core Tools v4
 - Azurite (emulador de storage, necessário para os timer triggers rodarem localmente)
-- SQL Server / Azure SQL (banco de origem `db-univille`, schema `itsm`), acessado com o driver [`mssql`](https://www.npmjs.com/package/mssql)
+- SQL Server / Azure SQL (banco de origem `db-univille`, schema `itsm`, e banco de destino `db-tapra-rosera-werner`, schema `dbo`), acessado com o driver [`mssql`](https://www.npmjs.com/package/mssql)
 - Azure Data Lake Storage Gen2 (camada *bronze*), acessado com o SDK [`@azure/storage-blob`](https://www.npmjs.com/package/@azure/storage-blob). No ambiente local, o Azurite faz esse papel
 - GitHub Actions (pipeline de validação e publicação)
 - ESLint e Prettier (lint, formatação e ordem dos imports no CI)
@@ -28,7 +28,7 @@ A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e d
 
 - **Origem de dados:** banco `db-univille` (Azure SQL), fornecido pelo professor, com as 10 tabelas do ITSM no schema `itsm`. Todas são capturadas.
 - **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a cada 5 minutos uma function de captura para cada tabela (`timerCapturaChamado`, `timerCapturaAnalista` etc.). Cada uma abre a conexão com o banco, lê a sua tabela, fecha a conexão e grava os dados no Data Lake. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
-- **Armazenamento:** cada captura vira um arquivo JSON no container *bronze* do **Azure Data Lake Storage Gen2**, em `bronze/itsm/<tabela>/ano=AAAA/mes=MM/dia=DD/`. As tabelas de destino já estão criadas no **Azure SQL Database** (veja [Banco de destino](#banco-de-destino)); a carga dos dados tratados nelas, prontos para consulta, é a próxima etapa.
+- **Armazenamento:** cada captura vira um arquivo JSON no container *bronze* do **Azure Data Lake Storage Gen2**, em `bronze/itsm/<tabela>/ano=AAAA/mes=MM/dia=DD/`. Uma vez ao dia, a function `timerCargaDestino` leva a captura mais recente de cada tabela para o **Azure SQL Database**, onde os dados ficam prontos para consulta (veja [Banco de destino](#banco-de-destino)).
 - **Visualização** *(próxima etapa)*: painéis e relatórios no **Power BI**, consultando o Azure SQL Database.
 - **Desenvolvimento e deploy:** o código é escrito no **VS Code** (Core Tools e Azurite para rodar localmente) e versionado no **GitHub**. O pipeline do **GitHub Actions** valida as functions a cada push e publica a Function App a cada push na `main` (veja [Pipeline (GitHub Actions)](#pipeline-github-actions)). O deploy manual (`func azure functionapp publish`) continua disponível.
 
@@ -41,6 +41,7 @@ A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e d
 | `httpEco` | HTTP GET `/api/eco?mensagem=Texto` | Retorna a informação recebida acrescida de um texto de identificação. |
 | `timerChamaHttp` | Timer (a cada 2 minutos) | Faz uma chamada HTTP para a function `httpEco` e imprime a resposta no log. |
 | `timerCaptura<Tabela>` (10 functions) | Timer (a cada 5 minutos) | Uma por tabela do schema `itsm`: captura os dados da tabela e grava um arquivo JSON no Data Lake. Lista completa na seção 5. |
+| `timerCargaDestino` | Timer (uma vez ao dia) | Atualiza as 10 tabelas do banco de destino com a captura mais recente de cada uma. Detalhes na seção 6. |
 
 ### 1. `timerLog` — Timer Trigger
 
@@ -151,6 +152,29 @@ As outras 9 tabelas seguem o mesmo padrão (`bronze/itsm/analista/...`, `bronze/
 
 Se faltar alguma variável obrigatória, a execução registra um erro com o **nome** das variáveis ausentes (nunca os valores) e não tenta conectar. A falha de uma tabela não afeta as outras, porque cada function tem a sua execução e a sua conexão.
 
+### 6. `timerCargaDestino` — Timer Trigger que popula o banco de destino
+
+Arquivo: [`src/functions/timerCargaDestino.js`](src/functions/timerCargaDestino.js), com a carga em [`src/lib/cargaDestino.js`](src/lib/cargaDestino.js).
+
+Executa uma vez ao dia, às 09:03 UTC (06:03 em Brasília), NCRONTAB `0 3 9 * * *`. O minuto 3 fica entre duas capturas, para todas as tabelas virem da mesma rodada. A cada execução, a function:
+
+1. confere as variáveis de ambiente `DESTINO_DB_*` e `DATALAKE_CONNECTION_STRING`;
+2. lê no Data Lake o arquivo mais recente de cada uma das 10 tabelas. Se faltar alguma captura, ou se alguma vier sem registros, para aqui, sem tocar no banco;
+3. abre uma transação no banco de destino e apaga os dados das tabelas, das que dependem de outras para as referenciadas;
+4. insere os dados na ordem inversa, das referenciadas para as que dependem delas, com as chaves estrangeiras validadas em cada inserção;
+5. confirma a transação e encerra a conexão.
+
+Um registro que quebre a integridade (por exemplo, um `chamado` com um `id_categoria` que não existe) faz o banco recusar a inserção. Como é tudo uma transação só, qualquer falha desfaz a carga inteira e o destino continua com os dados da última carga completa. A falha fica registrada no log:
+
+```
+[timerCargaDestino] fila: 10 registro(s), capturados em 2026-11-03T14:30:00.042Z
+...
+[timerCargaDestino] csat_avaliacao: 26 registro(s), capturados em 2026-11-03T14:30:00.042Z
+[timerCargaDestino] carga concluida: 10 tabelas atualizadas
+```
+
+A carga em bulk precisa da opção `checkConstraints`. Sem ela, o SQL Server aceita registros órfãos sem reclamar e ainda passa a marcar a chave estrangeira como não confiável.
+
 ## Como executar localmente
 
 Pré-requisitos: [Node.js 20 ou 22 LTS](https://nodejs.org) (versões suportadas pelo Azure Functions v4) e [Azure Functions Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local) — o Core Tools e o Azurite já vêm como `devDependencies` deste projeto.
@@ -193,6 +217,8 @@ Os timers passam a escrever no terminal automaticamente conforme o agendamento. 
 curl -X POST http://localhost:7071/admin/functions/timerCapturaChamado -H "Content-Type: application/json" -d "{}"
 ```
 
+A carga do banco de destino é disparada do mesmo jeito, com `timerCargaDestino`. Ela usa o banco de destino real, então preencha as variáveis `DESTINO_DB_*` antes.
+
 Para disparar as 10 capturas de uma vez (Git Bash):
 
 ```bash
@@ -207,12 +233,11 @@ No ambiente local, o Data Lake é o próprio Azurite. Para ver os arquivos grava
 
 O destino dos dados é o banco `db-tapra-rosera-werner`, no servidor `sv-tapra-rosera-werber.database.windows.net` (Azure SQL, tier Basic). O script [`sql/criarTabelasDestino.sql`](sql/criarTabelasDestino.sql) cria nele, no schema `dbo`, uma tabela para cada uma das 10 tabelas extraídas: `analista`, `categoria`, `chamado`, `chamado_sla`, `chamado_status_historico`, `cliente_organizacao`, `csat_avaliacao`, `fila`, `sla` e `solicitante`.
 
-As tabelas têm os mesmos nomes, colunas, tipos e nulidade da origem. A estrutura foi montada a partir dos arquivos da camada *bronze* e conferida com o `INFORMATION_SCHEMA` do `db-univille`. Por exemplo, os ids de `chamado`, `chamado_sla`, `chamado_status_historico` e `csat_avaliacao` aparecem como texto no JSON porque na origem são `BIGINT`, que o driver `mssql` devolve como string para não perder precisão. Duas diferenças em relação à origem são de propósito:
+As tabelas têm os mesmos nomes, colunas, tipos, nulidade e integridades da origem: chaves primárias, `UNIQUE` e as 14 chaves estrangeiras. A estrutura foi montada a partir dos arquivos da camada *bronze* e conferida com o `INFORMATION_SCHEMA` do `db-univille`. Por exemplo, os ids de `chamado`, `chamado_sla`, `chamado_status_historico` e `csat_avaliacao` aparecem como texto no JSON porque na origem são `BIGINT`, que o driver `mssql` devolve como string para não perder precisão. A única diferença em relação à origem é de propósito: as tabelas não têm `IDENTITY`, porque os ids vêm da origem e são gravados como estão, sem precisar de `SET IDENTITY_INSERT` na carga.
 
-- **Sem `IDENTITY`:** os ids vêm da origem e são gravados como estão, sem precisar de `SET IDENTITY_INSERT` na carga.
-- **Sem chaves estrangeiras:** cada tabela é capturada por uma function própria, em horários independentes, então a carga de uma não pode depender da ordem das outras. As chaves primárias e os `UNIQUE` da origem foram mantidos.
+O script pode ser executado mais de uma vez, porque tabela ou chave estrangeira que já existe não é alterada, e termina listando as 10 tabelas com a quantidade de colunas e de chaves estrangeiras de cada uma. Os dados são gravados pela function [`timerCargaDestino`](#6-timercargadestino--timer-trigger-que-popula-o-banco-de-destino). Para executar, use o *Query editor* do banco no portal (*SQL database > Query editor*, entrando com a conta do Microsoft Entra) ou a extensão *SQL Server (mssql)* do VS Code. O servidor só aceita conexões dos IPs liberados no firewall (*SQL server > Security > Networking*); o Query editor oferece liberar o IP de quem está acessando.
 
-As tabelas são criadas vazias. O script pode ser executado mais de uma vez, porque tabela que já existe não é alterada, e termina listando as 10 tabelas com a quantidade de colunas de cada uma. Para executar, use o *Query editor* do banco no portal (*SQL database > Query editor*, entrando com a conta do Microsoft Entra) ou a extensão *SQL Server (mssql)* do VS Code. O servidor só aceita conexões dos IPs liberados no firewall (*SQL server > Security > Networking*); o Query editor oferece liberar o IP de quem está acessando.
+A function grava com o usuário `carga_destino`, criado por [`sql/criarUsuarioCarga.sql`](sql/criarUsuarioCarga.sql). Ele é um usuário do próprio banco e só tem `SELECT`, `INSERT` e `DELETE` nas 10 tabelas. A senha fica apenas nas *Application settings*, em `DESTINO_DB_PASSWORD`.
 
 ## Banco de origem para desenvolvimento
 
@@ -248,10 +273,14 @@ Esse banco fica no tier **Basic** de propósito. O *free offer* do Azure SQL (GP
 | `ITSM_DB_TRUST_SERVER_CERTIFICATE` | Aceita certificado autoassinado. Use `true` só em SQL Server local (opcional) | `false` |
 | `DATALAKE_CONNECTION_STRING` | Connection string da conta do Data Lake (ADLS Gen2) onde as capturas são gravadas | `UseDevelopmentStorage=true` (Azurite) |
 | `DATALAKE_CONTAINER` | Container da camada *bronze* no Data Lake (opcional) | `bronze` |
+| `DESTINO_DB_SERVER` | Servidor do banco de destino | `sv-tapra-rosera-werber.database.windows.net` |
+| `DESTINO_DB_NAME` | Nome do banco de destino | `db-tapra-rosera-werner` |
+| `DESTINO_DB_USER` | Usuário da carga no banco de destino | `carga_destino` |
+| `DESTINO_DB_PASSWORD` | Senha desse usuário | só nas *Application settings* |
 
-Ao publicar no Azure, defina `ECO_FUNCTION_URL` nas *Application settings* da Function App apontando para `https://<nome-da-function-app>.azurewebsites.net/api/eco`, e cadastre também as variáveis `ITSM_DB_*` e `DATALAKE_*`.
+Ao publicar no Azure, defina `ECO_FUNCTION_URL` nas *Application settings* da Function App apontando para `https://<nome-da-function-app>.azurewebsites.net/api/eco`, e cadastre também as variáveis `ITSM_DB_*`, `DESTINO_DB_*` e `DATALAKE_*`.
 
-> **Credenciais:** usuário e senha do banco e a connection string do Data Lake existem apenas no `local.settings.json` (ignorado pelo Git) e nas *Application settings* da Function App. Nunca coloque esses valores no código, no `local.settings.json.example` ou no README.
+> **Credenciais:** usuário e senha dos bancos e a connection string do Data Lake existem apenas no `local.settings.json` (ignorado pelo Git) e nas *Application settings* da Function App. Nunca coloque esses valores no código, no `local.settings.json.example` ou no README.
 
 ## Publicação no Azure
 
@@ -313,7 +342,7 @@ Para ligar a publicação, depois de criar a Function App:
 Outros workflows:
 
 - [`ci.yml`](.github/workflows/ci.yml) (*CI/CD*): roda a cada push na `main`. Faz as mesmas duas validações e, só se as duas passarem, liga a Function App, define `DATALAKE_CONTAINER=bronze` e publica. Pushes que só mudam `docs/` ou arquivos `.md` não publicam.
-- [`parar-function-app.yml`](.github/workflows/parar-function-app.yml) (*Parar Function App*, disparado à mão em *Actions > Parar Function App > Run workflow*): para a `func-tapra-2026-jvr-cus` para economizar crédito. O próximo deploy liga de novo.
+- [`parar-function-app.yml`](.github/workflows/parar-function-app.yml) (*Parar Function App*, disparado à mão em *Actions > Parar Function App > Run workflow*): para a `func-tapra-2026-jvr-cus` para economizar crédito. O próximo deploy liga de novo. Enquanto ela está parada, nenhum timer roda: nem as capturas, nem a carga diária do banco de destino.
 - [`exportar-diagrama.yml`](.github/workflows/exportar-diagrama.yml) (*Exportar diagrama*, disparado à mão em *Actions > Exportar diagrama > Run workflow*): exporta o `docs/arquitetura.drawio` para PNG com o draw.io headless.
 
 ### Validações de qualidade (CI)

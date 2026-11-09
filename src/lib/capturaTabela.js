@@ -123,4 +123,4 @@ async function capturarTabela(tabela, context) {
     }
 }
 
-module.exports = { capturarTabela };
+module.exports = { capturarTabela, FONTE };
