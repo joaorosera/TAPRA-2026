@@ -70,7 +70,7 @@
         <mxCell id="icone14" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/general/Gear.svg;" vertex="1" parent="1">
           <mxGeometry x="477" y="415.5" width="15" height="15" as="geometry" />
         </mxCell>
-        <mxCell id="texto15" value="Application settings: &lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;ITSM_DB_*&lt;/span&gt;, &lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;DATALAKE_*&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="texto15" value="Application settings: &lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;ITSM_DB_*, DESTINO_DB_*&lt;/span&gt;, &lt;span style=&quot;font-family:Consolas,monospace&quot;&gt;DATALAKE_*&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="498" y="414" width="240" height="18" as="geometry" />
         </mxCell>
         <mxCell id="texto16" value="Também hospeda as functions de exercício:&lt;br&gt;timerLog, timerChamaHttp, httpParametro e httpEco" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=10;fontColor=#5F5F5F;" vertex="1" parent="1">
@@ -115,7 +115,7 @@
         <mxCell id="seta_grava" value="grava o JSON&lt;br&gt;de cada captura" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.1956;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="datalake_icone">
           <mxGeometry relative="1" as="geometry" x="-0.5" />
         </mxCell>
-        <mxCell id="seta_carga" value="timerCargaDestino&lt;br&gt;carga 1x ao dia" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;exitX=1;exitY=0.6500;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="sql_icone">
+        <mxCell id="seta_carga" value="timerCargaDestino&lt;br&gt;carga 1x ao dia" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.6500;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="sql_icone">
           <mxGeometry relative="1" as="geometry" x="-0.52" />
         </mxCell>
         <mxCell id="seta_consulta" value="consulta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.5;entryX=0;entryY=0.6500;" edge="1" parent="1" source="sql_icone" target="visualizacao">
