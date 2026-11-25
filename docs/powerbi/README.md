@@ -18,7 +18,8 @@ powerbi/
 
 - **10 tabelas** `dbo_<tabela>`, em modo *Import*, lidas com `Sql.Database(ServidorSql, BancoSql)`.
 - **Calendario**, tabela calculada que vai de 1º de janeiro do ano do primeiro chamado até 31 de dezembro do ano da última criação ou resolução. Está marcada como tabela de datas, e `Mês/Ano` é ordenado por `AnoMes`.
-- **Colunas calculadas** em `dbo_chamado` (`Grupo Status`, `Ordem Prioridade`, `Analista`, `Categoria`, `Fila` etc.) e as **medidas** dos indicadores na tabela `_Medidas`. Tudo vem de [`medidas.dax`](medidas.dax), e cada medida tem na descrição o número do indicador.
+- **Colunas calculadas** em `dbo_chamado` (`Grupo Status`, `Analista`, `Categoria`, `Fila` etc.) e as **medidas** dos indicadores na tabela `_Medidas`. Tudo vem de [`medidas.dax`](medidas.dax), e cada medida tem na descrição o número do indicador.
+- **`Ordem Prioridade`** é criada no Power Query, na consulta `dbo_chamado`, e não em DAX. Ela serve para ordenar `ds_prioridade` de crítica a baixa. Como coluna DAX, ela leria a própria `ds_prioridade` que ordena, e o Power BI recusa com "dependência circular".
 - **Relacionamentos:** os ativos são chamado→analista, categoria, fila e cliente, chamado_sla→chamado e sla, chamado_status_historico→chamado, csat_avaliacao→analista e chamado[Data Criacao]→Calendario. Outros 7 ficam inativos para não criar dois caminhos entre as mesmas tabelas. Um deles é o chamado[Data Resolucao]→Calendario, que a medida `Chamados Resolvidos (mês resolução)` liga com `USERELATIONSHIP` (indicador #3).
 
 | Página | Indicadores |
@@ -36,7 +37,7 @@ Rode [`sql/criarUsuarioPowerBi.sql`](../../sql/criarUsuarioPowerBi.sql) no *Quer
 O script também traz três consultas de conferência:
 
 1. as permissões do usuário (10 linhas);
-2. os valores reais de status, prioridade, tipo e nível. As colunas `Grupo Status` e `Ordem Prioridade` comparam esses textos (`aberto`, `em andamento`, `crítica`, ...). Se vierem escritos de outro jeito, ajuste as duas colunas na tabela `dbo_chamado`;
+2. os valores reais de status, prioridade, tipo e nível. As colunas `Grupo Status` e `Ordem Prioridade` comparam esses textos (`aberto`, `em andamento`, `crítica`, ...). Se vierem escritos de outro jeito, ajuste a `Grupo Status` (coluna calculada) e a `Ordem Prioridade` (etapa `OrdemPrioridade` da consulta `dbo_chamado`, no Power Query);
 3. os números que o painel deve mostrar (veja [Conferir os números](#5-conferir-os-números)).
 
 ## 2. Liberar o firewall
