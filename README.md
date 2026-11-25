@@ -15,6 +15,7 @@ Projeto da disciplina TAPRA (2026) com Azure Functions usando os gatilhos **Time
 - Azurite (emulador de storage, necessário para os timer triggers rodarem localmente)
 - SQL Server / Azure SQL (banco de origem `db-univille`, schema `itsm`, e banco de destino `db-tapra-rosera-werner`, schema `dbo`), acessado com o driver [`mssql`](https://www.npmjs.com/package/mssql)
 - Azure Data Lake Storage Gen2 (camada *bronze*), acessado com o SDK [`@azure/storage-blob`](https://www.npmjs.com/package/@azure/storage-blob). No ambiente local, o Azurite faz esse papel
+- Power BI Desktop, com o projeto salvo em PBIP (modelo em TMDL e relatório em PBIR)
 - GitHub Actions (pipeline de validação e publicação)
 - ESLint e Prettier (lint, formatação e ordem dos imports no CI)
 
@@ -29,7 +30,7 @@ A arquitetura é dividida em camadas, e as setas indicam o sentido dos dados e d
 - **Origem de dados:** banco `db-univille` (Azure SQL), fornecido pelo professor, com as 10 tabelas do ITSM no schema `itsm`. Todas são capturadas.
 - **Ingestão:** a **Function App** (Node.js, Azure Functions v4) executa a cada 5 minutos uma function de captura para cada tabela (`timerCapturaChamado`, `timerCapturaAnalista` etc.). Cada uma abre a conexão com o banco, lê a sua tabela, fecha a conexão e grava os dados no Data Lake. As credenciais ficam nas *Application settings* (`local.settings.json` no ambiente local, fora do Git), os logs vão para o **Application Insights** e o **Storage Account** (Azurite no ambiente local) guarda o estado dos timers. A mesma Function App hospeda as functions de exercício (`timerLog`, `timerChamaHttp`, `httpParametro` e `httpEco`).
 - **Armazenamento:** cada captura vira um arquivo JSON no container *bronze* do **Azure Data Lake Storage Gen2**, em `bronze/itsm/<tabela>/ano=AAAA/mes=MM/dia=DD/`. Uma vez ao dia, a function `timerCargaDestino` leva a captura mais recente de cada tabela para o **Azure SQL Database**, onde os dados ficam prontos para consulta (veja [Banco de destino](#banco-de-destino)).
-- **Visualização** *(próxima etapa)*: painéis e relatórios no **Power BI**, consultando o Azure SQL Database. Os 20 indicadores que serão entregues estão listados em [`docs/indicadores.md`](docs/indicadores.md).
+- **Visualização:** um relatório do **Power BI**, com 5 páginas, mostra os 20 indicadores listados em [`docs/indicadores.md`](docs/indicadores.md). Os dados vêm do Azure SQL Database e são atualizados uma vez ao dia, depois da carga (veja [Power BI](#power-bi)).
 - **Desenvolvimento e deploy:** o código é escrito no **VS Code** (Core Tools e Azurite para rodar localmente) e versionado no **GitHub**. O pipeline do **GitHub Actions** valida as functions a cada push e publica a Function App a cada push na `main` (veja [Pipeline (GitHub Actions)](#pipeline-github-actions)). O deploy manual (`func azure functionapp publish`) continua disponível.
 
 ## Functions do projeto
@@ -239,6 +240,12 @@ O script pode ser executado mais de uma vez, porque tabela ou chave estrangeira 
 
 A function grava com o usuário `carga_destino`, criado por [`sql/criarUsuarioCarga.sql`](sql/criarUsuarioCarga.sql). Ele é um usuário do próprio banco e só tem `SELECT`, `INSERT` e `DELETE` nas 10 tabelas. A senha fica apenas nas *Application settings*, em `DESTINO_DB_PASSWORD`.
 
+## Power BI
+
+O relatório fica em [`powerbi/`](powerbi/), no formato PBIP (modelo semântico em TMDL e relatório em PBIR), e lê o banco de destino com o usuário `leitura_powerbi`, criado por [`sql/criarUsuarioPowerBi.sql`](sql/criarUsuarioPowerBi.sql), que só tem `SELECT` nas 10 tabelas. O projeto não guarda dados nem senhas.
+
+Como preparar o banco, abrir o `.pbip` no Power BI Desktop, publicar, agendar a atualização para depois da carga das 06:03 e conferir os números está em [`docs/powerbi/README.md`](docs/powerbi/README.md).
+
 ## Banco de origem para desenvolvimento
 
 A origem oficial é o banco `db-univille` do professor, no servidor `sv-univille-ca.database.windows.net`, com as tabelas no schema `itsm`. Antes de o endereço do servidor ser informado, a equipe criou um **Azure SQL próprio como origem substituta**, com o banco `itsm` e só a tabela `chamado`, no schema `dbo`. Ele continua disponível para testes: aponte as variáveis `ITSM_DB_*` para ele e defina `ITSM_DB_SCHEMA=dbo`. Nesse banco, as outras 9 capturas registram erro de tabela inexistente, o que é esperado.
@@ -341,7 +348,7 @@ Para ligar a publicação, depois de criar a Function App:
 
 Outros workflows:
 
-- [`ci.yml`](.github/workflows/ci.yml) (*CI/CD*): roda a cada push na `main`. Faz as mesmas duas validações e, só se as duas passarem, liga a Function App, define `DATALAKE_CONTAINER=bronze` e publica. Pushes que só mudam `docs/` ou arquivos `.md` não publicam.
+- [`ci.yml`](.github/workflows/ci.yml) (*CI/CD*): roda a cada push na `main`. Faz as mesmas duas validações e, só se as duas passarem, liga a Function App, define `DATALAKE_CONTAINER=bronze` e publica. Pushes que só mudam `docs/`, `powerbi/` ou arquivos `.md` não publicam.
 - [`parar-function-app.yml`](.github/workflows/parar-function-app.yml) (*Parar Function App*, disparado à mão em *Actions > Parar Function App > Run workflow*): para a `func-tapra-2026-jvr-cus` para economizar crédito. O próximo deploy liga de novo. Enquanto ela está parada, nenhum timer roda: nem as capturas, nem a carga diária do banco de destino.
 - [`exportar-diagrama.yml`](.github/workflows/exportar-diagrama.yml) (*Exportar diagrama*, disparado à mão em *Actions > Exportar diagrama > Run workflow*): exporta o `docs/arquitetura.drawio` para PNG com o draw.io headless.
 
