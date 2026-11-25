@@ -16,6 +16,7 @@ __queuestorage__
 # Scripts de apoio que nao rodam no Functions host
 scripts
 sql
+powerbi
 
 # Configuracao das validacoes do CI (lint, formatacao e imports)
 eslint.config.js

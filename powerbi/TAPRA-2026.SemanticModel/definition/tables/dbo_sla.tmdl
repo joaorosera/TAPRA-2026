@@ -1,0 +1,97 @@
+table dbo_sla
+	lineageTag: 52e38703-7c0d-47c4-a477-185d3ab32ad0
+
+	column id_sla
+		dataType: int64
+		formatString: 0
+		lineageTag: 881cd0ee-3dcf-418f-a23f-8514e6d018a8
+		summarizeBy: none
+		sourceColumn: id_sla
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_sla
+		dataType: string
+		lineageTag: e7f8cd31-9c72-4ad9-a60d-355a01216a25
+		summarizeBy: none
+		sourceColumn: cd_sla
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sla
+		dataType: string
+		lineageTag: 8c81e3d5-5001-4bc2-a22e-f50b33cb11f6
+		summarizeBy: none
+		sourceColumn: nm_sla
+
+		annotation SummarizationSetBy = Automatic
+
+	column qt_meta_minutos
+		dataType: int64
+		formatString: 0
+		lineageTag: 0f7877b3-d949-4f02-aac2-7db179e90390
+		summarizeBy: none
+		sourceColumn: qt_meta_minutos
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_descricao
+		dataType: string
+		lineageTag: 3123b77e-fbb4-46f5-a14b-80654ee68319
+		summarizeBy: none
+		sourceColumn: ds_descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column fl_ativo
+		dataType: boolean
+		lineageTag: 71a87675-8353-4d50-abcb-c19fc83e7686
+		summarizeBy: none
+		sourceColumn: fl_ativo
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_inclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7934ce50-37cf-45cf-ada7-aea445789e8c
+		summarizeBy: none
+		sourceColumn: dt_inclusao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ca483476-8cc9-418c-a084-959af3b86fdb
+		summarizeBy: none
+		sourceColumn: dt_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sistema_origem
+		dataType: string
+		lineageTag: b3d9ece6-a583-449f-ac69-8a4f3c434e1d
+		summarizeBy: none
+		sourceColumn: nm_sistema_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_registro_origem
+		dataType: string
+		lineageTag: f913671a-85a2-4a73-a67a-7fd4766d7e21
+		summarizeBy: none
+		sourceColumn: cd_registro_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dbo_sla = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(ServidorSql, BancoSql),
+				    dbo_sla = Fonte{[Schema = "dbo", Item = "sla"]}[Data]
+				in
+				    dbo_sla
+
+	annotation PBI_ResultType = Table

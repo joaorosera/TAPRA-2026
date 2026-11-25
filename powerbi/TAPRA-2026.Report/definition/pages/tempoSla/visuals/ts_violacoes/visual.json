@@ -1,0 +1,98 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "ts_violacoes",
+  "position": {
+    "x": 20,
+    "y": 200,
+    "z": 2000,
+    "width": 400,
+    "height": 500,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dbo_chamado"
+                    }
+                  },
+                  "Property": "ds_prioridade"
+                }
+              },
+              "queryRef": "dbo_chamado.ds_prioridade",
+              "nativeQueryRef": "ds_prioridade",
+              "active": true
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dbo_sla"
+                    }
+                  },
+                  "Property": "nm_sla"
+                }
+              },
+              "queryRef": "dbo_sla.nm_sla",
+              "nativeQueryRef": "nm_sla",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Chamados com Violacao SLA"
+                }
+              },
+              "queryRef": "_Medidas.Chamados com Violacao SLA",
+              "nativeQueryRef": "Chamados com Violacao SLA"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'#17 Violações de SLA por prioridade e por SLA'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

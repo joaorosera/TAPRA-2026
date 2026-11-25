@@ -1,0 +1,118 @@
+table dbo_chamado_sla
+	lineageTag: 8977cd69-3304-4a6c-a17a-0b7e29c4539e
+
+	column id_chamado_sla
+		dataType: int64
+		formatString: 0
+		lineageTag: f17e67de-a632-4aa3-ac54-876ec15fe3df
+		summarizeBy: none
+		sourceColumn: id_chamado_sla
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_chamado
+		dataType: int64
+		formatString: 0
+		lineageTag: 043567d9-eb46-47d3-adee-bdc3d80953b8
+		summarizeBy: none
+		sourceColumn: id_chamado
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_sla
+		dataType: int64
+		formatString: 0
+		lineageTag: 0df7896e-c68f-4465-a021-9d031995343e
+		summarizeBy: none
+		sourceColumn: id_sla
+
+		annotation SummarizationSetBy = Automatic
+
+	column fl_breach
+		dataType: boolean
+		lineageTag: f28907c9-cded-412f-ac49-7e3b749326f8
+		summarizeBy: none
+		sourceColumn: fl_breach
+
+		annotation SummarizationSetBy = Automatic
+
+	column qt_tempo_restante_minutos
+		dataType: int64
+		formatString: 0
+		lineageTag: b7c3d932-907e-4ab5-a01c-e3945b902f7e
+		summarizeBy: none
+		sourceColumn: qt_tempo_restante_minutos
+
+		annotation SummarizationSetBy = Automatic
+
+	column qt_tempo_decorrido_minutos
+		dataType: int64
+		formatString: 0
+		lineageTag: a4e7ebbf-1943-4f91-a783-5075665cd4a4
+		summarizeBy: none
+		sourceColumn: qt_tempo_decorrido_minutos
+
+		annotation SummarizationSetBy = Automatic
+
+	column qt_meta_minutos
+		dataType: int64
+		formatString: 0
+		lineageTag: d92448b3-5a0f-4908-ab02-2b4e55183a25
+		summarizeBy: none
+		sourceColumn: qt_meta_minutos
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_referencia
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 76993733-3fd6-41f2-a581-f0648491eaf1
+		summarizeBy: none
+		sourceColumn: dt_referencia
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_inclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 08a229a4-d847-4fcb-a229-e17275c16bb9
+		summarizeBy: none
+		sourceColumn: dt_inclusao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 181dda3a-22d1-4a4f-a781-29ba056aec82
+		summarizeBy: none
+		sourceColumn: dt_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sistema_origem
+		dataType: string
+		lineageTag: a9b2d6b9-1baa-4b73-ac37-a8e5e4ea0164
+		summarizeBy: none
+		sourceColumn: nm_sistema_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_registro_origem
+		dataType: string
+		lineageTag: 15feada8-6684-437b-a64a-7000a7c5ea4a
+		summarizeBy: none
+		sourceColumn: cd_registro_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dbo_chamado_sla = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(ServidorSql, BancoSql),
+				    dbo_chamado_sla = Fonte{[Schema = "dbo", Item = "chamado_sla"]}[Data]
+				in
+				    dbo_chamado_sla
+
+	annotation PBI_ResultType = Table

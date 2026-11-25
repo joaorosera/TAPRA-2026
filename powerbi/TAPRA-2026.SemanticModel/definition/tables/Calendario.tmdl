@@ -1,0 +1,71 @@
+table Calendario
+	lineageTag: 7b11c89a-f4c2-460d-a809-777593ec3a12
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: 7cd60886-5703-4d4b-a252-34a33bba76bd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 64a00dd9-604e-499a-abcb-3a7817426ef7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		dataType: int64
+		formatString: 0
+		lineageTag: 4c3902e8-ece0-48bf-a72b-bf59042f2ad4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mês/Ano'
+		dataType: string
+		lineageTag: bd17e8e6-e72f-4d54-a8cd-057e9fa7718d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês/Ano]
+		sortByColumn: AnoMes
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnoMes
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 66eb9cb6-499b-47bb-a1dc-a876e0a81617
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [AnoMes]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendario = calculated
+		mode: import
+		source =
+				VAR _ini = DATE ( YEAR ( MIN ( dbo_chamado[dt_criacao] ) ), 1, 1 )
+				VAR _fim = DATE ( YEAR ( MAX ( MAX ( dbo_chamado[dt_criacao] ), MAX ( dbo_chamado[dt_resolucao] ) ) ), 12, 31 )
+				RETURN
+				    ADDCOLUMNS (
+				        CALENDAR ( _ini, _fim ),
+				        "Ano", YEAR ( [Date] ),
+				        "Mes", MONTH ( [Date] ),
+				        "Mês/Ano", FORMAT ( [Date], "mmm/yyyy" ),
+				        "AnoMes", YEAR ( [Date] ) * 100 + MONTH ( [Date] )
+				    )

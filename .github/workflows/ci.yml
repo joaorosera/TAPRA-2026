@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
     # Mudanca so de documentacao nao publica (e nao liga a Function App parada)
-    paths-ignore: ["docs/**", "**.md"]
+    paths-ignore: ["docs/**", "powerbi/**", "**.md"]
 
 jobs:
   validar:

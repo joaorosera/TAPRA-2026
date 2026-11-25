@@ -1,0 +1,88 @@
+table dbo_categoria
+	lineageTag: b0eb8f4a-64af-43be-aabb-3cdb1b128908
+
+	column id_categoria
+		dataType: int64
+		formatString: 0
+		lineageTag: 47c1f3a5-4ae6-4c08-ada1-33c17819ffb9
+		summarizeBy: none
+		sourceColumn: id_categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_categoria
+		dataType: string
+		lineageTag: 1ae3982e-f7e5-46eb-aa6f-1bb31424ee05
+		summarizeBy: none
+		sourceColumn: cd_categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_categoria
+		dataType: string
+		lineageTag: 45444cf7-f33a-4952-a797-69a59f831b49
+		summarizeBy: none
+		sourceColumn: nm_categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_descricao
+		dataType: string
+		lineageTag: 2d614caa-a5f4-4943-ae55-133df6962d81
+		summarizeBy: none
+		sourceColumn: ds_descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column fl_ativo
+		dataType: boolean
+		lineageTag: 805bd387-fa06-40ab-aea7-153afc9dae4b
+		summarizeBy: none
+		sourceColumn: fl_ativo
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_inclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f78380d4-03fc-4df4-a98d-a8235fb0085a
+		summarizeBy: none
+		sourceColumn: dt_inclusao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 04b8878c-e3d7-4fb1-a7d2-c1049ef42279
+		summarizeBy: none
+		sourceColumn: dt_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sistema_origem
+		dataType: string
+		lineageTag: d6ac3346-6486-4b14-aca0-18d38f8b1ab1
+		summarizeBy: none
+		sourceColumn: nm_sistema_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_registro_origem
+		dataType: string
+		lineageTag: f6ebc9a8-0440-4df6-aa2a-f4e75090f04b
+		summarizeBy: none
+		sourceColumn: cd_registro_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dbo_categoria = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(ServidorSql, BancoSql),
+				    dbo_categoria = Fonte{[Schema = "dbo", Item = "categoria"]}[Data]
+				in
+				    dbo_categoria
+
+	annotation PBI_ResultType = Table

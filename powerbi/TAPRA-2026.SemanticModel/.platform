@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "TAPRA-2026"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "89244fe0-4fd3-4a2f-a26a-184283e0b889"
+  }
+}
