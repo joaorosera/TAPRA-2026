@@ -52,16 +52,19 @@ RETURN
         "Outro"
     )
 
-// ordem das prioridades (Ferramentas de coluna > Classificar por coluna)
-Ordem Prioridade =
-SWITCH (
-    LOWER ( TRIM ( dbo_chamado[ds_prioridade] ) ),
-    "crítica", 1, "critica", 1,
-    "alta", 2,
-    "média", 3, "media", 3,
-    "baixa", 4,
-    9
-)
+// ordem das prioridades: NAO e coluna calculada em DAX. Ela le a ds_prioridade,
+// e ordenar a ds_prioridade por uma coluna DAX que depende dela gera "dependencia
+// circular". Por isso a coluna e criada no Power Query, na consulta dbo_chamado:
+//
+//   OrdemPrioridade = Table.AddColumn(dbo_chamado, "Ordem Prioridade", each
+//       let p = Text.Lower(Text.Trim([ds_prioridade])) in
+//       if p = "crítica" or p = "critica" then 1
+//       else if p = "alta" then 2
+//       else if p = "média" or p = "media" then 3
+//       else if p = "baixa" then 4
+//       else 9, Int64.Type)
+//
+// Depois: ds_prioridade > Ferramentas de coluna > Classificar por coluna > Ordem Prioridade
 
 // nomes com "Sem ..." no lugar de vazio (indicadores 8, 10, 11 e 12)
 Analista      = COALESCE ( RELATED ( dbo_analista[nm_analista] ), "Sem analista" )

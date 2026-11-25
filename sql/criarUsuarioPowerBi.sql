@@ -32,7 +32,7 @@ WHERE u.name = 'leitura_powerbi'
 ORDER BY tabela;
 
 -- Consulta 2: valores reais dos campos de texto usados no modelo. As colunas
--- calculadas Grupo Status e Ordem Prioridade (powerbi/, tabela dbo_chamado)
+-- Grupo Status e Ordem Prioridade (powerbi/, tabela dbo_chamado)
 -- comparam esses textos; se vierem diferentes (por exemplo EM_ANDAMENTO),
 -- ajuste as colunas.
 SELECT ds_status_chamado, COUNT(*) AS qtd FROM dbo.chamado GROUP BY ds_status_chamado ORDER BY qtd DESC;
