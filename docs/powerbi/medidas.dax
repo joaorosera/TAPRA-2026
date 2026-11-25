@@ -1,0 +1,156 @@
+// =====================================================================
+// TAPRA-2026 · Power BI · tabelas, colunas e medidas DAX
+// Banco: db-tapra-rosera-werner (schema dbo)
+// Cole cada bloco em: Modelagem > Nova tabela / Nova coluna / Nova medida
+// =====================================================================
+
+
+// ---------------------------------------------------------------------
+// 1) TABELA CALENDÁRIO  (Modelagem > Nova tabela)
+//    Depois: marcar como tabela de datas (coluna [Data])
+//    e ordenar [Mês/Ano] pela coluna [AnoMes]
+// ---------------------------------------------------------------------
+Calendario =
+VAR _ini = DATE ( YEAR ( MIN ( dbo_chamado[dt_criacao] ) ), 1, 1 )
+VAR _fim = DATE ( YEAR ( MAX ( MAX ( dbo_chamado[dt_criacao] ), MAX ( dbo_chamado[dt_resolucao] ) ) ), 12, 31 )
+RETURN
+    ADDCOLUMNS (
+        CALENDAR ( _ini, _fim ),
+        "Ano", YEAR ( [Date] ),
+        "Mes", MONTH ( [Date] ),
+        "Mês/Ano", FORMAT ( [Date], "mmm/yyyy" ),
+        "AnoMes", YEAR ( [Date] ) * 100 + MONTH ( [Date] )
+    )
+// obs.: renomeie a coluna [Date] para [Data] se quiser
+
+
+// ---------------------------------------------------------------------
+// 2) COLUNAS CALCULADAS na tabela dbo_chamado  (Modelagem > Nova coluna)
+// ---------------------------------------------------------------------
+
+// datas sem hora, para ligar com o Calendario
+Data Criacao = DATE ( YEAR ( dbo_chamado[dt_criacao] ), MONTH ( dbo_chamado[dt_criacao] ), DAY ( dbo_chamado[dt_criacao] ) )
+
+Data Resolucao =
+IF (
+    ISBLANK ( dbo_chamado[dt_resolucao] ),
+    BLANK (),
+    DATE ( YEAR ( dbo_chamado[dt_resolucao] ), MONTH ( dbo_chamado[dt_resolucao] ), DAY ( dbo_chamado[dt_resolucao] ) )
+)
+
+// agrupa os 6 status em Backlog / Resolvido / Cancelado
+// ATENÇÃO: confira os valores reais com a consulta 2 do sql/criarUsuarioPowerBi.sql
+// e ajuste os textos abaixo se vierem diferentes (ex.: "EM_ANDAMENTO")
+Grupo Status =
+VAR s = LOWER ( TRIM ( dbo_chamado[ds_status_chamado] ) )
+RETURN
+    SWITCH (
+        TRUE (),
+        s IN { "aberto", "em andamento", "pendente" }, "Backlog",
+        s IN { "resolvido", "fechado" }, "Resolvido",
+        s = "cancelado", "Cancelado",
+        "Outro"
+    )
+
+// ordem das prioridades (Ferramentas de coluna > Classificar por coluna)
+Ordem Prioridade =
+SWITCH (
+    LOWER ( TRIM ( dbo_chamado[ds_prioridade] ) ),
+    "crítica", 1, "critica", 1,
+    "alta", 2,
+    "média", 3, "media", 3,
+    "baixa", 4,
+    9
+)
+
+// nomes com "Sem ..." no lugar de vazio (indicadores 8, 10, 11 e 12)
+Analista      = COALESCE ( RELATED ( dbo_analista[nm_analista] ), "Sem analista" )
+Nivel Analista = COALESCE ( RELATED ( dbo_analista[ds_nivel] ), "Sem analista" )
+Categoria     = COALESCE ( RELATED ( dbo_categoria[nm_categoria] ), "Sem categoria" )
+Fila          = COALESCE ( RELATED ( dbo_fila[nm_fila] ), "Sem fila" )
+Cliente       = RELATED ( dbo_cliente_organizacao[nm_cliente_organizacao] )
+
+// horas até resolver (vazio se ainda não resolveu)
+Horas Resolucao =
+IF (
+    ISBLANK ( dbo_chamado[dt_resolucao] ),
+    BLANK (),
+    DATEDIFF ( dbo_chamado[dt_criacao], dbo_chamado[dt_resolucao], MINUTE ) / 60
+)
+
+
+// ---------------------------------------------------------------------
+// 3) MEDIDAS  (crie uma tabela vazia "_Medidas" e guarde todas nela)
+//    Página Inicial > Inserir dados > OK  → renomeie para _Medidas
+// ---------------------------------------------------------------------
+
+// ===== VOLUME =====
+
+// #1 e #2 (por mês: use Calendario[Mês/Ano] no eixo)
+Total Chamados = COUNTROWS ( dbo_chamado )
+
+// #3 abertos x resolvidos por mês
+Chamados Abertos = [Total Chamados]
+
+Chamados Resolvidos (mês resolução) =
+CALCULATE (
+    COUNTROWS ( dbo_chamado ),
+    NOT ISBLANK ( dbo_chamado[dt_resolucao] ),
+    USERELATIONSHIP ( dbo_chamado[Data Resolucao], Calendario[Date] )
+)
+
+// #5
+Backlog = CALCULATE ( [Total Chamados], dbo_chamado[Grupo Status] = "Backlog" )
+
+// #4, #6, #7, #8, #9, #10 → [Total Chamados] com a coluna da dimensão no eixo
+
+
+// ===== ANALISTAS =====
+
+// #11 e #12 → [Total Chamados] com dbo_chamado[Analista] / [Nivel Analista] no eixo
+
+// #13
+Chamados Resolvidos = CALCULATE ( [Total Chamados], dbo_chamado[Grupo Status] = "Resolvido" )
+
+Taxa Resolucao = DIVIDE ( [Chamados Resolvidos], [Total Chamados] )
+// formato: Porcentagem
+
+
+// ===== TEMPO =====
+
+// #14 (por prioridade: dbo_chamado[ds_prioridade] no eixo)
+Tempo Medio Resolucao (h) = AVERAGE ( dbo_chamado[Horas Resolucao] )
+
+// #15 (dbo_chamado_status_historico[ds_status_chamado] no eixo)
+Tempo Medio no Status (h) =
+CALCULATE (
+    AVERAGE ( dbo_chamado_status_historico[qt_tempo_status_minutos] ),
+    NOT ISBLANK ( dbo_chamado_status_historico[dt_fim_status] )
+) / 60
+
+
+// ===== SLA =====
+
+Chamados com SLA = DISTINCTCOUNT ( dbo_chamado_sla[id_chamado] )
+
+// #17 (eixo: dbo_chamado[ds_prioridade] e dbo_sla[nm_sla])
+Chamados com Violacao SLA =
+CALCULATE ( DISTINCTCOUNT ( dbo_chamado_sla[id_chamado] ), dbo_chamado_sla[fl_breach] = TRUE () )
+
+// #16
+% Dentro do SLA = DIVIDE ( [Chamados com SLA] - [Chamados com Violacao SLA], [Chamados com SLA] )
+// formato: Porcentagem
+
+
+// ===== CSAT =====
+
+// #18 (#20: dbo_analista[nm_analista] no eixo)
+Nota Media CSAT = AVERAGE ( dbo_csat_avaliacao[nr_score] )
+// formato: decimal, 2 casas
+
+Total Avaliacoes = COUNTROWS ( dbo_csat_avaliacao )
+
+// #19
+% Clientes Satisfeitos =
+DIVIDE ( CALCULATE ( [Total Avaliacoes], dbo_csat_avaliacao[nr_score] >= 4 ), [Total Avaliacoes] )
+// formato: Porcentagem
