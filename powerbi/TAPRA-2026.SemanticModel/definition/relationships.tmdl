@@ -1,0 +1,71 @@
+relationship 4a7a0647-e5af-4e95-af19-8dc516926085
+	fromColumn: dbo_chamado.id_analista_atual
+	toColumn: dbo_analista.id_analista
+
+relationship 66bd82f7-2d48-4a06-ae60-77b76089ad6b
+	fromColumn: dbo_chamado.id_categoria
+	toColumn: dbo_categoria.id_categoria
+
+relationship b3f07fb0-769d-4c46-ac8b-10a7694b4de7
+	fromColumn: dbo_chamado.id_fila_atual
+	toColumn: dbo_fila.id_fila
+
+relationship e0182ed3-e7c9-4f84-a6e0-7bba979fba3e
+	fromColumn: dbo_chamado.id_cliente_organizacao
+	toColumn: dbo_cliente_organizacao.id_cliente_organizacao
+
+relationship 33777a6d-c5a0-4174-a202-b17fc5870e94
+	fromColumn: dbo_chamado_sla.id_chamado
+	toColumn: dbo_chamado.id_chamado
+
+relationship cdb1967b-c1a4-4903-aa9a-782b4e1c2071
+	fromColumn: dbo_chamado_sla.id_sla
+	toColumn: dbo_sla.id_sla
+
+relationship 3ded6533-3596-4e2a-aad2-9d0fe1cb7967
+	fromColumn: dbo_chamado_status_historico.id_chamado
+	toColumn: dbo_chamado.id_chamado
+
+relationship b55b4cec-9b6a-4040-aa7a-971ec0bfb0e6
+	fromColumn: dbo_csat_avaliacao.id_analista
+	toColumn: dbo_analista.id_analista
+
+relationship 18c545d0-57ab-4a5c-afb0-468b4b176c1b
+	fromColumn: dbo_chamado.'Data Criacao'
+	toColumn: Calendario.Date
+
+relationship 345addfc-f976-4514-a1c0-fca492fe9d0e
+	isActive: false
+	fromColumn: dbo_csat_avaliacao.id_chamado
+	toColumn: dbo_chamado.id_chamado
+
+relationship fbfd7e87-077b-4535-a6af-22ef0f21549b
+	isActive: false
+	fromColumn: dbo_chamado_status_historico.id_analista_responsavel
+	toColumn: dbo_analista.id_analista
+
+relationship 2157fd7f-c3f7-4eeb-a0be-352fd8c296a8
+	isActive: false
+	fromColumn: dbo_chamado_status_historico.id_fila
+	toColumn: dbo_fila.id_fila
+
+relationship cfaf6534-6b96-4f6c-af28-7da1770567f2
+	isActive: false
+	fromColumn: dbo_analista.id_fila_atual
+	toColumn: dbo_fila.id_fila
+
+relationship 20a45988-4ef6-4a18-ae07-c09e6797cd63
+	isActive: false
+	fromColumn: dbo_solicitante.id_cliente_organizacao
+	toColumn: dbo_cliente_organizacao.id_cliente_organizacao
+
+relationship f29865f7-a33a-484a-a5d4-5f8aa26cc490
+	isActive: false
+	fromColumn: dbo_chamado.id_reporter
+	toColumn: dbo_solicitante.id_solicitante
+
+relationship 9b204524-38e5-4f6d-a1b1-06f43af33944
+	isActive: false
+	fromColumn: dbo_chamado.'Data Resolucao'
+	toColumn: Calendario.Date
+

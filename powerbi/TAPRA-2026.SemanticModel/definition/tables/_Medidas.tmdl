@@ -1,0 +1,100 @@
+table _Medidas
+	lineageTag: bdf2182c-203c-4c6c-aa10-cf8e8b669697
+
+	/// Indicadores #1 e #2 (por mes, com Calendario[Mês/Ano] no eixo) e base de #4 e #6 a #12
+	measure 'Total Chamados' = COUNTROWS ( dbo_chamado )
+		formatString: #,0
+		lineageTag: 9af1fc05-0632-40c0-ac06-8b358b5b5a46
+
+	/// Indicador #3: chamados pelo mes de criacao
+	measure 'Chamados Abertos' = [Total Chamados]
+		formatString: #,0
+		lineageTag: c1453177-2db1-4d39-a684-977045e1ce68
+
+	/// Indicador #3: chamados pelo mes de resolucao (relacionamento inativo com o Calendario)
+	measure 'Chamados Resolvidos (mês resolução)' =
+			CALCULATE (
+			    COUNTROWS ( dbo_chamado ),
+			    NOT ISBLANK ( dbo_chamado[dt_resolucao] ),
+			    USERELATIONSHIP ( dbo_chamado[Data Resolucao], Calendario[Date] )
+			)
+		formatString: #,0
+		lineageTag: caf50034-c7e1-470d-a880-7b1ddf798bd7
+
+	/// Indicador #5: chamados abertos, em andamento ou pendentes
+	measure Backlog = CALCULATE ( [Total Chamados], dbo_chamado[Grupo Status] = "Backlog" )
+		formatString: #,0
+		lineageTag: 0d02caae-b07e-4bd0-afa6-3bdec5da2cee
+
+	/// Chamados resolvidos ou fechados (base do indicador #13)
+	measure 'Chamados Resolvidos' = CALCULATE ( [Total Chamados], dbo_chamado[Grupo Status] = "Resolvido" )
+		formatString: #,0
+		lineageTag: 7059bb4a-8805-4889-a0a9-b633bde36117
+
+	/// Indicador #13: resolvidos ou fechados / total de chamados
+	measure 'Taxa Resolucao' = DIVIDE ( [Chamados Resolvidos], [Total Chamados] )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: f059c8d0-c5b1-441a-a97e-07a9656a9dc8
+
+	/// Indicador #14: media de dt_resolucao - dt_criacao, em horas
+	measure 'Tempo Medio Resolucao (h)' = AVERAGE ( dbo_chamado[Horas Resolucao] )
+		formatString: #,0.0
+		lineageTag: 401bdb61-9526-49c4-ace9-338eb008b7b6
+
+	/// Indicador #15: media de qt_tempo_status_minutos, so nos periodos encerrados, em horas
+	measure 'Tempo Medio no Status (h)' =
+			CALCULATE (
+			    AVERAGE ( dbo_chamado_status_historico[qt_tempo_status_minutos] ),
+			    NOT ISBLANK ( dbo_chamado_status_historico[dt_fim_status] )
+			) / 60
+		formatString: #,0.0
+		lineageTag: 962bb3e3-d265-4fbe-a228-28a7d132f33d
+
+	/// Chamados com algum SLA aplicado (base do indicador #16)
+	measure 'Chamados com SLA' = DISTINCTCOUNT ( dbo_chamado_sla[id_chamado] )
+		formatString: #,0
+		lineageTag: 972066dd-5bb9-4fba-af2d-134f45271d7f
+
+	/// Indicador #17: chamados com fl_breach verdadeiro
+	measure 'Chamados com Violacao SLA' = CALCULATE ( DISTINCTCOUNT ( dbo_chamado_sla[id_chamado] ), dbo_chamado_sla[fl_breach] = TRUE () )
+		formatString: #,0
+		lineageTag: 9f3c405d-fe96-45b3-a82a-f86b2893a39d
+
+	/// Indicador #16: chamados sem violacao / chamados com SLA
+	measure '% Dentro do SLA' = DIVIDE ( [Chamados com SLA] - [Chamados com Violacao SLA], [Chamados com SLA] )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 9387ca4c-d9cd-4c61-a02a-67de6eed3562
+
+	/// Indicadores #18 e #20 (por analista): media de nr_score, de 1 a 5
+	measure 'Nota Media CSAT' = AVERAGE ( dbo_csat_avaliacao[nr_score] )
+		formatString: 0.00
+		lineageTag: bd52af18-1746-4db6-a91a-50fb50533c27
+
+	/// Quantidade de avaliacoes de CSAT
+	measure 'Total Avaliacoes' = COUNTROWS ( dbo_csat_avaliacao )
+		formatString: #,0
+		lineageTag: 0334411a-be64-4248-a319-1575cdcc5887
+
+	/// Indicador #19: avaliacoes com nota 4 ou 5 / total de avaliacoes
+	measure '% Clientes Satisfeitos' = DIVIDE ( CALCULATE ( [Total Avaliacoes], dbo_csat_avaliacao[nr_score] >= 4 ), [Total Avaliacoes] )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 0a929e7f-5b90-480b-a86d-210e919a11e9
+
+	column Coluna
+		dataType: string
+		isHidden
+		lineageTag: fdd5d43b-8ed0-41c4-a197-a0a9a0ab5820
+		summarizeBy: none
+		sourceColumn: Coluna
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Medidas = m
+		mode: import
+		source =
+				let
+				    Fonte = #table(type table [Coluna = text], {})
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table

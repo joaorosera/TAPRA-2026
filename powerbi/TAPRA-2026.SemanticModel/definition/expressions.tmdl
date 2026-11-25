@@ -1,0 +1,9 @@
+expression ServidorSql = "sv-tapra-rosera-werber.database.windows.net" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 710a99d3-6c39-4faf-a367-30adea238868
+
+	annotation PBI_ResultType = Text
+
+expression BancoSql = "db-tapra-rosera-werner" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 5c8dc94d-78b8-470c-ab5d-aa80958fa724
+
+	annotation PBI_ResultType = Text

@@ -1,0 +1,100 @@
+table dbo_csat_avaliacao
+	lineageTag: 741ec385-a98b-4a20-a847-a62617598390
+
+	column id_csat_avaliacao
+		dataType: int64
+		formatString: 0
+		lineageTag: 3e819133-4d9d-4c12-a7f0-c973c80bbfe4
+		summarizeBy: none
+		sourceColumn: id_csat_avaliacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_chamado
+		dataType: int64
+		formatString: 0
+		lineageTag: 1627ff93-6044-4414-a750-9d4b56aa30a6
+		summarizeBy: none
+		sourceColumn: id_chamado
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_analista
+		dataType: int64
+		formatString: 0
+		lineageTag: 48ab4159-55ec-4027-a1d4-03c5b8f857d1
+		summarizeBy: none
+		sourceColumn: id_analista
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 07aad7b9-97c2-41a8-a490-247295aa6582
+		summarizeBy: none
+		sourceColumn: nr_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_comentario
+		dataType: string
+		lineageTag: c8d0caff-5544-4d6e-a183-86dd8ff1f3ae
+		summarizeBy: none
+		sourceColumn: ds_comentario
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_avaliacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9f9f263c-d7bd-434f-a8bc-8bd2eb27add8
+		summarizeBy: none
+		sourceColumn: dt_avaliacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_inclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 88a3faa7-0faf-4eae-a982-f4c3a3dc645d
+		summarizeBy: none
+		sourceColumn: dt_inclusao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 594a4d0b-3f11-4aef-ae06-69f9765fa900
+		summarizeBy: none
+		sourceColumn: dt_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sistema_origem
+		dataType: string
+		lineageTag: 7f8d0e01-1595-4035-ac5f-19ed77e802b2
+		summarizeBy: none
+		sourceColumn: nm_sistema_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_registro_origem
+		dataType: string
+		lineageTag: a9a060b8-4be3-4e67-addd-04e477881539
+		summarizeBy: none
+		sourceColumn: cd_registro_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dbo_csat_avaliacao = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(ServidorSql, BancoSql),
+				    dbo_csat_avaliacao = Fonte{[Schema = "dbo", Item = "csat_avaliacao"]}[Data]
+				in
+				    dbo_csat_avaliacao
+
+	annotation PBI_ResultType = Table

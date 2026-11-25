@@ -1,0 +1,88 @@
+table dbo_cliente_organizacao
+	lineageTag: 05aadb18-a8a6-47f9-a26a-12b8e6fb9536
+
+	column id_cliente_organizacao
+		dataType: int64
+		formatString: 0
+		lineageTag: 26703120-ab0d-417c-a88d-32f6ea51f4e4
+		summarizeBy: none
+		sourceColumn: id_cliente_organizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_cliente_organizacao
+		dataType: string
+		lineageTag: 06be42d5-9998-4432-a1ed-135ab0cbf0f3
+		summarizeBy: none
+		sourceColumn: cd_cliente_organizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_cliente_organizacao
+		dataType: string
+		lineageTag: bfd8f77c-43f7-40e2-af30-6ac065b5ce0e
+		summarizeBy: none
+		sourceColumn: nm_cliente_organizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_cnpj
+		dataType: string
+		lineageTag: 42c24dda-0f0a-473b-a33c-07444e72161c
+		summarizeBy: none
+		sourceColumn: nr_cnpj
+
+		annotation SummarizationSetBy = Automatic
+
+	column fl_ativo
+		dataType: boolean
+		lineageTag: ba130601-f5d3-4c4c-a833-b97a612a0777
+		summarizeBy: none
+		sourceColumn: fl_ativo
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_inclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6e6faee2-eb3b-4605-ae42-291bc6fd540f
+		summarizeBy: none
+		sourceColumn: dt_inclusao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 0ef3bfa3-c6c7-4929-a8a8-572268b91d3a
+		summarizeBy: none
+		sourceColumn: dt_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sistema_origem
+		dataType: string
+		lineageTag: b201543e-370c-4e6b-a19a-f84f9eeb95bc
+		summarizeBy: none
+		sourceColumn: nm_sistema_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_registro_origem
+		dataType: string
+		lineageTag: 01d6d1b9-7980-48cd-a4ea-bd41043c6eed
+		summarizeBy: none
+		sourceColumn: cd_registro_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dbo_cliente_organizacao = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(ServidorSql, BancoSql),
+				    dbo_cliente_organizacao = Fonte{[Schema = "dbo", Item = "cliente_organizacao"]}[Data]
+				in
+				    dbo_cliente_organizacao
+
+	annotation PBI_ResultType = Table

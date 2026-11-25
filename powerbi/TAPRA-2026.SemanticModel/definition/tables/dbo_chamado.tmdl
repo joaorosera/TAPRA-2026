@@ -1,0 +1,281 @@
+table dbo_chamado
+	lineageTag: 1f633e0b-da69-4ea2-a9f5-8a68a6b83772
+
+	column id_chamado
+		dataType: int64
+		formatString: 0
+		lineageTag: c0379c2f-5616-4871-aab2-c23822fbb3b9
+		summarizeBy: none
+		sourceColumn: id_chamado
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_chamado
+		dataType: string
+		lineageTag: 2eb588f0-36c6-4b23-a9a4-d215f16c5e92
+		summarizeBy: none
+		sourceColumn: nr_chamado
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_tipo_chamado
+		dataType: string
+		lineageTag: 70486f20-0287-4a49-ad5f-49f2cfca14e2
+		summarizeBy: none
+		sourceColumn: ds_tipo_chamado
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_status_chamado
+		dataType: string
+		lineageTag: a66ea9a9-59fc-4e47-a456-eebcbafaf8b7
+		summarizeBy: none
+		sourceColumn: ds_status_chamado
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_prioridade
+		dataType: string
+		lineageTag: 6589e821-f9b0-4c02-ac3a-25fb372831ac
+		summarizeBy: none
+		sourceColumn: ds_prioridade
+		sortByColumn: 'Ordem Prioridade'
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_criacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 572cae3e-e3f3-435e-aed5-4792aaad98ec
+		summarizeBy: none
+		sourceColumn: dt_criacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_resolucao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c5d24138-ac26-4858-a517-2cc336db991a
+		summarizeBy: none
+		sourceColumn: dt_resolucao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_ultima_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3fb384d0-f34f-414b-a9de-dda02ce99784
+		summarizeBy: none
+		sourceColumn: dt_ultima_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_analista_atual
+		dataType: int64
+		formatString: 0
+		lineageTag: 99ce8e64-84cb-4bbb-a055-66267e121c26
+		summarizeBy: none
+		sourceColumn: id_analista_atual
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_reporter
+		dataType: int64
+		formatString: 0
+		lineageTag: 62b56677-8039-492e-a2a5-14e2a002c694
+		summarizeBy: none
+		sourceColumn: id_reporter
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_categoria
+		dataType: int64
+		formatString: 0
+		lineageTag: 2a81e922-fd55-4774-a621-52952193a3b1
+		summarizeBy: none
+		sourceColumn: id_categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_cliente_organizacao
+		dataType: int64
+		formatString: 0
+		lineageTag: 9199ae3a-f996-4718-afd9-df4f3ad9ca5a
+		summarizeBy: none
+		sourceColumn: id_cliente_organizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_fila_atual
+		dataType: int64
+		formatString: 0
+		lineageTag: 5a7942a8-fd56-4c9c-a3a0-bbdfdb2dfb9d
+		summarizeBy: none
+		sourceColumn: id_fila_atual
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_titulo
+		dataType: string
+		lineageTag: 6240121e-67a4-4139-a206-8d08b995d5c8
+		summarizeBy: none
+		sourceColumn: ds_titulo
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_descricao
+		dataType: string
+		lineageTag: 14b3bff7-2eae-4bc7-a10d-13cf2a90c80a
+		summarizeBy: none
+		sourceColumn: ds_descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_inclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 344807e2-c224-4dec-a7d6-cd90df20281f
+		summarizeBy: none
+		sourceColumn: dt_inclusao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3997746e-a29d-44eb-adef-8a26c5f2d834
+		summarizeBy: none
+		sourceColumn: dt_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sistema_origem
+		dataType: string
+		lineageTag: cb857e33-a4bf-4f63-a1b8-b3b9d968d199
+		summarizeBy: none
+		sourceColumn: nm_sistema_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_registro_origem
+		dataType: string
+		lineageTag: 70aac973-e6b8-49aa-ada4-b0588292e55e
+		summarizeBy: none
+		sourceColumn: cd_registro_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Criacao' = DATE ( YEAR ( dbo_chamado[dt_criacao] ), MONTH ( dbo_chamado[dt_criacao] ), DAY ( dbo_chamado[dt_criacao] ) )
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 73248ded-601e-41be-acba-38a4aedea132
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Resolucao' =
+			IF (
+			    ISBLANK ( dbo_chamado[dt_resolucao] ),
+			    BLANK (),
+			    DATE ( YEAR ( dbo_chamado[dt_resolucao] ), MONTH ( dbo_chamado[dt_resolucao] ), DAY ( dbo_chamado[dt_resolucao] ) )
+			)
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: c05ebd01-3f03-4161-a1bd-9465b75d9559
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Grupo Status' =
+			VAR s = LOWER ( TRIM ( dbo_chamado[ds_status_chamado] ) )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        s IN { "aberto", "em andamento", "pendente" }, "Backlog",
+			        s IN { "resolvido", "fechado" }, "Resolvido",
+			        s = "cancelado", "Cancelado",
+			        "Outro"
+			    )
+		dataType: string
+		lineageTag: 0a91d62a-7b59-4d44-a9b6-123d4b96c81d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ordem Prioridade' =
+			SWITCH (
+			    LOWER ( TRIM ( dbo_chamado[ds_prioridade] ) ),
+			    "crítica", 1, "critica", 1,
+			    "alta", 2,
+			    "média", 3, "media", 3,
+			    "baixa", 4,
+			    9
+			)
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f223228c-3bf4-4f31-ab17-70765393840a
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Analista = COALESCE ( RELATED ( dbo_analista[nm_analista] ), "Sem analista" )
+		dataType: string
+		lineageTag: b353b6bb-69b6-491a-abd2-389ffe714f00
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nivel Analista' = COALESCE ( RELATED ( dbo_analista[ds_nivel] ), "Sem analista" )
+		dataType: string
+		lineageTag: 7afeebf0-8f1c-4fb8-ae4b-0dbaa1b8db38
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Categoria = COALESCE ( RELATED ( dbo_categoria[nm_categoria] ), "Sem categoria" )
+		dataType: string
+		lineageTag: eb72d45d-2863-4dff-a8dc-e3333c680060
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fila = COALESCE ( RELATED ( dbo_fila[nm_fila] ), "Sem fila" )
+		dataType: string
+		lineageTag: 1e9ceed6-2cce-4aca-a953-265afda4cc7a
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente = RELATED ( dbo_cliente_organizacao[nm_cliente_organizacao] )
+		dataType: string
+		lineageTag: e3ff0525-591e-4d46-a42e-8c9d0cda907e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Horas Resolucao' =
+			IF (
+			    ISBLANK ( dbo_chamado[dt_resolucao] ),
+			    BLANK (),
+			    DATEDIFF ( dbo_chamado[dt_criacao], dbo_chamado[dt_resolucao], MINUTE ) / 60
+			)
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 4e58a0d1-1eb8-4a35-a426-4fae2189cf5e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dbo_chamado = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(ServidorSql, BancoSql),
+				    dbo_chamado = Fonte{[Schema = "dbo", Item = "chamado"]}[Data]
+				in
+				    dbo_chamado
+
+	annotation PBI_ResultType = Table

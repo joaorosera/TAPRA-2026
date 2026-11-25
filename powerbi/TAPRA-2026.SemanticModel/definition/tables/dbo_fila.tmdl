@@ -1,0 +1,88 @@
+table dbo_fila
+	lineageTag: fc7f894a-d334-4b18-ac27-5fbd7d7ee16b
+
+	column id_fila
+		dataType: int64
+		formatString: 0
+		lineageTag: 2c397a9f-ca01-49e5-a8d3-06d8b9448106
+		summarizeBy: none
+		sourceColumn: id_fila
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_fila
+		dataType: string
+		lineageTag: b899deb1-0972-474e-af42-3cd02f97c2bc
+		summarizeBy: none
+		sourceColumn: cd_fila
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_fila
+		dataType: string
+		lineageTag: 4cb0127d-7c3c-482c-a704-a1d320832d25
+		summarizeBy: none
+		sourceColumn: nm_fila
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_descricao
+		dataType: string
+		lineageTag: 9d796030-83e7-4d80-aa36-eb89a5de05bb
+		summarizeBy: none
+		sourceColumn: ds_descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column fl_ativo
+		dataType: boolean
+		lineageTag: 904ed965-09ac-4a97-a0af-125ad078db41
+		summarizeBy: none
+		sourceColumn: fl_ativo
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_inclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 718d238e-c778-4c43-a669-580db4a65f0e
+		summarizeBy: none
+		sourceColumn: dt_inclusao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 84ea45a6-5d43-41f0-af88-752d99122141
+		summarizeBy: none
+		sourceColumn: dt_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sistema_origem
+		dataType: string
+		lineageTag: a8ecec28-be9f-46a5-aa44-eb74605afc9f
+		summarizeBy: none
+		sourceColumn: nm_sistema_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_registro_origem
+		dataType: string
+		lineageTag: 9e741bf6-9455-45a4-a06f-440ca251dbde
+		summarizeBy: none
+		sourceColumn: cd_registro_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dbo_fila = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(ServidorSql, BancoSql),
+				    dbo_fila = Fonte{[Schema = "dbo", Item = "fila"]}[Data]
+				in
+				    dbo_fila
+
+	annotation PBI_ResultType = Table

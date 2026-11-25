@@ -1,0 +1,105 @@
+table dbo_solicitante
+	lineageTag: f9038503-f3fd-4ed2-af45-b2ae518afd05
+
+	column id_solicitante
+		dataType: int64
+		formatString: 0
+		lineageTag: 71a5b063-8a2c-488a-a5eb-808278ab6186
+		summarizeBy: none
+		sourceColumn: id_solicitante
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_solicitante
+		dataType: string
+		lineageTag: 758157c4-5599-4179-accf-46ec14b9bfff
+		summarizeBy: none
+		sourceColumn: cd_solicitante
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_cliente_organizacao
+		dataType: int64
+		formatString: 0
+		lineageTag: 4422a098-3982-4c0f-ad14-7bda8703cd08
+		summarizeBy: none
+		sourceColumn: id_cliente_organizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_solicitante
+		dataType: string
+		lineageTag: 2ed81384-8bf1-4275-ab4c-4e3eb4adab07
+		summarizeBy: none
+		sourceColumn: nm_solicitante
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_email
+		dataType: string
+		lineageTag: c88cf023-d712-420b-a778-b6d8a27a7808
+		summarizeBy: none
+		sourceColumn: ds_email
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_telefone
+		dataType: string
+		lineageTag: 8e6bb6aa-ed12-42a9-a8ab-167a347c9bf7
+		summarizeBy: none
+		sourceColumn: ds_telefone
+
+		annotation SummarizationSetBy = Automatic
+
+	column fl_ativo
+		dataType: boolean
+		lineageTag: 714d6ff0-867c-4077-ae10-901d09dfca2f
+		summarizeBy: none
+		sourceColumn: fl_ativo
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_inclusao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 596067e8-0fdf-4ef6-a5e7-27750bcaae7b
+		summarizeBy: none
+		sourceColumn: dt_inclusao
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_atualizacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: bc9154c7-ce5b-4cdb-a3a3-9efb256c382d
+		summarizeBy: none
+		sourceColumn: dt_atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_sistema_origem
+		dataType: string
+		lineageTag: 55ac4723-f3e8-493c-ac0e-a8f5c4591ff5
+		summarizeBy: none
+		sourceColumn: nm_sistema_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_registro_origem
+		dataType: string
+		lineageTag: 987381fa-431d-46bc-a27c-eda697b1262c
+		summarizeBy: none
+		sourceColumn: cd_registro_origem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dbo_solicitante = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(ServidorSql, BancoSql),
+				    dbo_solicitante = Fonte{[Schema = "dbo", Item = "solicitante"]}[Data]
+				in
+				    dbo_solicitante
+
+	annotation PBI_ResultType = Table
