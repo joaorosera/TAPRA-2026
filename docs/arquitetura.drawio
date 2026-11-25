@@ -100,9 +100,6 @@
         <mxCell id="texto21" value="&lt;b&gt;VISUALIZAÇÃO&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Helvetica;align=center;verticalAlign=top;fontSize=12;fontColor=#2B2B2B;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="1370" y="162" width="230" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="tag22" value="próxima etapa" style="rounded=1;arcSize=50;html=1;whiteSpace=wrap;fillColor=#F1F1F1;strokeColor=#B5B5B5;fontColor=#5F5F5F;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1445" y="316" width="80" height="18" as="geometry" />
-        </mxCell>
         <mxCell id="powerbi_icone" value="" style="image;aspect=fixed;html=1;points=[];image=img/lib/azure2/power_platform/PowerBI.svg;" vertex="1" parent="1">
           <mxGeometry x="1465" y="345" width="39" height="52" as="geometry" />
         </mxCell>
@@ -118,7 +115,7 @@
         <mxCell id="seta_carga" value="timerCargaDestino&lt;br&gt;carga 1x ao dia" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.6500;entryX=0;entryY=0.5;" edge="1" parent="1" source="ingestao" target="sql_icone">
           <mxGeometry relative="1" as="geometry" x="-0.52" />
         </mxCell>
-        <mxCell id="seta_consulta" value="consulta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#8A8A8A;fontColor=#5F5F5F;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=1;exitY=0.5;entryX=0;entryY=0.6500;" edge="1" parent="1" source="sql_icone" target="visualizacao">
+        <mxCell id="seta_consulta" value="consulta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=7;fontSize=11;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;strokeColor=#2B2B2B;fontColor=#2B2B2B;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.6500;" edge="1" parent="1" source="sql_icone" target="visualizacao">
           <mxGeometry relative="1" as="geometry" x="0.49" />
         </mxCell>
         <mxCell id="devops" value="" style="rounded=0;html=1;whiteSpace=wrap;dashed=1;dashPattern=6 4;strokeWidth=1.5;strokeColor=#2B2B2B;fillColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
