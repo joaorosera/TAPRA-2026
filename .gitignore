@@ -14,3 +14,7 @@ __queuestorage__/
 *.log
 .DS_Store
 Thumbs.db
+
+# Arquivos locais do Power BI Desktop (configuracao da maquina e cache com os dados)
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
