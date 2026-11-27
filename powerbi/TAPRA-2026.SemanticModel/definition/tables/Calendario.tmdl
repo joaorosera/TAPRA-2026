@@ -35,7 +35,7 @@ table Calendario
 
 		annotation SummarizationSetBy = Automatic
 
-	column 'Mês/Ano'
+	column Mês/Ano
 		dataType: string
 		lineageTag: bd17e8e6-e72f-4d54-a8cd-057e9fa7718d
 		summarizeBy: none
@@ -69,3 +69,4 @@ table Calendario
 				        "Mês/Ano", FORMAT ( [Date], "mmm/yyyy" ),
 				        "AnoMes", YEAR ( [Date] ) * 100 + MONTH ( [Date] )
 				    )
+

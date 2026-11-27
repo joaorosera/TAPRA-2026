@@ -116,3 +116,4 @@ table dbo_chamado_status_historico
 				    dbo_chamado_status_historico
 
 	annotation PBI_ResultType = Table
+

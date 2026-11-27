@@ -98,3 +98,4 @@ table dbo_csat_avaliacao
 				    dbo_csat_avaliacao
 
 	annotation PBI_ResultType = Table
+

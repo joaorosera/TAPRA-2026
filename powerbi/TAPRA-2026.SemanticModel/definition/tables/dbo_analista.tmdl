@@ -103,3 +103,4 @@ table dbo_analista
 				    dbo_analista
 
 	annotation PBI_ResultType = Table
+

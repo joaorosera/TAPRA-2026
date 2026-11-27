@@ -86,3 +86,4 @@ table dbo_fila
 				    dbo_fila
 
 	annotation PBI_ResultType = Table
+

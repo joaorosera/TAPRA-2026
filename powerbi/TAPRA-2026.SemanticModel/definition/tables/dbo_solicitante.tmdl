@@ -103,3 +103,4 @@ table dbo_solicitante
 				    dbo_solicitante
 
 	annotation PBI_ResultType = Table
+

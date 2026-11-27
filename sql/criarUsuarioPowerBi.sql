@@ -45,8 +45,8 @@ SELECT ds_nivel, COUNT(*) AS qtd FROM dbo.analista GROUP BY ds_nivel ORDER BY qt
 SELECT
     (SELECT COUNT(*) FROM dbo.chamado) AS total_chamados,
     (SELECT COUNT(*) FROM dbo.chamado
-      WHERE LOWER(LTRIM(RTRIM(ds_status_chamado))) IN ('aberto', 'em andamento', 'pendente')) AS backlog,
-    (SELECT CAST(100.0 * SUM(CASE WHEN LOWER(LTRIM(RTRIM(ds_status_chamado))) IN ('resolvido', 'fechado') THEN 1 ELSE 0 END)
+      WHERE LOWER(LTRIM(RTRIM(ds_status_chamado))) IN ('aberto', 'em andamento', 'pendente', 'open', 'in_progress', 'pending')) AS backlog,
+    (SELECT CAST(100.0 * SUM(CASE WHEN LOWER(LTRIM(RTRIM(ds_status_chamado))) IN ('resolvido', 'fechado', 'resolved', 'closed') THEN 1 ELSE 0 END)
             / NULLIF(COUNT(*), 0) AS DECIMAL(5, 1)) FROM dbo.chamado) AS taxa_resolucao_pct,
     (SELECT COUNT(DISTINCT id_chamado) FROM dbo.chamado_sla) AS chamados_com_sla,
     (SELECT COUNT(DISTINCT id_chamado) FROM dbo.chamado_sla WHERE fl_breach = 1) AS chamados_violacao_sla,

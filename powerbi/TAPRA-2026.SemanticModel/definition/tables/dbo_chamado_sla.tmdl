@@ -116,3 +116,4 @@ table dbo_chamado_sla
 				    dbo_chamado_sla
 
 	annotation PBI_ResultType = Table
+

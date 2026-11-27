@@ -86,3 +86,4 @@ table dbo_categoria
 				    dbo_categoria
 
 	annotation PBI_ResultType = Table
+

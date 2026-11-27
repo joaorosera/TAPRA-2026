@@ -86,3 +86,4 @@ table dbo_cliente_organizacao
 				    dbo_cliente_organizacao
 
 	annotation PBI_ResultType = Table
+
