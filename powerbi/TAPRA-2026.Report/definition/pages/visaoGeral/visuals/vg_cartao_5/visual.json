@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "vg_cartao_5",
   "position": {
-    "x": 857.3333333333334,
+    "x": 857.33333333333337,
     "y": 20,
     "z": 5000,
     "width": 193.33333333333334,

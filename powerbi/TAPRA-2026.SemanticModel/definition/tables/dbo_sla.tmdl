@@ -95,3 +95,4 @@ table dbo_sla
 				    dbo_sla
 
 	annotation PBI_ResultType = Table
+

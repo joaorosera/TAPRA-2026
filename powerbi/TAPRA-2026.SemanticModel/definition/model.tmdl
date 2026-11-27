@@ -10,6 +10,8 @@ annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBI_QueryOrder = ["ServidorSql","BancoSql","dbo_analista","dbo_categoria","dbo_chamado","dbo_chamado_sla","dbo_chamado_status_historico","dbo_cliente_organizacao","dbo_csat_avaliacao","dbo_fila","dbo_sla","dbo_solicitante","_Medidas"]
 
+annotation PBI_ProTooling = ["DevMode"]
+
 ref table dbo_analista
 ref table dbo_categoria
 ref table dbo_chamado
@@ -22,3 +24,4 @@ ref table dbo_sla
 ref table dbo_solicitante
 ref table Calendario
 ref table _Medidas
+

@@ -7,3 +7,4 @@ expression BancoSql = "db-tapra-rosera-werner" meta [IsParameterQuery=true, Type
 	lineageTag: 5c8dc94d-78b8-470c-ab5d-aa80958fa724
 
 	annotation PBI_ResultType = Text
+

@@ -1,0 +1,178 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1406.6529717877424,
+            "y": 848.046538326801
+          },
+          "nodeIndex": "_Medidas",
+          "nodeLineageTag": "bdf2182c-203c-4c6c-aa10-cf8e8b669697",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 594.1396261993234,
+            "y": 655.893476498816
+          },
+          "nodeIndex": "Calendario",
+          "nodeLineageTag": "7b11c89a-f4c2-460d-a809-777593ec3a12",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 882.858808159468,
+            "y": 1292.102676586
+          },
+          "nodeIndex": "dbo_analista",
+          "nodeLineageTag": "69db1ea6-14ef-4efb-a97d-2bc11be64d50",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 525.059822325909,
+            "y": 1288.6039708103649
+          },
+          "nodeIndex": "dbo_categoria",
+          "nodeLineageTag": "b0eb8f4a-64af-43be-aabb-3cdb1b128908",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 671.02148253649875,
+            "y": 935.55579399065073
+          },
+          "nodeIndex": "dbo_chamado",
+          "nodeLineageTag": "1f633e0b-da69-4ea2-a9f5-8a68a6b83772",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 304.26672864296785,
+            "y": 888.25188155337673
+          },
+          "nodeIndex": "dbo_chamado_sla",
+          "nodeLineageTag": "8977cd69-3304-4a6c-a17a-0b7e29c4539e",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1172.6529717877424,
+            "y": 984.35934306042839
+          },
+          "nodeIndex": "dbo_chamado_status_historico",
+          "nodeLineageTag": "6872d4fe-7589-4734-aa0e-bde67a88a004",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 393.849040957962,
+            "y": -50
+          },
+          "nodeIndex": "dbo_cliente_organizacao",
+          "nodeLineageTag": "05aadb18-a8a6-47f9-a26a-12b8e6fb9536",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1169.6624331465441,
+            "y": 1646.0930766536021
+          },
+          "nodeIndex": "dbo_csat_avaliacao",
+          "nodeLineageTag": "741ec385-a98b-4a20-a847-a62617598390",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 883.59255130999622,
+            "y": 583.05689026801247
+          },
+          "nodeIndex": "dbo_fila",
+          "nodeLineageTag": "fc7f894a-d334-4b18-ac27-5fbd7d7ee16b",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 533.90866331677262
+          },
+          "nodeIndex": "dbo_sla",
+          "nodeLineageTag": "52e38703-7c0d-47c4-a477-185d3ab32ad0",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 348.14964265348965,
+            "y": 302.15041407687704
+          },
+          "nodeIndex": "dbo_solicitante",
+          "nodeLineageTag": "f9038503-f3fd-4ed2-af45-b2ae518afd05",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}
